@@ -14,6 +14,9 @@ const Pages = () => {
       <Navbar />
       <Routes>
         <Route path="*" element={<Button>Hello</Button>} />
+        <Route path=":city" element={<Button>Hello</Button>}>
+          <Route path=":hotel" element={<Button>Hello</Button>} />
+        </Route>
       </Routes>
     </Container>
   );

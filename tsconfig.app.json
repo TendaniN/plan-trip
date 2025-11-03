@@ -7,10 +7,11 @@
       "pages/*": ["./src/pages/*"],
       "types/*": ["./src/types/*"],
       "constants/*": ["./src/constants/*"],
+      "stores/*": ["src/stores/*"],
       "utils/*": ["./src/utils/*"],
       "hooks/*": ["./src/hooks/*"]
     },
-    
+
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,
