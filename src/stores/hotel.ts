@@ -16,7 +16,7 @@ type Actions = {
 type Action = {
   type: keyof Actions;
   city: CityValues;
-  name?: string;
+  name: string;
 };
 
 const hotelReducer = (state: State, action: Action) => {
