@@ -12,6 +12,7 @@ export default defineConfig({
       assets: "/src/assets",
       types: "/src/types",
       constants: "/src/constants",
+      stores: "/src/stores/*",
       utils: "/src/utils",
       hooks: "/src/hooks",
       react: resolve(__dirname, "node_modules", "react"),
