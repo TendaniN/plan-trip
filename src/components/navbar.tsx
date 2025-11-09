@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab } from "@mui/material";
+import { Box } from "@mui/material";
 import { Link } from "react-router-dom";
 import logoImg from "assets/branding/logo-transparent.png";
 import styled from "@emotion/styled";
@@ -31,10 +31,6 @@ export const Navbar = () => {
       <LogoContainer to="/">
         <img src={logoImg} />
       </LogoContainer>
-      <Tabs role="navigation">
-        <Tab label="About" href="/about" />
-        <Tab label="Contact Us" href="/contact" />
-      </Tabs>
     </StyledBox>
   );
 };
