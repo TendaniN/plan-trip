@@ -7,7 +7,7 @@
       "pages/*": ["./src/pages/*"],
       "types/*": ["./src/types/*"],
       "constants/*": ["./src/constants/*"],
-      "stores/*": ["src/stores/*"],
+      "stores/*": ["./src/stores/*"],
       "utils/*": ["./src/utils/*"],
       "hooks/*": ["./src/hooks/*"]
     },
