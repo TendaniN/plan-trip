@@ -2,16 +2,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Pages from "pages/index";
 import { BrowserRouter } from "react-router-dom";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#F6ACC7",
-    },
-    secondary: {
-      main: "#FCC959",
-    },
-  },
-});
+const theme = createTheme({ cssVariables: true });
 
 function App() {
   return (

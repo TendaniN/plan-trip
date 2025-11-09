@@ -2,6 +2,43 @@
   font-family: 'Roboto Variable', sans-serif;
   background-color: #E7E5E2;
   color: #030202;
+
+  /*
+  * @tokens Colors
+  * @presenter Color
+  *
+  * Used for the color, background-color, border-color CSS properties
+  */
+
+  /*
+  * @tokens Color Tertiary
+  * @presenter Color
+  */
+  --color-tertiary-50: #FEF7F9;
+  --color-tertiary-100: #FCE5EE;
+  --color-tertiary-200: #FBD9E5;
+  --color-tertiary-300: #F9C7D9;
+  --color-tertiary-400: #F8BDD2;
+  --color-tertiary-500: #F6ACC7;
+  --color-tertiary-600: #E09DB5;
+  --color-tertiary-700: #AF7A8D;
+  --color-tertiary-800: #875F6D;
+  --color-tertiary-900: #674854;
+
+  /*
+  * @tokens Color Accents
+  * @presenter Color
+  */
+  --color-accent-50: #FFFAEE;
+  --color-accent-100: #FEEECC;
+  --color-accent-200: #FEE6B3;
+  --color-accent-300: #FDDB90;
+  --color-accent-400: #FDD47A;
+  --color-accent-500: #FCC959;
+  --color-accent-600: #E5B751;
+  --color-accent-700: #B38F3F;
+  --color-accent-800: #8B6F31;
+  --color-accent-900: #6A5425;
 }
 
 body {
