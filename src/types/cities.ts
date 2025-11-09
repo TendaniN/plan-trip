@@ -16,6 +16,6 @@ export type CityKeys = keyof typeof ALL_CITIES;
 export type CityValues = (typeof ALL_CITIES)[CityKeys];
 
 export const CITY_MAP = [
-  { type: "japan", cities: Object.values(JAPAN_CITIES) },
-  { type: "south korea", cities: Object.values(SOUTH_KOREA_CITIES) },
+  { country: "japan", cities: Object.values(JAPAN_CITIES) },
+  { country: "south korea", cities: Object.values(SOUTH_KOREA_CITIES) },
 ];

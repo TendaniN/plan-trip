@@ -3,7 +3,7 @@ import { type CountryValues } from "types/countries";
 import { create } from "zustand";
 
 type State = {
-  cities: { type: string; cities: string[] };
+  cities: { country: string; cities: string[] };
 };
 
 type Actions = {
@@ -23,7 +23,7 @@ const cityReducer = (state: State, action: Action) => {
       return { city: action.city };
     case "getCountryCities":
       return {
-        cities: CITY_MAP.find(({ type }) => type === action.country),
+        cities: CITY_MAP.find(({ country }) => country === action.country),
       };
     default:
       return state;
