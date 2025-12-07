@@ -1,4 +1,3 @@
-import { Button } from "@mui/material";
 import { Navbar } from "components/navbar";
 import { Routes, Route } from "react-router-dom";
 import styled from "@emotion/styled";
@@ -23,7 +22,12 @@ const Pages = () => {
       <Navbar />
       <Routes>
         <Route path="*" element={<HomePage />} />
-        <Route path="/trip" element={<Button>Hello</Button>} />
+        <Route path="/trip" element={<div>Trip</div>}>
+          <Route path="/:trip_id" element={<div>Trip</div>}>
+            <Route path="/:location_id" element={<div>Location</div>} />
+          </Route>
+        </Route>
+        <Route path="/account" element={<div>Account</div>} />
       </Routes>
     </Container>
   );

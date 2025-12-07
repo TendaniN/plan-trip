@@ -1,18 +1,14 @@
 import styled from "@emotion/styled";
 import { Typography, Autocomplete, TextField, Button } from "@mui/material";
-import dayjs, { Dayjs } from "dayjs";
+import moment, { type Moment } from "moment";
 import { CITIES_MAP } from "constants/cities";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaSpinner } from "react-icons/fa6";
 import { PageContainer } from "components/page-container";
 import { PageLoader } from "components/page-loader";
 import { useNavigate } from "react-router-dom";
 
-import "dayjs/locale/en-gb";
-import { db } from "stores/db";
 import logger from "utils/logger";
 
 const SearchContainer = styled.div`
@@ -73,23 +69,29 @@ const HomePage = () => {
     label: string;
     country: string;
   } | null>(null);
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<Moment | null>(null);
+  const [endDate, setEndDate] = useState<Moment | null>(null);
   const [searching, setSearching] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const formDisabled = !cityValue || !startDate || !endDate || searching;
 
-  const handleDBUpdate = async (country: string, label: string) => {
+  const handleDBUpdate = async () => {
     try {
-      const startId = await db.startDate.put({ id: 1, date: startDate });
-      const endId = await db.endDate.put({ id: 1, date: endDate });
-      const cityId = await db.cities.add({ country, label });
+      // const cityId = await db.cities.add({
+      //   country,
+      //   label,
+      //   startDate: startDate
+      //     ? startDate.format("YYYY-MM-DD")
+      //     : moment().format("YYYY-MM-DD"),
+      //   endDate: endDate
+      //     ? endDate.format("YYYY-MM-DD")
+      //     : moment().add(1, "days").format("YYYY-MM-DD"),
+      // });
 
-      logger.info(`Start Date (${startId}) updated.`);
-      logger.info(`End Date (${endId}) updated.`);
-      logger.info(`City (${cityId}) added to list.`);
+      logger.info(`City added to list.`);
       setSearching(false);
+      setLoading(false);
     } catch (error) {
       logger.error("Failed to update:" + error);
       setSearching(false);
@@ -101,26 +103,13 @@ const HomePage = () => {
     setSearching(true);
 
     if (cityValue && startDate && endDate) {
-      handleDBUpdate(cityValue.country, cityValue.label);
+      handleDBUpdate();
+      navigate("/trip");
     } else {
       logger.error("Missing Inputs.");
       setSearching(false);
     }
   };
-
-  useEffect(() => {
-    (async () => {
-      const dbStart = await db.startDate.get(1);
-      const dbEnd = await db.endDate.get(1);
-      const dbCities = await db.cities.toArray();
-
-      if (dbStart && dbEnd && dbCities.length > 0) {
-        navigate("/trip");
-      } else {
-        setLoading(false);
-      }
-    })();
-  }, [navigate]);
 
   return (
     <PageContainer>
@@ -157,44 +146,39 @@ const HomePage = () => {
                 )}
               />
               <DateContainer>
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  adapterLocale="en-gb"
-                >
-                  <DatePicker
-                    name="start-date"
-                    className="datepicker"
-                    value={startDate}
-                    minDate={dayjs()}
-                    label="Start Date"
-                    onChange={(value) => setStartDate(value)}
-                    sx={{
-                      bgcolor: "#fff",
-                      borderRadius: "1rem",
-                      width: "48%",
-                      "& .MuiInputLabel-root": {
-                        "&.Mui-focused": { marginTop: "-8px" },
-                      },
-                    }}
-                  />
-                  <div style={{ margin: "auto" }}>to</div>
-                  <DatePicker
-                    name="end-date"
-                    className="datepicker"
-                    value={endDate}
-                    label="End Date"
-                    minDate={startDate ? startDate : dayjs()}
-                    onChange={(value) => setEndDate(value)}
-                    sx={{
-                      bgcolor: "#fff",
-                      borderRadius: "1rem",
-                      width: "48%",
-                      "& .MuiInputLabel-root": {
-                        "&.Mui-focused": { marginTop: "-8px" },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  name="start-date"
+                  className="datepicker"
+                  value={startDate}
+                  minDate={moment()}
+                  label="Start Date"
+                  onChange={(value) => setStartDate(value ? value : null)}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: "1rem",
+                    width: "48%",
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": { marginTop: "-8px" },
+                    },
+                  }}
+                />
+                <div style={{ margin: "auto" }}>to</div>
+                <DatePicker
+                  name="end-date"
+                  className="datepicker"
+                  value={endDate}
+                  label="End Date"
+                  minDate={startDate ? startDate : moment()}
+                  onChange={(value) => setEndDate(value ? value : null)}
+                  sx={{
+                    bgcolor: "#fff",
+                    borderRadius: "1rem",
+                    width: "48%",
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": { marginTop: "-8px" },
+                    },
+                  }}
+                />
               </DateContainer>
               <Button
                 type="submit"
