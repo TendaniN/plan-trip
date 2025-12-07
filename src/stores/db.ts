@@ -1,26 +1,15 @@
 import Dexie, { type EntityTable } from "dexie";
-import type { HotelProps } from "types/hotels";
-import type { ItineraryProps } from "types/itinerary";
-import { Dayjs } from "dayjs";
 import logger from "utils/logger";
+import type { User } from "types/model";
 
 // Define the db instance type
 const db = new Dexie("PlanTripDB") as Dexie & {
-  itinerary: EntityTable<ItineraryProps, "id">;
-  cities: EntityTable<{ id: number; country: string; label: string }, "id">;
-  hotels: EntityTable<HotelProps, "id">;
-  startDate: EntityTable<{ id: number; date: Dayjs | null }, "id">;
-  endDate: EntityTable<{ id: number; date: Dayjs | null }, "id">;
+  user: EntityTable<User, "id">;
 };
 
 // Define schema
 db.version(1).stores({
-  itinerary: "++id, name, location, date, start_time, end_time, duration, link",
-  cities: "++id, country, label",
-  hotels:
-    "++id, name, area, rating, stars, distance, price, link, room, breakfast",
-  startDate: "id, date",
-  endDate: "id, date",
+  user: "++id, username, password, first_name, last_name, trips, *trips",
 });
 
 // Check if db exists or create it
