@@ -1,53 +1,46 @@
 import { useFormik } from "formik";
 import { Button, TextField } from "@mui/material";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ButtonSpinner } from "components/button-spinner";
+import { Link, useNavigate } from "react-router-dom";
+import { ButtonSpinner, FormContainer } from "components";
 import * as yup from "yup";
-import { Form } from "../containers/form-container";
 import { db } from "stores/db";
 import logger from "utils/logger";
 import { useAccountStore } from "stores/account";
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+
   const setUser = useAccountStore((state) => state.setUser);
 
   const [submitting, setSubmitting] = useState(false);
-  const {
-    handleBlur,
-    handleChange,
-    handleSubmit,
-    values,
-    errors,
-    touched,
-    dirty,
-  } = useFormik({
-    initialValues: {
-      username: "",
-      password: "",
-    },
-    onSubmit: (values) => {
-      setSubmitting(true);
-      findUser(values.username, values.password);
-    },
-    validationSchema: yup.object().shape({
-      username: yup
-        .string()
-        .min(5, "Username must be at least 6 characters.")
-        .required("Required"),
-      password: yup
-        .string()
-        .min(8, "Password must be at least 8 characters.")
-        .required("Required"),
-    }),
-  });
+  const { handleBlur, handleChange, handleSubmit, values, errors, touched } =
+    useFormik({
+      initialValues: {
+        username: "",
+        password: "",
+      },
+      onSubmit: (values) => {
+        setSubmitting(true);
+        findUser(values.username, values.password);
+      },
+      validationSchema: yup.object().shape({
+        username: yup.string().required("Required"),
+        password: yup.string().required("Required"),
+      }),
+    });
 
   const findUser = async (username: string, password: string) => {
     try {
-      const user = await db.user.get([username, password]);
+      const user = await db.user
+        .where("username")
+        .equals(username)
+        .and((user) => user.password === password)
+        .first();
       if (user) {
         setUser(user);
         logger.info(`User (${user.username}) logged in.`);
+        navigate("/");
       }
       setSubmitting(false);
     } catch (error) {
@@ -57,7 +50,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <FormContainer onSubmit={handleSubmit}>
       <div className="input-group">
         <TextField
           required
@@ -106,19 +99,20 @@ export const LoginForm = () => {
       <Button
         type="submit"
         variant="contained"
-        disabled={dirty}
-        aria-disabled={dirty}
+        disabled={values.password === "" || values.username === ""}
+        aria-disabled={values.password === "" || values.username === ""}
         sx={{
           display: "flex",
           gap: "0.5rem",
           bgcolor: "var(--color-accent-500)",
           color: "#000",
-          borderRadius: "1rem",
         }}
       >
         {submitting && <ButtonSpinner />}Submit
       </Button>
-      Don't have an account? Register <Link to="/register">here</Link>.
-    </Form>
+      <div>
+        Don't have an account? Register <Link to="/register">here</Link>.
+      </div>
+    </FormContainer>
   );
 };

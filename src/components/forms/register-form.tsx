@@ -1,16 +1,17 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { ButtonSpinner } from "components/button-spinner";
+import { ButtonSpinner, FormContainer } from "components";
 import * as yup from "yup";
-import { Form } from "../containers/form-container";
 import { db } from "stores/db";
 import logger from "utils/logger";
 import { type Trip } from "types/model";
 import { useAccountStore } from "stores/account";
 
 export const RegisterForm = () => {
+  const navigate = useNavigate();
+
   const setUser = useAccountStore((state) => state.setUser);
 
   const [submitting, setSubmitting] = useState(false);
@@ -52,12 +53,12 @@ export const RegisterForm = () => {
           .string()
           .min(3, "First name must be at least 3 characters.")
           .max(30, "First name must be less than 30 characters.")
-          .matches(/^[^0-9*]$/, "First name cannot have numbers."),
+          .matches(/^[^\d]*$/, "First name cannot have numbers."),
         last_name: yup
           .string()
           .min(3, "Last name must be at least 3 characters.")
           .max(30, "First name must be less than 30 characters.")
-          .matches(/^[^0-9*]$/, "Last name cannot have numbers."),
+          .matches(/^[^\d]*$/, "Last name cannot have numbers."),
       }),
     });
 
@@ -73,6 +74,7 @@ export const RegisterForm = () => {
       setUser({ ...user, id: userId });
       logger.info(`User (${userId}) created.`);
       setSubmitting(false);
+      navigate("/");
     } catch (error) {
       logger.error("Failed to create user:" + error);
       setSubmitting(false);
@@ -83,7 +85,7 @@ export const RegisterForm = () => {
     values.username === "" || values.password === "" || values.password2 === "";
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <FormContainer onSubmit={handleSubmit}>
       <div className="input-group">
         <TextField
           fullWidth
@@ -213,6 +215,6 @@ export const RegisterForm = () => {
       <Box sx={{ margin: "0 auto" }}>
         Have have an account? Login <Link to="/login">here</Link>.
       </Box>
-    </Form>
+    </FormContainer>
   );
 };

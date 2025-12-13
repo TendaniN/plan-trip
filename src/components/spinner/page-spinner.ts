@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { LuShipWheel } from "react-icons/lu";
 
-export const PageLoader = styled(LuShipWheel)`
+export const PageSpinner = styled(LuShipWheel)`
   animation: spin 5s linear infinite;
   margin: auto;
   width: 10rem;
