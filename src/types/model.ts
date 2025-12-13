@@ -14,18 +14,18 @@ export interface Itinerary {
 }
 
 export interface Location {
-  id: number;
+  id: string;
   city: CityValues;
   country: CountryValues;
   start_date: string;
   end_date: string;
   num_of_nights: number;
-  accommodation: HotelProps;
+  accommodation?: HotelProps;
   itinerary_activites: Itinerary[];
 }
 
 export interface Trip {
-  id: number;
+  id: string;
   name?: string;
   locations: Location[];
   start_date: string;
