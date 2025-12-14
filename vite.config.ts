@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      components: "/src/components",
+      components: resolve(__dirname, "src/components"),
       pages: "/src/pages",
       assets: "/src/assets",
       types: "/src/types",
       constants: "/src/constants",
-      stores: "/src/stores/*",
+      stores: "/src/stores",
       utils: "/src/utils",
       hooks: "/src/hooks",
       react: resolve(__dirname, "node_modules", "react"),

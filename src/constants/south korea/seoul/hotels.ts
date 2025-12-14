@@ -13,6 +13,7 @@ interface SeoulHotelProps extends HotelProps {
 
 export const hotels: SeoulHotelProps[] = [
   {
+    id: "mecure-ambassador-seoul-hongdae",
     name: "Mercure Ambassador Seoul Hongdae",
     area: "Hongdae",
     rating: { booking: 8.9, naver: 4.9, google: 4.6 },
@@ -34,6 +35,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "four-points-by-sheraton-josun-seoul",
     name: "Four Points by Sheraton Josun, Seoul",
     area: "Myeongdong",
     rating: { booking: 8.6, naver: 4.6, google: 4.3 },
@@ -55,6 +57,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "fraser-place-central-seoul",
     name: "Fraser Place Central Seoul",
     area: "Jung-Gu",
     rating: { booking: 8.8, naver: 4.4, google: 4.2 },
@@ -72,6 +75,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: false,
   },
   {
+    id: "nine-tree-by-parnas-seoul-myeongdong-2",
     name: "Nine Tree by Parnas Seoul Myeongdong 2",
     area: "Myeongdong",
     rating: { booking: 8.6, naver: 4.38, google: 4.3 },
@@ -89,6 +93,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "lotte-city-hotel-myeongdong",
     name: "Lotte City Hotel Myeongdong",
     area: "Myeongdong",
     rating: { booking: 8.5, naver: 4.48, google: 4.2 },
@@ -106,6 +111,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "sotetsu-hotels-the-splaisir-seoul-myeongdong",
     name: "Sotetsu Hotels The Splaisir Seoul Myeongdong",
     area: "Myeongdong",
     rating: { booking: 8.3, naver: 4.2, google: 4 },
@@ -127,6 +133,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "orakai-daehakro-hotel-bw-signature-collection",
     name: "Orakai Daehakro Hotel, BW Signature Collection",
     area: "Jongno-Gu",
     rating: { booking: 8.7, naver: 4.3, google: 4.5 },
@@ -148,6 +155,7 @@ export const hotels: SeoulHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "amanti-hotel-seoul-hongdae",
     name: "Amanti Hotel Seoul Hongdae",
     area: "Mapo-Gu",
     rating: { booking: 8.6, naver: 4.45, google: 4.5 },

@@ -4,10 +4,12 @@
     "paths": {
       "assets/*": ["./src/assets/*"],
       "components/*": ["./src/components/*"],
+      "components": ["./src/components/index.ts"],
       "pages/*": ["./src/pages/*"],
+      "page": ["./src/pages/index.tsx"],
       "types/*": ["./src/types/*"],
       "constants/*": ["./src/constants/*"],
-      "stores/*": ["src/stores/*"],
+      "stores/*": ["./src/stores/*"],
       "utils/*": ["./src/utils/*"],
       "hooks/*": ["./src/hooks/*"]
     },
@@ -27,6 +29,7 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "esModuleInterop": true,
 
     /* Linting */
     "strict": true,

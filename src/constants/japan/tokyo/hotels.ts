@@ -12,6 +12,7 @@ interface TokyoHotelProps extends HotelProps {
 
 export const hotels: TokyoHotelProps[] = [
   {
+    id: "mecure-tokyo-haneda-airport",
     name: "Mercure Tokyo Haneda Airport",
     area: "Ota City",
     rating: { booking: 9.1, google: 4.8 },
@@ -29,6 +30,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "hotel-metropolitan-haneda",
     name: "Hotel Metropolitan Haneda",
     area: "Ota City",
     rating: { booking: 9.1, google: 4.5 },
@@ -46,6 +48,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "hotel-metropolitan-tokyo-ikebukuro",
     name: "Hotel Metropolitan Tokyo Ikebukuro",
     area: "Toshima City",
     rating: { booking: 8.7, google: 4.2 },
@@ -63,6 +66,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "remm-plus-ginza",
     name: "remm plus Ginza",
     area: "Chuo City",
     rating: { booking: 8.5, google: 4.3 },
@@ -80,6 +84,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "miyako-city-tokyo-takanawa",
     name: "Miyako City Tokyo Takanawa",
     area: "Minato City",
     rating: { booking: 8.7, google: 4.3 },
@@ -97,6 +102,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "villa-fontaine-grand-tokyo-ariake",
     name: "Villa Fontaine Grand Tokyo Ariake",
     area: "Koto City",
     rating: { booking: 8.4, google: 4.1 },
@@ -114,6 +120,7 @@ export const hotels: TokyoHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "loisir-hotel-shinagawa-seaside",
     name: "Loisir Hotel Shinagawa Seaside",
     area: "Shinagawa City",
     rating: { booking: 8.4, google: 3.9 },

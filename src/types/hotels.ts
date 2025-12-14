@@ -20,7 +20,7 @@ interface RoomProps {
 }
 
 export interface HotelProps {
-  id: number;
+  id: string;
   name: string;
   area: string;
   rating: RatingProps;
