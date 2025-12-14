@@ -3,7 +3,7 @@ import { CITIES_MAP } from "constants/cities";
 import { Link } from "react-router-dom";
 
 export const CityListContainer = () => (
-  <ImageList cols={3} rowHeight={245} sx={{ height: 450 }}>
+  <ImageList cols={3} rowHeight={245} sx={{ overflowY: "initial" }}>
     {CITIES_MAP.map(({ id, label, image, country }) => (
       <Link key={`city-${id}`} to={`/city/${id}`}>
         <ImageListItem sx={{ maxHeight: 245 }}>

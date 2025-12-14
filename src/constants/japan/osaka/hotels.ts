@@ -6,6 +6,7 @@ interface OsakaHotelProps extends HotelProps {
 
 export const hotels: OsakaHotelProps[] = [
   {
+    id: "citadines-namba-osaka",
     name: "Citadines Namba Osaka",
     area: "Namba",
     rating: { booking: 9.1, google: 4.6 },
@@ -23,6 +24,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "cross-hotel-osaka",
     name: "Cross Hotel Osaka",
     area: "Chuo Ward",
     rating: { booking: 8.9, google: 4.4 },
@@ -40,6 +42,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "premier-hotel-cabin-president-osaka",
     name: "Premier Hotel Cabin President Osaka",
     area: "Kita Ward",
     rating: { booking: 8.9, google: 4.4 },
@@ -57,6 +60,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "the-royal-park-hotel-iconic-osaka-midosuji",
     name: "The Royal Park Hotel Iconic Osaka Midosuji",
     area: "Chuo Ward",
     rating: { booking: 8.9, google: 4.4 },
@@ -74,6 +78,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: false,
   },
   {
+    id: "osaka-excel-hotel-tokyu",
     name: "Osaka Excel Hotel Tokyu",
     area: "Chuo Ward",
     rating: { booking: 8.9, google: 4.4 },
@@ -91,6 +96,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "the-royal-park-canvas-osaka-kitahama",
     name: "The Royal Park Canvas - Osaka Kitahama",
     area: "Chuo Ward",
     rating: { booking: 8.8, google: 4.4 },
@@ -108,6 +114,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "fairfield-by-marriott-osaka-namba",
     name: "Fairfield by Marriott Osaka Namba",
     area: "Naniwa Ward",
     rating: { booking: 8.8, google: 4.2 },
@@ -125,6 +132,7 @@ export const hotels: OsakaHotelProps[] = [
     breakfast: true,
   },
   {
+    id: "hotel-resol-trinity-osaka",
     name: "Hotel Resol Trinity Osaka",
     area: "Kita Ward",
     rating: { booking: 8.7, google: 4.3 },
