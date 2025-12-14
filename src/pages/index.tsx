@@ -1,36 +1,70 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import HomePage from "./home";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import RegisterPage from "./register";
 import LoginPage from "./login";
-import { Navbar } from "components";
+import { Navbar, PageSpinner } from "components";
 import { useAccountStore } from "stores/account";
-import TripPage from "./trip";
+import TripsPage from "./trips";
+import { clearSession, isSessionExpired } from "utils/session";
+import { db } from "stores/db";
+import logger from "utils/logger";
 
 const Pages = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const account = useAccountStore((state) => state);
+  const { setUser, id, username } = useAccountStore((state) => state);
+
+  const [siteLoading, setSiteLoading] = useState(true);
+
+  const addToStore = async () => {
+    try {
+      const users = await db.user.toArray();
+      if (users.length > 0) {
+        setUser(users[0]);
+        logger.info("Restoring session...");
+        if (
+          location.pathname === "/register" ||
+          location.pathname === "/login"
+        ) {
+          navigate("/");
+        }
+
+        setSiteLoading(false);
+      } else if (
+        location.pathname !== "/register" &&
+        location.pathname !== "/login"
+      ) {
+        logger.info("Session expired.");
+        navigate("/login");
+        setSiteLoading(false);
+      }
+    } catch (error) {
+      logger.error("Could not find user in db: ", error);
+      navigate("/register");
+      setSiteLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (
-      account.username === "" &&
-      account.id === 0 &&
-      location.pathname !== "/register" &&
-      location.pathname !== "/login"
-    ) {
-      navigate("/login");
+    if (isSessionExpired()) {
+      clearSession();
+      setSiteLoading(false);
+    } else if (id === 0 && username === "") {
+      addToStore();
     }
-  }, [account, navigate, location.pathname]);
+  }, [id, username]);
 
-  return (
+  return siteLoading ? (
+    <PageSpinner />
+  ) : (
     <>
       <Navbar />
       <Routes>
         <Route path="*" element={<HomePage />} />
-        <Route path="/trip" element={<TripPage />}>
+        <Route path="/trip" element={<TripsPage />}>
           <Route path="/trip/:trip_id" element={<div>Trip</div>}>
             <Route
               path="/trip/:trip_id/:location_id"
