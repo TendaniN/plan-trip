@@ -8,6 +8,7 @@ import { db } from "stores/db";
 import logger from "utils/logger";
 import { type Trip } from "types/model";
 import { useAccountStore } from "stores/account";
+import { startSession } from "utils/session";
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export const RegisterForm = () => {
       const userId = await db.user.add(user);
       setUser({ ...user, id: userId });
       logger.info(`User (${userId}) created.`);
+      startSession();
       setSubmitting(false);
       navigate("/");
     } catch (error) {

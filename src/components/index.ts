@@ -7,7 +7,8 @@ import { CityListContainer } from "./containers/city-list-container";
 import { LoginForm } from "./forms/login-form";
 import { RegisterForm } from "./forms/register-form";
 
-// Modals
+// Inputs
+import { EditableText } from "./inputs/editable-text";
 
 // Navigation
 import { Navbar } from "./navigation/navbar";
@@ -21,6 +22,7 @@ export {
   CityListContainer,
   LoginForm,
   RegisterForm,
+  EditableText,
   Navbar,
   ButtonSpinner,
   PageSpinner,

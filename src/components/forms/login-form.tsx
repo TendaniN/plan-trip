@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { db } from "stores/db";
 import logger from "utils/logger";
 import { useAccountStore } from "stores/account";
+import { startSession } from "utils/session";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export const LoginForm = () => {
         .first();
       if (user) {
         setUser(user);
+        startSession();
         logger.info(`User (${user.username}) logged in.`);
         navigate("/");
       }
