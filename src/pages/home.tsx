@@ -6,7 +6,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { type DateValidationError } from "@mui/x-date-pickers/models";
 import { useState, useId } from "react";
 import { FaSpinner } from "react-icons/fa6";
-import { PageContainer } from "components";
+import { CityListContainer, PageContainer } from "components";
 import { useNavigate } from "react-router-dom";
 
 import logger from "utils/logger";
@@ -324,6 +324,17 @@ const HomePage = () => {
           </Button>
         </SearchContainer>
       </form>
+      <Typography align="center" variant="h4">
+        OR
+      </Typography>
+      <Typography
+        align="center"
+        variant="h2"
+        sx={{ fontFamily: '"Chango", system-ui' }}
+      >
+        Pick a city to explore
+      </Typography>
+      <CityListContainer />
     </PageContainer>
   );
 };

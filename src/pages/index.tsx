@@ -37,6 +37,7 @@ const Pages = () => {
             />
           </Route>
         </Route>
+        <Route path="/city/:city_id" element={<div>City</div>} />
         <Route path="/account" element={<div>Account</div>} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
