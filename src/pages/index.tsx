@@ -6,6 +6,7 @@ import RegisterPage from "./register";
 import LoginPage from "./login";
 import { Navbar } from "components";
 import { useAccountStore } from "stores/account";
+import TripPage from "./trip";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Pages = () => {
       <Navbar />
       <Routes>
         <Route path="*" element={<HomePage />} />
-        <Route path="/trip" element={<div>Trip</div>}>
+        <Route path="/trip" element={<TripPage />}>
           <Route path="/trip/:trip_id" element={<div>Trip</div>}>
             <Route
               path="/trip/:trip_id/:location_id"

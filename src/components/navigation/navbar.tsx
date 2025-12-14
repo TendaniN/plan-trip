@@ -99,13 +99,13 @@ export const Navbar = () => {
           },
         }}
       >
-        <MenuItem href="/account" onClick={handleClose}>
-          Profile
-        </MenuItem>
+        <Link to="/account" onClick={handleClose}>
+          <MenuItem>Profile</MenuItem>
+        </Link>
         <Divider />
-        <MenuItem href="/trip" onClick={handleClose}>
-          My Trips
-        </MenuItem>
+        <Link to="/trip" onClick={handleClose}>
+          <MenuItem>My Trips</MenuItem>
+        </Link>
         <MenuItem href="#" onClick={handleClose}>
           Logout
         </MenuItem>
