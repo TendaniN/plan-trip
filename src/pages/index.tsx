@@ -1,17 +1,11 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import styled from "@emotion/styled";
 import HomePage from "./home";
-import { useEffect, useState } from "react";
-import { initDB } from "stores/db";
+import { useEffect } from "react";
+
 import RegisterPage from "./register";
 import LoginPage from "./login";
-import { PageSpinner, Navbar } from "components";
+import { Navbar } from "components";
 import { useAccountStore } from "stores/account";
-
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-`;
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -19,38 +13,19 @@ const Pages = () => {
 
   const account = useAccountStore((state) => state);
 
-  const [siteLoading, setSiteLoading] = useState(true);
-
   useEffect(() => {
-    (async () => {
-      await initDB();
-      setSiteLoading(false);
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (!siteLoading) {
-      if (
-        account.username === "" &&
-        account.id === 0 &&
-        location.pathname !== "/register" &&
-        location.pathname !== "/login"
-      ) {
-        navigate("/register");
-      }
+    if (
+      account.username === "" &&
+      account.id === 0 &&
+      location.pathname !== "/register" &&
+      location.pathname !== "/login"
+    ) {
+      navigate("/login");
     }
-  }, [siteLoading, account, navigate, location.pathname]);
-
-  if (siteLoading) {
-    return (
-      <Container>
-        <PageSpinner />
-      </Container>
-    );
-  }
+  }, [account, navigate, location.pathname]);
 
   return (
-    <Container>
+    <>
       <Navbar />
       <Routes>
         <Route path="*" element={<HomePage />} />
@@ -66,7 +41,7 @@ const Pages = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
-    </Container>
+    </>
   );
 };
 

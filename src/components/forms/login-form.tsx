@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Box } from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ButtonSpinner, FormContainer } from "components";
@@ -110,9 +110,9 @@ export const LoginForm = () => {
       >
         {submitting && <ButtonSpinner />}Submit
       </Button>
-      <div>
+      <Box sx={{ margin: "0 auto" }}>
         Don't have an account? Register <Link to="/register">here</Link>.
-      </div>
+      </Box>
     </FormContainer>
   );
 };
