@@ -12,7 +12,7 @@ import { startSession } from "utils/session";
 export const LoginForm = () => {
   const navigate = useNavigate();
 
-  const setUser = useAccountStore((state) => state.setUser);
+  const { setState, trips } = useAccountStore((state) => state);
 
   const [submitting, setSubmitting] = useState(false);
   const { handleBlur, handleChange, handleSubmit, values, errors, touched } =
@@ -39,7 +39,15 @@ export const LoginForm = () => {
         .and((user) => user.password === password)
         .first();
       if (user) {
-        setUser(user);
+        const locations = await db.locations.toArray();
+        const itinerarys = await db.itinerarys.toArray();
+
+        setState(
+          user,
+          trips.filter((trip) => trip.userId === user.id),
+          locations,
+          itinerarys
+        );
         startSession();
         logger.info(`User (${user.username}) logged in.`);
         navigate("/");

@@ -6,14 +6,13 @@ import { ButtonSpinner, FormContainer } from "components";
 import * as yup from "yup";
 import { db } from "stores/db";
 import logger from "utils/logger";
-import { type Trip } from "types/model";
 import { useAccountStore } from "stores/account";
 import { startSession } from "utils/session";
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
 
-  const setUser = useAccountStore((state) => state.setUser);
+  const setState = useAccountStore((state) => state.setState);
 
   const [submitting, setSubmitting] = useState(false);
   const { handleBlur, handleChange, handleSubmit, values, errors, touched } =
@@ -32,7 +31,7 @@ export const RegisterForm = () => {
           password: values.password,
           first_name: values.first_name,
           last_name: values.last_name,
-          trips: new Array<Trip>(),
+          trips: new Array<number>(),
         });
       },
       validationSchema: yup.object().shape({
@@ -68,11 +67,11 @@ export const RegisterForm = () => {
     password: string;
     first_name?: string;
     last_name?: string;
-    trips: Trip[];
+    trips: number[];
   }) => {
     try {
       const userId = await db.user.add(user);
-      setUser({ ...user, id: userId });
+      setState({ ...user, id: userId }, [], [], []);
       logger.info(`User (${userId}) created.`);
       startSession();
       setSubmitting(false);

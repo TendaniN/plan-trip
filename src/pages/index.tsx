@@ -15,15 +15,24 @@ const Pages = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { setUser, id, username } = useAccountStore((state) => state);
+  const { setState, id, username } = useAccountStore((state) => state);
 
   const [siteLoading, setSiteLoading] = useState(true);
 
   const addToStore = async () => {
     try {
       const users = await db.user.toArray();
+      const trips = await db.trips.toArray();
+      const locations = await db.locations.toArray();
+      const itinerarys = await db.itinerarys.toArray();
+
       if (users.length > 0) {
-        setUser(users[0]);
+        setState(
+          users[0],
+          trips.filter(({ userId }) => userId === users[0].id),
+          locations,
+          itinerarys
+        );
         logger.info("Restoring session...");
         if (
           location.pathname === "/register" ||
@@ -37,12 +46,12 @@ const Pages = () => {
         location.pathname !== "/register" &&
         location.pathname !== "/login"
       ) {
-        logger.info("Session expired.");
-        navigate("/login");
+        logger.info("No users found in db.");
+        navigate("/register");
         setSiteLoading(false);
       }
     } catch (error) {
-      logger.error("Could not find user in db: ", error);
+      logger.error("Could not find a user in db: ", error);
       navigate("/register");
       setSiteLoading(false);
     }
@@ -51,8 +60,8 @@ const Pages = () => {
   useEffect(() => {
     if (isSessionExpired()) {
       clearSession();
-      setSiteLoading(false);
-    } else if (id === 0 && username === "") {
+      addToStore();
+    } else if (id === "" && username === "") {
       addToStore();
     }
   }, [id, username]);

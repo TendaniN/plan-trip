@@ -72,16 +72,13 @@ const TripContainer = styled.li`
 `;
 
 const TripsPage = () => {
-  const { username, trips, updateTrip, id } = useAccountStore((state) => state);
+  const { username, trips, updateTrip, id, locations } = useAccountStore(
+    (state) => state
+  );
 
   const handleDBUpdate = async (tripId: string, name: string) => {
     try {
-      await db.user.update(id, (user) => {
-        const trip = user.trips.find((t) => t.id === tripId);
-        if (trip) {
-          trip.name = name;
-        }
-      });
+      await db.trips.where({ id: tripId, userId: id }).modify({ name });
       updateTrip(tripId, { name });
       logger.info("Trip name was updated.");
     } catch (error) {
@@ -102,7 +99,7 @@ const TripsPage = () => {
         {`${username}'s Trips`}
       </Typography>
       <ListContainer>
-        {trips.map(({ id, name, locations }) => (
+        {trips.map(({ id, name }) => (
           <TripContainer key={`trip-${id}`}>
             <div className="trip-actions">
               <EditTripModal />
@@ -127,28 +124,33 @@ const TripsPage = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {locations.map((location) => (
-                    <TableRow key={`trip-${id}-location-${location.id}`}>
-                      <TableCell sx={{ textTransform: "capitalize" }}>
-                        {location.city}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(moment(location.start_date, "YYYY-MM-DD"))}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(moment(location.end_date, "YYYY-MM-DD"))}
-                      </TableCell>
-                      <TableCell>{location.num_of_nights}</TableCell>
-                      <TableCell>
-                        <Link
-                          to={`/trip/${id}/${location.id}`}
-                          style={{ display: "flex", gap: "0.25rem" }}
-                        >
-                          See more <FaAngleRight style={{ margin: "auto 0" }} />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {locations
+                    .filter((location) => location.tripId === id)
+                    .map((location) => (
+                      <TableRow key={`trip-${id}-location-${location.id}`}>
+                        <TableCell sx={{ textTransform: "capitalize" }}>
+                          {location.city}
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(
+                            moment(location.start_date, "YYYY-MM-DD")
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(moment(location.end_date, "YYYY-MM-DD"))}
+                        </TableCell>
+                        <TableCell>{location.num_of_nights}</TableCell>
+                        <TableCell>
+                          <Link
+                            to={`/trip/${id}/${location.id}`}
+                            style={{ display: "flex", gap: "0.25rem" }}
+                          >
+                            See more{" "}
+                            <FaAngleRight style={{ margin: "auto 0" }} />
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   <TableRow>
                     <TableCell rowSpan={3} colSpan={2} />
                     <TableCell sx={{ fontWeight: 500 }}>Total days</TableCell>

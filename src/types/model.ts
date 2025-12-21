@@ -1,9 +1,9 @@
 import type { CityValues } from "./cities";
 import type { CountryValues } from "./countries";
-import type { HotelProps } from "./hotels";
 
 export interface Itinerary {
-  id: number;
+  id: string;
+  locationId: string;
   date: string;
   time: string;
   duration: number;
@@ -15,28 +15,30 @@ export interface Itinerary {
 
 export interface Location {
   id: string;
+  tripId: string;
   city: CityValues;
   country: CountryValues;
   start_date: string;
   end_date: string;
   num_of_nights: number;
-  accommodation?: HotelProps;
-  itinerary_activites: Itinerary[];
+  accommodation?: string[];
+  itinerary_activites: number[];
 }
 
 export interface Trip {
   id: string;
+  userId: string;
   name?: string;
-  locations: Location[];
+  locations: number[];
   start_date: string;
   end_date: string;
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   password: string;
   first_name?: string;
   last_name?: string;
-  trips: Trip[];
+  trips: number[];
 }
