@@ -22,14 +22,14 @@ export interface Location {
   end_date: string;
   num_of_nights: number;
   accommodation?: string[];
-  itinerary_activites: number[];
+  itinerary_activites: string[];
 }
 
 export interface Trip {
   id: string;
   userId: string;
   name?: string;
-  locations: number[];
+  locations: string[];
   start_date: string;
   end_date: string;
 }
@@ -40,5 +40,5 @@ export interface User {
   password: string;
   first_name?: string;
   last_name?: string;
-  trips: number[];
+  trips: string[];
 }

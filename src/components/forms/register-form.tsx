@@ -31,7 +31,7 @@ export const RegisterForm = () => {
           password: values.password,
           first_name: values.first_name,
           last_name: values.last_name,
-          trips: new Array<number>(),
+          trips: new Array<string>(),
         });
       },
       validationSchema: yup.object().shape({
@@ -67,7 +67,7 @@ export const RegisterForm = () => {
     password: string;
     first_name?: string;
     last_name?: string;
-    trips: number[];
+    trips: string[];
   }) => {
     try {
       const userId = await db.user.add(user);

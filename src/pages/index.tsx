@@ -1,12 +1,12 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import HomePage from "./home";
+import HomePage from "./home-page";
 import { useEffect, useState } from "react";
 
-import RegisterPage from "./register";
-import LoginPage from "./login";
+import RegisterPage from "./register-page";
+import LoginPage from "./login-page";
 import { Navbar, PageSpinner } from "components";
 import { useAccountStore } from "stores/account";
-import TripsPage from "./trips";
+import TripsPage from "./trips-page";
 import { clearSession, isSessionExpired } from "utils/session";
 import { db } from "stores/db";
 import logger from "utils/logger";

@@ -20,6 +20,10 @@ interface AccountState {
   clearState: () => void;
   addTrip: (trip: Trip) => void;
   updateTrip: (tripId: string, updates: Partial<Trip>) => void;
+  addLocation: (location: Location) => void;
+  updateLocation: (locationId: string, updates: Partial<Location>) => void;
+  addActivity: (itinerary: Itinerary) => void;
+  updateActivity: (itineraryId: string, updates: Partial<Itinerary>) => void;
 }
 
 const initialState = {
@@ -57,6 +61,28 @@ export const useAccountStore = create<AccountState>((set) => ({
     set((state) => ({
       trips: state.trips.map((trip) =>
         trip.id === tripId ? { ...trip, ...updates } : trip
+      ),
+    })),
+
+  addLocation: (location) =>
+    set((state) => ({
+      locations: [...state.locations, location],
+    })),
+  updateLocation: (locationId, updates) =>
+    set((state) => ({
+      locations: state.locations.map((location) =>
+        location.id === locationId ? { ...location, ...updates } : location
+      ),
+    })),
+
+  addActivity: (itinerary) =>
+    set((state) => ({
+      itinerarys: [...state.itinerarys, itinerary],
+    })),
+  updateActivity: (itineraryId, updates) =>
+    set((state) => ({
+      itinerarys: state.itinerarys.map((itinerary) =>
+        itinerary.id === itineraryId ? { ...itinerary, ...updates } : itinerary
       ),
     })),
 }));

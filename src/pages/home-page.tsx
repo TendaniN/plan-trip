@@ -10,7 +10,6 @@ import { CityListContainer, PageContainer } from "components";
 import { useNavigate } from "react-router-dom";
 
 import logger from "utils/logger";
-import type { Itinerary } from "types/model";
 import { calcDaysBetween } from "utils/calc-days-between";
 import type { CityValues } from "types/cities";
 import type { CountryValues } from "types/countries";
@@ -71,7 +70,7 @@ const Spinner = styled(FaSpinner)`
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const { id, addTrip, trips } = useAccountStore((state) => state);
+  const { id, addTrip, addLocation } = useAccountStore((state) => state);
 
   const [searching, setSearching] = useState(false);
   const tripId = useId();
@@ -127,29 +126,30 @@ const HomePage = () => {
     const name = trip_name ? trip_name : `${city} ${start.format("YYYY")}`;
     const trip = {
       id: tripId,
+      userId: id,
       name,
       start_date: start.format("YYYY-MM-DD"),
       end_date: end.format("YYYY-MM-DD"),
-      locations: [
-        {
-          id: locationId,
-          city,
-          country,
-          start_date: start.format("YYYY-MM-DD"),
-          end_date: end.format("YYYY-MM-DD"),
-          num_of_nights: calcDaysBetween(start, end),
-          itinerary_activites: new Array<Itinerary>(),
-        },
-      ],
+      locations: [locationId],
+    };
+    const location = {
+      id: locationId,
+      tripId,
+      city,
+      country,
+      start_date: start.format("YYYY-MM-DD"),
+      end_date: end.format("YYYY-MM-DD"),
+      num_of_nights: calcDaysBetween(start, end),
+      itinerary_activites: new Array<string>(),
     };
     try {
-      db.user.update(id, {
-        trips: [...trips, trip],
-      });
+      await db.trips.add(trip);
+      await db.locations.add(location);
       addTrip(trip);
-      logger.info(`City added to Trip.`);
+      addLocation(location);
+      logger.info(`Location (${locationId}) added to Trip (${tripId}).`);
       setSearching(false);
-      navigate(`/trip/${tripId}`);
+      navigate(`/trip`);
     } catch (error) {
       logger.error("Failed to update:" + error);
       setSearching(false);
