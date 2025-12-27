@@ -1,26 +1,119 @@
-import { useState } from "react";
-import "./app.css";
+import { useState, useEffect } from "react";
 import "@mantine/core/styles.css";
-import { MantineProvider } from "@mantine/core";
+import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
+import { BrowserRouter } from "react-router-dom";
+
+import { initDB } from "db";
+
+const theme = createTheme({
+  fontFamily: "Inter, system-ui, sans-serif",
+  headings: {
+    fontFamily: "Chango, cursive",
+    fontWeight: "400",
+  },
+  colors: {
+    primary: [
+      "#FEF7FA",
+      "#FDEBF2",
+      "#FCDCE7",
+      "#FACBDC",
+      "#F8BCD2",
+      "#F7ADC8",
+      "#D293AA",
+      "#AF7B8E",
+      "#8D6372",
+      "#6F4E5A",
+    ],
+    secondary: [
+      "#FFFAEF",
+      "#FFF2D7",
+      "#FEE8B8",
+      "#FEDE97",
+      "#FDD478",
+      "#FDCA5A",
+      "#D7AC4D",
+      "#B48F40",
+      "#907333",
+      "#725B28",
+    ],
+    gray: [
+      "#FDFCFC",
+      "#F9F9F8",
+      "#F5F4F3",
+      "#F0EFED",
+      "#EBEAE7",
+      "#E7E5E2",
+      "#C4C3C0",
+      "#A4A3A0",
+      "#848381",
+      "#686766",
+    ],
+    green: [
+      "#F6FFF8",
+      "#E9FFEE",
+      "#D7FFE1",
+      "#C5FFD4",
+      "#B4FFC6",
+      "#A3FFBA",
+      "#8BD99E",
+      "#74B584",
+      "#5D916A",
+      "#497354",
+    ],
+    purple: [
+      "#FDF3FF",
+      "#FAE3FF",
+      "#F6CDFF",
+      "#F2B5FF",
+      "#EF9FFF",
+      "#EB8AFF",
+      "#C875D9",
+      "#A762B5",
+      "#864F91",
+      "#6A3E73",
+    ],
+    blue: [
+      "#F6F7FF",
+      "#E9EDFF",
+      "#D7DEFF",
+      "#C5CEFF",
+      "#B4C0FF",
+      "#A3B2FF",
+      "#8B97D9",
+      "#747EB5",
+      "#5D6591",
+      "#495073",
+    ],
+  },
+});
+
+const ContainerProps = {
+  bg: "var(--mantine-color-gray-5)",
+  h: "100vh",
+  maw: "100%",
+  m: "0",
+  p: "0",
+};
 
 const App = () => {
-  const [count, setCount] = useState(0);
+  const [siteLoading, setSiteLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      await initDB();
+      setSiteLoading(false);
+    })();
+  }, []);
 
   return (
-    <MantineProvider>
-      <div></div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <MantineProvider theme={theme}>
+      <BrowserRouter>
+        {siteLoading ? (
+          <Loader color="primary-5" size="xl" />
+        ) : (
+          <Container {...ContainerProps}></Container>
+        )}
+      </BrowserRouter>
     </MantineProvider>
   );
 };

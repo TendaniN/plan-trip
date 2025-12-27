@@ -52,7 +52,7 @@ const initialState = {
   travels: [] as Travel[],
 };
 
-export const useStore = create<AccountState>((set) => ({
+export const useDBStore = create<AccountState>((set) => ({
   ...initialState,
 
   setState: (user, trips, locations, itinerary) =>
@@ -127,14 +127,14 @@ export const useStore = create<AccountState>((set) => ({
 
 // Locations for a specific trip
 export const useTripLocations = (tripId: string): Location[] =>
-  useStore(
+  useDBStore(
     (state) =>
       state.locations.filter((location) => location.tripId === tripId) ?? []
   );
 
 // Itinerary for a specific location
 export const useLocationItinerary = (locationId: string): Itinerary[] =>
-  useStore(
+  useDBStore(
     (state) =>
       state.itinerary.filter(
         (itinerary) => itinerary.locationId === locationId
