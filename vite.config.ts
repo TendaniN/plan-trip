@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -5,14 +6,16 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   resolve: {
     alias: {
-      assets: "./src/assets",
-      components: "./src/components",
-      constants: "./src/constants",
-      pages: "./src/pages",
-      types: "./src/types",
-      db: "./src/db",
-      utils: "./src/utils",
-      hooks: "./src/hooks",
+      assets: "/src/assets",
+      components: "/src/components",
+      constants: "/src/constants",
+      pages: "/src/pages",
+      types: "/src/types",
+      db: "/src/db",
+      utils: "/src/utils",
+      hooks: "/src/hooks",
+      react: resolve(__dirname, "node_modules", "react"),
+      "react-dom": resolve(__dirname, "node_modules", "react-dom"),
     },
   },
   plugins: [react()],

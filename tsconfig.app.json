@@ -18,6 +18,7 @@
       "pages": ["./src/pages/index.tsx"],
       "types/*": ["./src/types/*"],
       "db/*": ["./src/db/*"],
+      "db": ["./src/db/index.ts"],
       "utils/*": ["./src/utils/*"],
       "hooks/*": ["./src/hooks/*"],
     },
