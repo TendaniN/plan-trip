@@ -14,6 +14,7 @@ export interface ButtonProps extends BaseButtonProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component?: any;
   to?: string;
+  type?: "button" | "reset" | "submit";
 }
 
 const useStyles = createStyles(
@@ -73,12 +74,13 @@ export const Button = ({
   size = "md",
   color = "secondary-2",
   children,
+  type = "button",
   ...props
 }: ButtonProps) => {
   const { classes } = useStyles({ size, color });
 
   return (
-    <MantineButton classNames={classes} size={size} {...props}>
+    <MantineButton type={type} classNames={classes} size={size} {...props}>
       {children}
     </MantineButton>
   );

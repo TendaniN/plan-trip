@@ -1,20 +1,18 @@
-import { Loader } from "@mantine/core";
 import { Navbar } from "components/index";
 import { db } from "db";
 import { useDBStore } from "db/store";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import logger from "utils/logger";
 
 import { clearSession, isSessionExpired } from "utils/session";
+import RegisterPage from "./register-page";
 
 const Pages = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const { setState, id, username } = useDBStore((state) => state);
-
-  const [siteLoading, setSiteLoading] = useState(true);
 
   const addToStore = async () => {
     try {
@@ -43,34 +41,29 @@ const Pages = () => {
         ) {
           navigate("/");
         }
-
-        setSiteLoading(false);
       } else if (
         location.pathname !== "/register" &&
         location.pathname !== "/login"
       ) {
         logger.info("No users found in db.");
         navigate("/register");
-        setSiteLoading(false);
       }
     } catch (error) {
       logger.error("Could not find a user in db: ", error);
       navigate("/register");
-      setSiteLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isSessionExpired() || (id === "" && username === "")) {
-      if (isSessionExpired()) clearSession();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isSessionExpired()) {
+      clearSession();
+      addToStore();
+    } else if (id === "" && username === "") {
       addToStore();
     }
   }, [id, username]);
 
-  return siteLoading ? (
-    <Loader color="primary-5" size="xl" />
-  ) : (
+  return (
     <div>
       <Navbar />
       <Routes>
@@ -85,7 +78,7 @@ const Pages = () => {
         </Route>
         <Route path="/city/:city_id" element={<div>City</div>} />
         <Route path="/profile" element={<div>Profile</div>} />
-        <Route path="/register" element={<div>Register</div>} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<div>Login</div>} />
         <Route path="/logout" element={<div>Logout</div>} />
       </Routes>
