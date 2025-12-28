@@ -4,6 +4,8 @@ import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
 import { BrowserRouter } from "react-router-dom";
 
 import { initDB } from "db";
+import Pages from "./pages";
+import { emotionTransform, MantineEmotionProvider } from "@mantine/emotion";
 
 const theme = createTheme({
   fontFamily: "Inter, system-ui, sans-serif",
@@ -106,14 +108,18 @@ const App = () => {
   }, []);
 
   return (
-    <MantineProvider theme={theme}>
-      <BrowserRouter>
-        {siteLoading ? (
-          <Loader color="primary-5" size="xl" />
-        ) : (
-          <Container {...ContainerProps}></Container>
-        )}
-      </BrowserRouter>
+    <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+      <MantineEmotionProvider>
+        <BrowserRouter>
+          {siteLoading ? (
+            <Loader color="primary-5" size="xl" />
+          ) : (
+            <Container {...ContainerProps}>
+              <Pages />
+            </Container>
+          )}
+        </BrowserRouter>
+      </MantineEmotionProvider>
     </MantineProvider>
   );
 };
