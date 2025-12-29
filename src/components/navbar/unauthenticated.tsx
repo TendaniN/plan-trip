@@ -19,7 +19,7 @@ export const UnAuthenticated = () => (
         border: "1px solid #000",
       }}
     >
-      <LinkButton color="green-4" to="/login">
+      <LinkButton bg="green.4" to="/login">
         Login
       </LinkButton>
       <Box py={8} mx="auto">

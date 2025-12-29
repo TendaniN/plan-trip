@@ -90,7 +90,7 @@ const theme = createTheme({
 });
 
 const ContainerProps = {
-  bg: "var(--mantine-color-gray-5)",
+  bg: "gray.5",
   h: "100vh",
   maw: "100%",
   m: "0",
@@ -112,7 +112,7 @@ const App = () => {
       <MantineEmotionProvider>
         <BrowserRouter>
           {siteLoading ? (
-            <Loader color="primary-5" size="xl" />
+            <Loader color="primary.5" size="xl" />
           ) : (
             <Container {...ContainerProps}>
               <Pages />

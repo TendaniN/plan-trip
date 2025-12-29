@@ -15,6 +15,7 @@ import { Button } from "components";
 import { Link } from "react-router-dom";
 import { formatDuration } from "utils/format-duration";
 import { getSessionRemainingMs } from "utils/session";
+import { useEffect, useState } from "react";
 
 const useStyles = createStyles(() => ({
   item: {
@@ -28,9 +29,21 @@ const useStyles = createStyles(() => ({
 }));
 
 export const Authenticated = () => {
+  const [remainingMs, setRemainingMs] = useState(getSessionRemainingMs());
+
   const { classes } = useStyles();
 
   const { username, first_name, last_name } = useDBStore((state) => state);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = getSessionRemainingMs();
+
+      setRemainingMs(remaining);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Menu width={200}>
@@ -43,16 +56,16 @@ export const Authenticated = () => {
       <MenuDropdown
         bdrs={12}
         py={6}
+        bd="1px solid #000"
         style={{
           display: "flex",
           flexDirection: "column",
-          border: "1px solid #000",
         }}
       >
         <Box px={8}>
-          <Flex color="#000" fz="sm">{`${first_name} ${last_name}`}</Flex>
-          <Flex color="gray-5" fz="xs">{`Session Ends: ${formatDuration(
-            getSessionRemainingMs()
+          <Flex c="#000" fz="sm">{`${first_name} ${last_name}`}</Flex>
+          <Flex c="gray.8" fz="xs">{`Session Ends: ${formatDuration(
+            remainingMs
           )}`}</Flex>
         </Box>
         <MenuDivider style={{ borderColor: "#000" }} />
