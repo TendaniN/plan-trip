@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useForm, hasLength, matchesField } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader, Box } from "@mantine/core";
 
@@ -126,6 +126,7 @@ export const RegisterForm = () => {
         </Flex>
         <Flex gap={10}>
           <TextInput
+            type="password"
             w="50%"
             {...getInputProps("password")}
             radius="md"
@@ -134,6 +135,7 @@ export const RegisterForm = () => {
             label="Password"
           />
           <TextInput
+            type="password"
             w="50%"
             {...getInputProps("password2")}
             radius="md"
@@ -165,6 +167,13 @@ export const RegisterForm = () => {
         <Button type="submit" color="green-4" w="100%">
           Register
         </Button>
+        <Flex justify="center">
+          Already have an account? Login{" "}
+          <Link to="/register" style={{ marginLeft: 4 }}>
+            here
+          </Link>
+          .
+        </Flex>
       </Box>
     </form>
   );
