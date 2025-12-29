@@ -7,5 +7,14 @@ import { Navbar } from "./navbar";
 
 import { RegisterForm } from "./forms/register-form";
 import { LoginForm } from "./forms/login-form";
+import { TripForm } from "./forms/trip-form";
 
-export { AuthWrapper, Button, LinkButton, Navbar, RegisterForm, LoginForm };
+export {
+  AuthWrapper,
+  Button,
+  LinkButton,
+  Navbar,
+  RegisterForm,
+  LoginForm,
+  TripForm,
+};

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
 import { BrowserRouter } from "react-router-dom";
 
@@ -112,7 +113,7 @@ const App = () => {
       <MantineEmotionProvider>
         <BrowserRouter>
           {siteLoading ? (
-            <Loader color="primary.5" size="xl" />
+            <Loader c="primary.5" size="xl" />
           ) : (
             <Container {...ContainerProps}>
               <Pages />

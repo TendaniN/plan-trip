@@ -8,6 +8,7 @@ import logger from "utils/logger";
 import { clearSession, isSessionExpired } from "utils/session";
 import RegisterPage from "./register-page";
 import LoginPage from "./login-page";
+import HomePage from "./home-page";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -68,14 +69,12 @@ const Pages = () => {
     <div>
       <Navbar />
       <Routes>
-        <Route path="*" element={<div>Index</div>} />
-        <Route path="/trip" element={<div>Trips</div>}>
-          <Route path="/trip/:trip_id" element={<div>Trip</div>}>
-            <Route
-              path="/trip/:trip_id/:location_id"
-              element={<div>Location</div>}
-            />
-          </Route>
+        <Route path="*" element={<HomePage />} />
+        <Route path="/trip/:trip_id" element={<div>Trip</div>}>
+          <Route
+            path="/trip/:trip_id/:location_id"
+            element={<div>Location</div>}
+          />
         </Route>
         <Route path="/city/:city_id" element={<div>City</div>} />
         <Route path="/profile" element={<div>Profile</div>} />
