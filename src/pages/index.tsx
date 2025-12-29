@@ -7,6 +7,7 @@ import logger from "utils/logger";
 
 import { clearSession, isSessionExpired } from "utils/session";
 import RegisterPage from "./register-page";
+import LoginPage from "./login-page";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ const Pages = () => {
         <Route path="/city/:city_id" element={<div>City</div>} />
         <Route path="/profile" element={<div>Profile</div>} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<div>Login</div>} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<div>Logout</div>} />
       </Routes>
     </div>
