@@ -14,7 +14,7 @@ import { useDBStore } from "db/store";
 import { Button } from "components";
 import { Link } from "react-router-dom";
 import { formatDuration } from "utils/format-duration";
-import { getSessionRemainingMs } from "utils/session";
+import { clearSession, getSessionRemainingMs } from "utils/session";
 import { useEffect, useState } from "react";
 
 const useStyles = createStyles(() => ({
@@ -38,6 +38,13 @@ export const Authenticated = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const remaining = getSessionRemainingMs();
+
+      if (remaining <= 0) {
+        clearSession();
+        setRemainingMs(0);
+        clearInterval(interval);
+        return;
+      }
 
       setRemainingMs(remaining);
     }, 1000);
