@@ -111,7 +111,7 @@ export const RegisterForm = () => {
       >
         <LoadingOverlay
           visible={submitting}
-          loaderProps={{ children: <Loader color="blue-5" type="dots" /> }}
+          loaderProps={{ children: <Loader color="blue.5" type="dots" /> }}
         />
         <Flex>
           <TextInput
@@ -164,7 +164,7 @@ export const RegisterForm = () => {
             label="Last Name"
           />
         </Flex>
-        <Button type="submit" color="green-4" w="100%">
+        <Button type="submit" color="green.4" w="100%">
           Register
         </Button>
         <Flex justify="center">

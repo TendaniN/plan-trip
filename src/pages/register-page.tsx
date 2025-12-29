@@ -4,7 +4,7 @@ import { Container, Title } from "@mantine/core";
 const RegisterPage = () => {
   return (
     <Container p={24} h="calc(100vh - 60px)">
-      <Title mt="36" order={2} style={{ textAlign: "center" }}>
+      <Title mt={36} mb={18} order={2} ta="center">
         Create an account
       </Title>
       <RegisterForm />

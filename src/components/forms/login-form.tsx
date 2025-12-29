@@ -80,7 +80,7 @@ export const LoginForm = () => {
       >
         <LoadingOverlay
           visible={submitting}
-          loaderProps={{ children: <Loader color="blue-5" type="dots" /> }}
+          loaderProps={{ children: <Loader color="blue.5" type="dots" /> }}
         />
         <Flex>
           <TextInput
@@ -104,7 +104,7 @@ export const LoginForm = () => {
             label="Password"
           />
         </Flex>
-        <Button type="submit" color="green-4" w="100%">
+        <Button type="submit" color="green.4" w="100%">
           Login
         </Button>
         <Flex justify="center">
