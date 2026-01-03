@@ -300,70 +300,76 @@ const TripPage = () => {
                     </Box>
                   ))}
                 </Box>
-                {tripLocations.map(
-                  (
-                    { id, city, start_date, end_date, accommodation, nights },
-                    index
-                  ) => (
-                    <Box
-                      key={`table-row-${id}`}
-                      display="grid"
-                      w="100%"
-                      fz="sm"
-                      bg={index % 2 === 0 ? "purple.2" : "blue.2"}
-                      style={{
-                        gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
-                      }}
-                    >
-                      <Box style={getColumnStyle()}>
-                        <Text size="sm" mt="0.5rem">
-                          {city}
-                        </Text>
-                      </Box>
-                      <EditableDateInput
-                        id={id}
-                        date={start_date}
-                        start
-                        onChange={updateLocationDate}
-                      />
-                      <EditableDateInput
-                        id={id}
-                        date={end_date}
-                        start={false}
-                        onChange={updateLocationDate}
-                      />
-                      <EditableSelect
-                        id={id}
-                        city={city}
-                        onChange={updateLocationHotel}
-                        accommodation={accommodation}
-                      />
-                      <Box style={getColumnStyle()}>
-                        <Text size="sm" mt="0.5rem">
-                          {nights}
-                        </Text>
-                      </Box>
-                      <Box style={getColumnStyle()}>
-                        <LinkButton
-                          w="100%"
-                          my="auto"
-                          color="green.4"
-                          to={`/trip/${tripId}/location/${id}`}
-                        >
-                          <FaEye /> View
-                        </LinkButton>
-                      </Box>
-                      <Box style={getColumnStyle(true)}>
-                        {trip.locations.length > 1 && (
-                          <RemoveLocationModal
-                            tripId={tripId}
-                            locationId={id}
-                          />
-                        )}
-                      </Box>
-                    </Box>
+                {tripLocations
+                  .sort(
+                    (a, b) =>
+                      dayjs(a.start_date).valueOf() -
+                      dayjs(b.start_date).valueOf()
                   )
-                )}
+                  .map(
+                    (
+                      { id, city, start_date, end_date, accommodation, nights },
+                      index
+                    ) => (
+                      <Box
+                        key={`table-row-${id}`}
+                        display="grid"
+                        w="100%"
+                        fz="sm"
+                        bg={index % 2 === 0 ? "purple.2" : "blue.2"}
+                        style={{
+                          gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
+                        }}
+                      >
+                        <Box style={getColumnStyle()}>
+                          <Text size="sm" mt="0.5rem">
+                            {city}
+                          </Text>
+                        </Box>
+                        <EditableDateInput
+                          id={id}
+                          date={start_date}
+                          start
+                          onChange={updateLocationDate}
+                        />
+                        <EditableDateInput
+                          id={id}
+                          date={end_date}
+                          start={false}
+                          onChange={updateLocationDate}
+                        />
+                        <EditableSelect
+                          id={id}
+                          city={city}
+                          onChange={updateLocationHotel}
+                          accommodation={accommodation}
+                        />
+                        <Box style={getColumnStyle()}>
+                          <Text size="sm" mt="0.5rem">
+                            {nights}
+                          </Text>
+                        </Box>
+                        <Box style={getColumnStyle()}>
+                          <LinkButton
+                            w="100%"
+                            my="auto"
+                            color="green.4"
+                            to={`/trip/${tripId}/location/${id}`}
+                          >
+                            <FaEye /> View
+                          </LinkButton>
+                        </Box>
+                        <Box style={getColumnStyle(true)}>
+                          {trip.locations.length > 1 && (
+                            <RemoveLocationModal
+                              tripId={tripId}
+                              locationId={id}
+                            />
+                          )}
+                        </Box>
+                      </Box>
+                    )
+                  )}
               </Flex>
             </Box>
           </Flex>
