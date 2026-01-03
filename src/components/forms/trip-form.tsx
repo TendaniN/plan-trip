@@ -1,6 +1,6 @@
 import { useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import {
   Flex,
   TextInput,
@@ -20,6 +20,9 @@ import dayjs from "dayjs";
 import { CITY_MAP, type CityValues } from "constants/city";
 import { calcDaysBetween } from "utils/calc-days-between";
 import type { CountryValues } from "constants/country";
+import { showNotification } from "@mantine/notifications";
+import { FaCheck, FaX } from "react-icons/fa6";
+import type { DexieError } from "dexie";
 
 const dateParser: DateInputProps["dateParser"] = (input) => {
   if (input === "WW2") {
@@ -44,6 +47,11 @@ export const TripForm = () => {
       trip_name: "",
     },
     onSubmitPreventDefault: "always",
+    validate: {
+      start_date: isNotEmpty("Required."),
+      end_date: isNotEmpty("Required."),
+      cityValue: isNotEmpty("Required."),
+    },
   });
 
   const tripId = useId();
@@ -83,11 +91,23 @@ export const TripForm = () => {
       addTrip(trip);
       addLocation(location);
       logger.info(`Location (${locationId}) added to Trip (${tripId}).`);
+      showNotification({
+        title: "New trip and location created.",
+        message: "Redirecting to your trip now...",
+        color: "green.7",
+        icon: <FaCheck />,
+      });
       setCreating(false);
       navigate(`/trip/${tripId}`);
     } catch (error) {
       logger.error("Failed to update:" + error);
       setCreating(false);
+      showNotification({
+        title: "Something Went Wrong",
+        message: (error as DexieError).message,
+        color: "red",
+        icon: <FaX />,
+      });
     }
   };
 
@@ -189,7 +209,7 @@ export const TripForm = () => {
             }
           />
         </Flex>
-        <Button type="submit" bg="green.4" w="100%" disabled={formDisabled}>
+        <Button type="submit" color="green.4" w="100%" disabled={formDisabled}>
           Create
         </Button>
       </Box>

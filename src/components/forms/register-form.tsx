@@ -9,6 +9,7 @@ import { useDBStore } from "db/store";
 import { startSession } from "utils/session";
 import logger from "utils/logger";
 import { Button } from "components";
+import { showNotification } from "@mantine/notifications";
 
 const hasNumber = (value: string) => /\d/.test(value);
 const hasNoNumbers = (value: string) => !/\d/.test(value);
@@ -76,6 +77,10 @@ export const RegisterForm = () => {
       const userId = await db.user.add(user);
       setState({ ...user, id: userId }, [], [], [], [], []);
       logger.info(`User (${userId}) created.`);
+      showNotification({
+        message: "Registration successful",
+        color: "green.7",
+      });
       startSession();
       setSubmitting(false);
       navigate("/");

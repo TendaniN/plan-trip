@@ -1,20 +1,37 @@
-import { Container, Title, Box, Flex } from "@mantine/core";
+import { Container, Title, Box, Flex, Alert } from "@mantine/core";
 import { LinkButton, TripForm } from "components";
+import { MAX_DB_ENTRIES } from "constants/db";
 import { useDBStore } from "db/store";
-import { FaEye } from "react-icons/fa6";
+import { FaEye, FaCircleInfo } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const { trips } = useDBStore((state) => state);
   return (
     <Container p={24} h="calc(100vh - 60px)">
-      <Title mt={36} mb={18} order={2} ta="center">
-        Plan a Trip
-      </Title>
-      <TripForm />
+      {trips.length >= MAX_DB_ENTRIES ? (
+        <Alert
+          color="red"
+          radius="lg"
+          title="No new trips can be added"
+          icon={<FaCircleInfo />}
+        >
+          Maximum number of database entries for trips reached. Please delete
+          past trips <Link to="/trip">here</Link> to make space for new ones.
+        </Alert>
+      ) : (
+        <>
+          <Title mt={36} mb={18} order={2} ta="center">
+            Plan a Trip
+          </Title>
+          <TripForm />
+        </>
+      )}
+
       {trips.length > 0 && (
         <>
           <Title mt={36} mb={18} order={2} ta="center">
-            Or Continue Editing
+            {trips.length >= MAX_DB_ENTRIES ? "" : "Or "}Continue Editing
           </Title>
           <Box>
             {trips.map(({ id, name }, index) => (

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { BrowserRouter } from "react-router-dom";
 
 import { initDB } from "db";
@@ -111,6 +113,7 @@ const App = () => {
   return (
     <MantineProvider theme={theme} stylesTransform={emotionTransform}>
       <MantineEmotionProvider>
+        <Notifications />
         <BrowserRouter>
           {siteLoading ? (
             <Loader c="primary.5" size="xl" />
