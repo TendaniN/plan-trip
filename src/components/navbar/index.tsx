@@ -14,15 +14,13 @@ const boxStyle = {
   boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)",
 };
 
-export const Navbar = () => {
-  return (
-    <Box style={boxStyle}>
-      <Link to="/">
-        <Image w="5rem" src={logoImg} />
-      </Link>
-      <AuthWrapper renderDenied={<UnAuthenticated />}>
-        <Authenticated />
-      </AuthWrapper>
-    </Box>
-  );
-};
+export const Navbar = () => (
+  <Box style={boxStyle}>
+    <Link to="/">
+      <Image w="5rem" src={logoImg} />
+    </Link>
+    <AuthWrapper renderDenied={<UnAuthenticated />}>
+      <Authenticated />
+    </AuthWrapper>
+  </Box>
+);

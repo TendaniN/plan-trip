@@ -6,7 +6,7 @@ import {
 import { createStyles } from "@mantine/emotion";
 
 type ButtonSize = "sm" | "md" | "lg";
-type ButtonColor = "green.4" | "blue.3" | "purple.3" | "secondary.2";
+type ButtonColor = "green.4" | "blue.3" | "purple.3" | "secondary.2" | "red.6";
 
 export interface ButtonProps extends BaseButtonProps {
   size?: ButtonSize;
@@ -15,6 +15,7 @@ export interface ButtonProps extends BaseButtonProps {
   component?: any;
   to?: string;
   type?: "button" | "reset" | "submit";
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const useStyles = createStyles((theme, { size }: { size: ButtonSize }) => {
