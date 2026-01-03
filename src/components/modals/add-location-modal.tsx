@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import { Button } from "components";
 import { CITY_MAP, type CityValues } from "constants/city";
 import type { HotelProps } from "types/hotel";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaCheck, FaX } from "react-icons/fa6";
 import { ALL_HOTELS } from "constants/hotels";
 import { useMemo, useState, useId } from "react";
 import type { Trip } from "types/db";
@@ -26,7 +26,9 @@ import type { CountryValues } from "constants/country";
 import { db } from "db";
 import { useDBStore } from "db/store";
 import logger from "utils/logger";
-import { MAX_DB_ENTRIES } from "constants/db";
+import { DEFAULT_DATE_FORMAT, MAX_DB_ENTRIES } from "constants/db";
+import { showNotification } from "@mantine/notifications";
+import type { DexieError } from "dexie";
 
 const dateParser: DateInputProps["dateParser"] = (input) => {
   if (input === "WW2") {
@@ -93,7 +95,19 @@ export const AddLocationModal = ({ trip }: Props) => {
       itinerary: [],
     };
     try {
+      let start_date = trip.start_date;
+      if (dayjs(start).isBefore(start_date)) {
+        start_date = dayjs(start, DEFAULT_DATE_FORMAT).format(
+          DEFAULT_DATE_FORMAT
+        );
+      }
+      let end_date = trip.end_date;
+      if (dayjs(end).isAfter(end_date)) {
+        end_date = dayjs(end, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT);
+      }
       await db.trips.update(trip.id, {
+        start_date: start_date,
+        end_date: end_date,
         locations: [...trip.locations, locationId],
       });
       await db.locations.add(location);
@@ -101,10 +115,21 @@ export const AddLocationModal = ({ trip }: Props) => {
       updateTrip(trip.id, { locations: [...trip.locations, locationId] });
 
       logger.info(`Location (${locationId}) added to Trip (${trip.id}).`);
+      showNotification({
+        message: `Location - ${city} - was added.`,
+        color: "green.7",
+        icon: <FaCheck />,
+      });
       setCreating(false);
       handleClose();
     } catch (error) {
       logger.error("Failed to add location:" + error);
+      showNotification({
+        title: "Something Went Wrong",
+        message: (error as DexieError).message,
+        color: "red",
+        icon: <FaX />,
+      });
       setCreating(false);
     }
   };
@@ -182,8 +207,8 @@ export const AddLocationModal = ({ trip }: Props) => {
                   w="50%"
                   radius="md"
                   required
-                  valueFormat="YYYY-MM-DD"
-                  placeholder="YYYY-MM-DD"
+                  valueFormat={DEFAULT_DATE_FORMAT}
+                  placeholder={DEFAULT_DATE_FORMAT}
                   dateParser={dateParser}
                   minDate={dayjs().format("YYYY-MM-DD")}
                   label="Start Date"
@@ -194,8 +219,8 @@ export const AddLocationModal = ({ trip }: Props) => {
                   w="50%"
                   radius="md"
                   required
-                  valueFormat="YYYY-MM-DD"
-                  placeholder="YYYY-MM-DD"
+                  valueFormat={DEFAULT_DATE_FORMAT}
+                  placeholder={DEFAULT_DATE_FORMAT}
                   dateParser={dateParser}
                   minDate={
                     values.start_date
