@@ -28,6 +28,7 @@ interface AccountState {
 
   addLocation: (location: Location) => void;
   updateLocation: (locationId: string, updates: Partial<Location>) => void;
+  removeLocation: (tripId: string, locationId: string) => void;
 
   addActivity: (itinerary: Itinerary) => void;
   updateActivity: (itineraryId: string, updates: Partial<Itinerary>) => void;
@@ -88,6 +89,19 @@ export const useDBStore = create<AccountState>((set) => ({
     set((state) => ({
       locations: state.locations.map((location) =>
         location.id === locationId ? { ...location, ...updates } : location
+      ),
+    })),
+  removeLocation: (tripId, locationId) =>
+    set((state) => ({
+      locations: state.locations.filter(({ id }) => id !== locationId),
+      trips: state.trips.map((trip) =>
+        trip.id === tripId
+          ? {
+              ...trip,
+              locations:
+                trip.locations?.filter((id) => id !== locationId) ?? [],
+            }
+          : trip
       ),
     })),
 
