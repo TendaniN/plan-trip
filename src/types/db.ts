@@ -10,7 +10,7 @@ export interface Itinerary {
   date: string;
   time: string;
   duration: number;
-  cost: number;
+  cost: string | number;
   link: string;
 }
 

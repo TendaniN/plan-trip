@@ -13,9 +13,13 @@ import { Breadcrumbs } from "./breadcrumb";
 
 import { AddLocationModal } from "./modals/add-location-modal";
 import { RemoveLocationModal } from "./modals/remove-location-modal";
+import { AddActivityModal } from "./modals/add-activity-modal";
 
 import { EditableDateInput } from "./inputs/editable-date-input";
+import { EditableNumberInput } from "./inputs/editable-number-input";
 import { EditableSelect } from "./inputs/editable-select";
+import { EditableTextInput } from "./inputs/editable-text-input";
+import { EditableTimeInput } from "./inputs/editable-time-input";
 
 export {
   AuthWrapper,
@@ -28,6 +32,10 @@ export {
   Breadcrumbs,
   AddLocationModal,
   RemoveLocationModal,
+  AddActivityModal,
   EditableDateInput,
+  EditableNumberInput,
   EditableSelect,
+  EditableTextInput,
+  EditableTimeInput,
 };
