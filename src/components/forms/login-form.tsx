@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader, Box } from "@mantine/core";
 
@@ -13,7 +13,7 @@ import { showNotification } from "@mantine/notifications";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   const { setState, trips } = useDBStore((state) => state);
 
@@ -55,12 +55,9 @@ export const LoginForm = () => {
         startSession();
         logger.info(`User (${user.username}) logged in.`);
         showNotification({ message: "Login successful", color: "green.7" });
-        const next = searchParams.get("next");
-        if (next) {
-          navigate(next);
-        } else {
-          navigate("/");
-        }
+
+        const from = location.state?.from ?? "/";
+        navigate(from);
       }
       setSubmitting(false);
     } catch (error) {
