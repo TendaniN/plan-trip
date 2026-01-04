@@ -80,7 +80,7 @@ export const RemoveLocationModal = ({
           </ModalBody>
         </ModalContent>
       </ModalRoot>
-      <ActionIcon color="red.4" mt="0.5rem" mx="0.5rem" onClick={open}>
+      <ActionIcon color="red.4" mt="0.5rem" mx="auto" onClick={open}>
         <FaRegTrashCan />
       </ActionIcon>
     </>

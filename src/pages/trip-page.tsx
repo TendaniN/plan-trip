@@ -106,6 +106,7 @@ const getColumnStyle = (last = false) => {
     borderRight: last ? "" : "1px solid #000",
     textTransform: "capitalize",
     padding: "8px 16px",
+    display: "flex",
   };
 };
 
@@ -345,7 +346,7 @@ const TripPage = () => {
                           accommodation={accommodation}
                         />
                         <Box style={getColumnStyle()}>
-                          <Text size="sm" mt="0.5rem">
+                          <Text size="sm" my="auto">
                             {nights}
                           </Text>
                         </Box>
