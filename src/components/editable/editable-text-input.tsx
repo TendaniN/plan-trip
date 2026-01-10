@@ -60,7 +60,7 @@ export const EditableTextInput = ({ text, onChange, id }: Props) => {
           >
             {value}
           </span>
-          <FaPen size="0.5rem" style={{ margin: "0.25rem auto 0 auto" }} />
+          <FaPen size="0.75rem" style={{ margin: "0.25rem auto 0 auto" }} />
         </Text>
       ) : (
         <TextInput

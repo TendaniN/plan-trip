@@ -5,6 +5,7 @@ import { FaCheck, FaX, FaPen } from "react-icons/fa6";
 type Props = {
   text: string | number;
   preText?: string;
+  postText?: string;
   precision?: number;
   onChange: (id: string, text: string | number) => void;
   id: string;
@@ -15,7 +16,7 @@ export const EditableNumberInput = ({
   onChange,
   id,
   preText,
-  precision,
+  postText,
 }: Props) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<string | number>(text);
@@ -56,7 +57,7 @@ export const EditableNumberInput = ({
             },
           }}
         >
-          {`${preText ? preText : ""}${value}`}
+          {`${preText ? preText : ""}${value}${postText ? ` ${postText}` : ""}`}
           <FaPen size="0.75rem" style={{ margin: "auto 0" }} />
         </Text>
       ) : (
@@ -67,7 +68,6 @@ export const EditableNumberInput = ({
           size="xs"
           autoFocus
           rightSectionWidth={60}
-          decimalScale={precision}
           rightSectionPointerEvents="all"
           rightSection={
             <Flex gap={4}>

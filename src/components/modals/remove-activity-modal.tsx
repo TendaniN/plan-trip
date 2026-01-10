@@ -17,6 +17,7 @@ import logger from "utils/logger";
 
 import { Button } from "components";
 import { useState } from "react";
+import { sum } from "utils/sum";
 
 export const RemoveActivityModal = ({
   locationId,
@@ -28,7 +29,14 @@ export const RemoveActivityModal = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [removing, setRemoving] = useState(false);
 
-  const { removeActivity } = useDBStore((state) => state);
+  const { removeActivity, updateBudget, budgets, itinerary, locations } =
+    useDBStore((state) => state);
+
+  const location = locations.filter(({ id }) => id === locationId)[0];
+
+  const currentBudget = budgets.filter(
+    ({ tripId }) => tripId === location.tripId
+  )[0];
 
   const deleteActivity = async () => {
     try {
@@ -39,6 +47,12 @@ export const RemoveActivityModal = ({
       });
       await db.itinerary.delete(activityId);
       removeActivity(locationId, activityId);
+      await db.budgets
+        .where({ id: currentBudget.id })
+        .modify({ itinerary: sum(itinerary.map(({ cost }) => Number(cost))) });
+      updateBudget(currentBudget.id, {
+        itinerary: sum(itinerary.map(({ cost }) => Number(cost))),
+      });
 
       logger.info(`Removed (${activityId}) from Location (${locationId}).`);
 
@@ -82,7 +96,7 @@ export const RemoveActivityModal = ({
           </ModalBody>
         </ModalContent>
       </ModalRoot>
-      <ActionIcon color="red.4" mt="0.5rem" mx="auto" onClick={open}>
+      <ActionIcon color="red.4" mt="0.25rem" mx="auto" onClick={open}>
         <FaRegTrashCan />
       </ActionIcon>
     </>

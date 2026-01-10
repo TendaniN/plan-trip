@@ -36,6 +36,7 @@ import logger from "utils/logger";
 import { type DexieError } from "dexie";
 import { ALL_HOTELS } from "constants/hotels";
 import { useState } from "react";
+import { sum } from "utils/sum";
 
 const getColumnStyle = (last = false) => {
   return {
@@ -74,11 +75,6 @@ const GridHeader = [
     label: "Time",
   },
   {
-    id: "duration",
-    style: getColumnStyle(),
-    label: "Duration",
-  },
-  {
     id: "link",
     style: getColumnStyle(),
     label: "Link",
@@ -87,6 +83,11 @@ const GridHeader = [
     id: "cost",
     style: getColumnStyle(),
     label: "Cost",
+  },
+  {
+    id: "duration",
+    style: getColumnStyle(),
+    label: "Duration",
   },
   {
     id: "remove",
@@ -260,6 +261,12 @@ const LocationPage = () => {
     try {
       await db.itinerary.where({ id }).modify({ cost });
       updateActivity(id, { cost });
+      await db.budgets
+        .where({ id: currentBudget.id })
+        .modify({ itinerary: sum(itinerary.map(({ cost }) => Number(cost))) });
+      updateBudget(currentBudget.id, {
+        itinerary: sum(itinerary.map(({ cost }) => Number(cost))),
+      });
       logger.info("Itinerary cost was updated.");
       showNotification({
         message: "Itinerary cost was updated.",
@@ -472,7 +479,7 @@ const LocationPage = () => {
                             <ActionIcon
                               variant="light"
                               color="blue.9"
-                              mt="0.5rem"
+                              mt="0.25rem"
                               onClick={() =>
                                 setSelectedCollapse(
                                   selectedCollapse === id ? null : id
@@ -514,18 +521,18 @@ const LocationPage = () => {
                           />
                           <EditableNumberInput
                             id={id}
-                            text={duration}
-                            onChange={updateActivityDuration}
+                            text={cost}
+                            preText="R "
+                            onChange={updateActivityCost}
                           />
                           <EditableNumberInput
                             id={id}
-                            text={cost}
-                            precision={2}
-                            preText="R"
-                            onChange={updateActivityCost}
+                            text={duration}
+                            postText="hours"
+                            onChange={updateActivityDuration}
                           />
                           <Box style={getColumnStyle(true)}>
-                            {location.itinerary.length > 1 && (
+                            {locationItinerary.length > 1 && (
                               <RemoveActivityModal
                                 locationId={locationId}
                                 activityId={id}
@@ -548,6 +555,45 @@ const LocationPage = () => {
                       </>
                     )
                   )}
+                {locationItinerary.length > 0 && (
+                  <Box
+                    display="grid"
+                    w="100%"
+                    fz="sm"
+                    bg="primary.2"
+                    style={{
+                      gridTemplateColumns: "65.34% 34.66%",
+                    }}
+                  >
+                    <Box
+                      style={{
+                        borderRight: "1px solid #000",
+                        borderBottom: "1px solid #000",
+                        padding: "8px 16px",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <Text fw="bold" size="sm" my="auto" ta="right">
+                        Total itinerary cost
+                      </Text>
+                    </Box>
+                    <Box
+                      style={{
+                        textTransform: "capitalize",
+                        borderBottom: "1px solid #000",
+                        padding: "8px 16px",
+                        display: "flex",
+                      }}
+                    >
+                      <Text fw="bold" size="sm" my="auto">
+                        {`R ${sum(
+                          locationItinerary.map(({ cost }) => Number(cost))
+                        )}`}
+                      </Text>
+                    </Box>
+                  </Box>
+                )}
               </Flex>
             </Box>
           </Flex>

@@ -27,6 +27,8 @@ import logger from "utils/logger";
 import { calcDaysBetween } from "utils/calc-days-between";
 import type { HotelProps } from "types/hotel";
 import { type DexieError } from "dexie";
+import { workingSumDays } from "utils/sum-days";
+import { sum } from "utils/sum";
 
 interface Props {
   id: string;
@@ -401,6 +403,85 @@ const TripPage = () => {
                       </Box>
                     )
                   )}
+                {tripLocations.length > 0 && (
+                  <>
+                    <Box
+                      display="grid"
+                      w="100%"
+                      fz="sm"
+                      bg="primary.2"
+                      style={{
+                        gridTemplateColumns: "69% 31%",
+                      }}
+                    >
+                      <Box
+                        style={{
+                          borderRight: "1px solid #000",
+                          borderBottom: "1px solid #000",
+                          textTransform: "capitalize",
+                          padding: "8px 16px",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <Text fw="bold" size="sm" my="auto" ta="right">
+                          Total number of nights
+                        </Text>
+                      </Box>
+                      <Box
+                        style={{
+                          textTransform: "capitalize",
+                          borderBottom: "1px solid #000",
+                          padding: "8px 16px",
+                          display: "flex",
+                        }}
+                      >
+                        <Text fw="bold" size="sm" my="auto">
+                          {sum(tripLocations.map(({ nights }) => nights))}
+                        </Text>
+                      </Box>
+                    </Box>
+                    <Box
+                      display="grid"
+                      w="100%"
+                      fz="sm"
+                      bg="primary.2"
+                      style={{
+                        gridTemplateColumns: "69% 31%",
+                      }}
+                    >
+                      <Box
+                        style={{
+                          borderRight: "1px solid #000",
+                          textTransform: "capitalize",
+                          padding: "8px 16px",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <Text
+                          fw="bold"
+                          size="sm"
+                          my="auto"
+                          style={{ justifyContent: "flex-end" }}
+                        >
+                          Total number of working days
+                        </Text>
+                      </Box>
+                      <Box
+                        style={{
+                          textTransform: "capitalize",
+                          padding: "8px 16px",
+                          display: "flex",
+                        }}
+                      >
+                        <Text fw="bold" size="sm" my="auto">
+                          {workingSumDays(trip.start_date, trip.end_date)}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </>
+                )}
               </Flex>
             </Box>
           </Flex>
