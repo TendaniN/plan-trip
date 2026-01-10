@@ -151,9 +151,15 @@ const GridHeader = [
 const TripPage = () => {
   const { tripId } = useParams();
 
-  const { trips, locations, id, updateTrip, updateLocation } = useDBStore(
-    (state) => state
-  );
+  const {
+    trips,
+    locations,
+    id,
+    updateTrip,
+    updateLocation,
+    budgets,
+    updateBudget,
+  } = useDBStore((state) => state);
 
   if (tripId === undefined) return null;
 
@@ -162,6 +168,8 @@ const TripPage = () => {
   const tripLocations = tripId
     ? locations.filter((location) => location.tripId === tripId)
     : [];
+
+  const currentBudget = budgets.filter((budget) => budget.tripId === tripId)[0];
 
   const items = [
     { title: "Home", to: "/", icon: <FaHouse /> },
@@ -224,6 +232,28 @@ const TripPage = () => {
     accommodation?: HotelProps
   ) => {
     try {
+      if (accommodation) {
+        const currentHotel =
+          tripLocations.find((loc) => loc.id === id)?.accommodation ?? null;
+        if (currentHotel) {
+          await db.budgets.update(currentBudget.id, {
+            accommodation: currentBudget.accommodation.filter(
+              (budget) => budget.name !== currentHotel.name
+            ),
+          });
+          updateBudget(currentBudget.id, {
+            accommodation: currentBudget.accommodation.filter(
+              (budget) => budget.name !== currentHotel.name
+            ),
+          });
+        }
+        await db.budgets.update(currentBudget.id, {
+          accommodation: [...currentBudget.accommodation, accommodation],
+        });
+        updateBudget(currentBudget.id, {
+          accommodation: [...currentBudget.accommodation, accommodation],
+        });
+      }
       await db.locations.where({ id }).modify({ accommodation });
       updateLocation(id, { accommodation });
       logger.info("Location accommodation was updated.");

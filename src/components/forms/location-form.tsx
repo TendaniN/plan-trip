@@ -37,7 +37,10 @@ export const LocationForm = ({ trip, close }: Props) => {
 
   const locationId = useId();
 
-  const { updateTrip, addLocation } = useDBStore((state) => state);
+  const { updateTrip, addLocation, budgets, updateBudget } = useDBStore(
+    (state) => state
+  );
+  const budget = budgets.filter(({ tripId }) => tripId === trip.id)[0];
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -72,6 +75,14 @@ export const LocationForm = ({ trip, close }: Props) => {
     end: string,
     accommodation?: HotelProps
   ) => {
+    if (accommodation) {
+      await db.budgets.update(budget.id, {
+        accommodation: [...budget.accommodation, accommodation],
+      });
+      updateBudget(budget.id, {
+        accommodation: [...budget.accommodation, accommodation],
+      });
+    }
     const location = {
       id: locationId,
       tripId: trip.id,

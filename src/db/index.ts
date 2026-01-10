@@ -15,7 +15,7 @@ db.version(1).stores({
   user: "++id, &username, password, first_name, last_name, *trips",
   trips:
     "++id, userId, name, start_date, end_date, *locations, *travels, *budgets",
-  budgets: "++id, tripId, accommodation, itinerary, travel, buffer",
+  budgets: "++id, &tripId, accommodation, itinerary, travel, buffer",
   travels: "++id, tripId, type, duration, time, date, carrier",
   locations:
     "++id, tripId, city, country, start_date, end_date, nights, accommodation, *itinerary",

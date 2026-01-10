@@ -18,58 +18,41 @@ import logger from "utils/logger";
 import { Button } from "components";
 import { useState } from "react";
 
-export const RemoveLocationModal = ({
-  tripId,
+export const RemoveActivityModal = ({
   locationId,
+  activityId,
 }: {
-  tripId: string;
   locationId: string;
+  activityId: string;
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [removing, setRemoving] = useState(false);
 
-  const { removeLocation, locations, updateBudget, budgets } = useDBStore(
-    (state) => state
-  );
+  const { removeActivity } = useDBStore((state) => state);
 
-  const deleteLocation = async () => {
+  const deleteActivity = async () => {
     try {
-      const location = locations.filter(({ id }) => id === locationId)[0];
-      const currentBudget = budgets.filter(
-        (budget) => budget.tripId === tripId
-      )[0];
-      const currentHotel = location.accommodation;
-      if (currentHotel) {
-        await db.budgets.update(currentBudget.id, {
-          accommodation: currentBudget.accommodation.filter(
-            (budget) => budget.name !== currentHotel.name
-          ),
-        });
-        updateBudget(currentBudget.id, {
-          accommodation: currentBudget.accommodation.filter(
-            (budget) => budget.name !== currentHotel.name
-          ),
-        });
-      }
-      await db.trips.update(tripId, (trip) => {
-        trip.locations = trip.locations.filter((id) => id !== locationId);
+      await db.locations.update(locationId, (location) => {
+        location.itinerary = location.itinerary.filter(
+          (id) => id !== activityId
+        );
       });
-      await db.locations.delete(locationId);
-      removeLocation(tripId, locationId);
+      await db.itinerary.delete(activityId);
+      removeActivity(locationId, activityId);
 
-      logger.info(`Removed (${locationId}) from Trip (${tripId}).`);
+      logger.info(`Removed (${activityId}) from Location (${locationId}).`);
 
       setRemoving(false);
       close();
     } catch (error) {
-      logger.error("Failed to remove location:" + error);
+      logger.error("Failed to remove itinerary activity:" + error);
       setRemoving(false);
     }
   };
 
   const handleDelete = () => {
     setRemoving(true);
-    deleteLocation();
+    deleteActivity();
   };
 
   return (

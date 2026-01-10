@@ -16,11 +16,13 @@ import { Breadcrumbs } from "./breadcrumb";
 import { AddLocationModal } from "./modals/add-location-modal";
 import { RemoveLocationModal } from "./modals/remove-location-modal";
 import { AddActivityModal } from "./modals/add-activity-modal";
+import { RemoveActivityModal } from "./modals/remove-activity-modal";
 
 import { EditableDateInput } from "./editable/editable-date-input";
 import { EditableNumberInput } from "./editable/editable-number-input";
 import { EditableSelect } from "./editable/editable-select";
 import { EditableTextInput } from "./editable/editable-text-input";
+import { EditableTextareaInput } from "./editable/editable-textarea-input";
 import { EditableTimeInput } from "./editable/editable-time-input";
 
 export {
@@ -37,9 +39,11 @@ export {
   AddLocationModal,
   RemoveLocationModal,
   AddActivityModal,
+  RemoveActivityModal,
   EditableDateInput,
   EditableNumberInput,
   EditableSelect,
   EditableTextInput,
+  EditableTextareaInput,
   EditableTimeInput,
 };

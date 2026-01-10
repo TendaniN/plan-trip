@@ -37,7 +37,7 @@ export const TripForm = () => {
 
   const [creating, setCreating] = useState(false);
 
-  const { id, addTrip, addLocation } = useDBStore((state) => state);
+  const { id, addTrip, addLocation, addBudget } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
@@ -56,6 +56,7 @@ export const TripForm = () => {
 
   const tripId = useId();
   const locationId = useId();
+  const budgetId = useId();
 
   const createTrip = async (
     start: string,
@@ -85,12 +86,24 @@ export const TripForm = () => {
       nights: calcDaysBetween(start, end),
       itinerary: [],
     };
+    const budget = {
+      id: budgetId,
+      tripId,
+      accommodation: [],
+      itinerary: 0,
+      travel: 0,
+      buffer: 0,
+    };
     try {
       await db.trips.add(trip);
       await db.locations.add(location);
+      await db.budgets.add(budget);
       addTrip(trip);
       addLocation(location);
-      logger.info(`Location (${locationId}) added to Trip (${tripId}).`);
+      addBudget(budget);
+      logger.info(
+        `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`
+      );
       showNotification({
         title: "New trip and location created.",
         message: "Redirecting to your trip now...",

@@ -39,7 +39,7 @@ export interface Travel {
 export interface Budget {
   id: string;
   tripId: string;
-  accommodation: number;
+  accommodation: HotelProps[];
   itinerary: number;
   travel: number;
   buffer: number;

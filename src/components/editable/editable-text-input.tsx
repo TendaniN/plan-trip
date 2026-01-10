@@ -40,7 +40,7 @@ export const EditableTextInput = ({ text, onChange, id }: Props) => {
           styles={{
             root: {
               cursor: "pointer",
-              display: "inline-flex",
+              display: "flex",
               gap: "0.5rem",
               "&:hover": {
                 textDecoration: "underline",
@@ -48,8 +48,19 @@ export const EditableTextInput = ({ text, onChange, id }: Props) => {
             },
           }}
         >
-          {value}
-          <FaPen size="0.75rem" style={{ margin: "auto 0" }} />
+          <span
+            style={{
+              wordBreak: "break-all",
+              width: "88%",
+              lineHeight: 1.5,
+              height: 26,
+              overflow: "clip",
+              margin: "auto 0",
+            }}
+          >
+            {value}
+          </span>
+          <FaPen size="0.5rem" style={{ margin: "0.25rem auto 0 auto" }} />
         </Text>
       ) : (
         <TextInput

@@ -1,24 +1,16 @@
 import { useState } from "react";
-import { ActionIcon, Flex, Text, Box, NumberInput } from "@mantine/core";
+import { ActionIcon, Flex, Text, Box, Textarea } from "@mantine/core";
 import { FaCheck, FaX, FaPen } from "react-icons/fa6";
 
 type Props = {
-  text: string | number;
-  preText?: string;
-  precision?: number;
-  onChange: (id: string, text: string | number) => void;
+  text: string;
+  onChange: (id: string, text: string) => void;
   id: string;
 };
 
-export const EditableNumberInput = ({
-  text,
-  onChange,
-  id,
-  preText,
-  precision,
-}: Props) => {
+export const EditableTextareaInput = ({ text, onChange, id }: Props) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState<string | number>(text);
+  const [value, setValue] = useState<string>(text);
 
   const handleSave = () => {
     if (value) {
@@ -32,14 +24,7 @@ export const EditableNumberInput = ({
   };
 
   return (
-    <Box
-      style={{
-        borderBottom: "1px solid #000",
-        borderRight: "1px solid #000",
-        textTransform: "capitalize",
-        padding: "8px 16px",
-      }}
-    >
+    <Box p={8}>
       {!editing ? (
         <Text
           size="sm"
@@ -48,7 +33,7 @@ export const EditableNumberInput = ({
           styles={{
             root: {
               cursor: "pointer",
-              display: "inline-flex",
+              display: "flex",
               gap: "0.5rem",
               "&:hover": {
                 textDecoration: "underline",
@@ -56,18 +41,21 @@ export const EditableNumberInput = ({
             },
           }}
         >
-          {`${preText ? preText : ""}${value}`}
-          <FaPen size="0.75rem" style={{ margin: "auto 0" }} />
+          <span style={{ width: "97%" }}>
+            {value ? value : "No description"}
+          </span>
+          <FaPen size="1rem" style={{ margin: "0 auto" }} />
         </Text>
       ) : (
-        <NumberInput
+        <Textarea
           mt="0.25rem"
           value={value}
-          onChange={setValue}
-          size="xs"
+          onChange={(e) => setValue(e.target.value)}
+          size="sm"
+          autosize
+          minRows={4}
           autoFocus
           rightSectionWidth={60}
-          decimalScale={precision}
           rightSectionPointerEvents="all"
           rightSection={
             <Flex gap={4}>

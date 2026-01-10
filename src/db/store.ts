@@ -32,6 +32,7 @@ interface AccountState {
 
   addActivity: (itinerary: Itinerary) => void;
   updateActivity: (itineraryId: string, updates: Partial<Itinerary>) => void;
+  removeActivity: (locationId: string, activityId: string) => void;
 
   addBudget: (budget: Budget) => void;
   updateBudget: (budgetId: string, updates: Partial<Budget>) => void;
@@ -113,6 +114,19 @@ export const useDBStore = create<AccountState>((set) => ({
     set((state) => ({
       itinerary: state.itinerary.map((itinerary) =>
         itinerary.id === itineraryId ? { ...itinerary, ...updates } : itinerary
+      ),
+    })),
+  removeActivity: (locationId, activityId) =>
+    set((state) => ({
+      itinerary: state.itinerary.filter(({ id }) => id !== activityId),
+      locations: state.locations.map((location) =>
+        location.id === locationId
+          ? {
+              ...location,
+              locations:
+                location.itinerary?.filter((id) => id !== activityId) ?? [],
+            }
+          : location
       ),
     })),
 

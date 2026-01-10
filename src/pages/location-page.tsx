@@ -1,24 +1,41 @@
-import { Container, Title, Flex, Text, Box, Select } from "@mantine/core";
+import {
+  Container,
+  Title,
+  Flex,
+  Text,
+  Box,
+  Select,
+  ActionIcon,
+  Collapse,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useParams } from "react-router-dom";
-import { useMemo } from "react";
 import dayjs from "dayjs";
-import { FaHouse, FaCheck, FaX, FaChevronDown } from "react-icons/fa6";
+import {
+  FaHouse,
+  FaCheck,
+  FaX,
+  FaChevronDown,
+  FaPlus,
+  FaMinus,
+} from "react-icons/fa6";
 
 import {
   Breadcrumbs,
-  RemoveLocationModal,
   EditableDateInput,
   EditableTextInput,
   AddActivityModal,
   EditableNumberInput,
   EditableTimeInput,
+  RemoveActivityModal,
+  EditableTextareaInput,
 } from "components";
 import { useDBStore } from "db/store";
 import { db } from "db";
 import logger from "utils/logger";
 import { type DexieError } from "dexie";
 import { ALL_HOTELS } from "constants/hotels";
+import { useState } from "react";
 
 const getColumnStyle = (last = false) => {
   return {
@@ -31,6 +48,11 @@ const getColumnStyle = (last = false) => {
 };
 
 const GridHeader = [
+  {
+    id: "collapse",
+    style: getColumnStyle(),
+    label: "",
+  },
   {
     id: "day",
     style: getColumnStyle(),
@@ -74,10 +96,19 @@ const GridHeader = [
 ];
 
 const LocationPage = () => {
+  const [selectedCollapse, setSelectedCollapse] = useState<string | null>(null);
+
   const { tripId, locationId } = useParams();
 
-  const { trips, locations, updateLocation, updateActivity, itinerary } =
-    useDBStore((state) => state);
+  const {
+    trips,
+    locations,
+    updateLocation,
+    updateActivity,
+    itinerary,
+    updateBudget,
+    budgets,
+  } = useDBStore((state) => state);
 
   if (tripId === undefined) return null;
   if (locationId === undefined) return null;
@@ -86,8 +117,9 @@ const LocationPage = () => {
   const location = locationId
     ? locations.find((loc) => loc.id === locationId)
     : null;
+  const currentBudget = budgets.filter((budget) => budget.tripId === tripId)[0];
 
-  const accommodations = useMemo(() => {
+  const getAccommodations = () => {
     if (location) {
       const hotels = ALL_HOTELS.find(({ type }) => type === location.city);
       if (hotels) {
@@ -96,7 +128,7 @@ const LocationPage = () => {
       return [];
     }
     return [];
-  }, [location]);
+  };
 
   const locationItinerary = locationId
     ? itinerary.filter((act) => act.locationId === locationId)
@@ -114,10 +146,29 @@ const LocationPage = () => {
 
   const updateLocationHotel = async (hotel: string | null) => {
     const accommodation = hotel
-      ? accommodations.find(({ name }) => name === hotel)
+      ? getAccommodations().find(({ name }) => name === hotel)
       : undefined;
     try {
       if (accommodation) {
+        const currentHotel = location?.accommodation;
+        if (currentHotel) {
+          await db.budgets.update(currentBudget.id, {
+            accommodation: currentBudget.accommodation.filter(
+              (budget) => budget.name !== currentHotel.name
+            ),
+          });
+          updateBudget(currentBudget.id, {
+            accommodation: currentBudget.accommodation.filter(
+              (budget) => budget.name !== currentHotel.name
+            ),
+          });
+        }
+        await db.budgets.update(currentBudget.id, {
+          accommodation: [...currentBudget.accommodation, accommodation],
+        });
+        updateBudget(currentBudget.id, {
+          accommodation: [...currentBudget.accommodation, accommodation],
+        });
         await db.locations.where({ id: locationId }).modify({
           accommodation,
         });
@@ -271,6 +322,27 @@ const LocationPage = () => {
     }
   };
 
+  const updateActivityDescription = async (id: string, description: string) => {
+    try {
+      await db.itinerary.where({ id }).modify({ description });
+      updateActivity(id, { description });
+      logger.info("Itinerary description was updated.");
+      showNotification({
+        message: "Itinerary description was updated.",
+        color: "green.7",
+        icon: <FaCheck />,
+      });
+    } catch (error) {
+      logger.error("Itinerary description was not updated:", error);
+      showNotification({
+        title: "Something Went Wrong",
+        message: (error as DexieError).message,
+        color: "red",
+        icon: <FaX />,
+      });
+    }
+  };
+
   return (
     <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
       <Breadcrumbs items={items} />
@@ -303,7 +375,7 @@ const LocationPage = () => {
               <Text fw={600} fz="md" my="auto">{`For ${trip.name}`}</Text>
               <Select
                 value={location.accommodation?.name}
-                data={accommodations.map(({ name }) => name)}
+                data={getAccommodations().map(({ name }) => name)}
                 onChange={updateLocationHotel}
                 size="sm"
                 searchable
@@ -331,7 +403,7 @@ const LocationPage = () => {
             <Box>
               <Flex justify="space-between">
                 <Title my="auto" order={6}>
-                  Locations
+                  Itinerary
                 </Title>
 
                 <AddActivityModal location={location} />
@@ -351,7 +423,7 @@ const LocationPage = () => {
                   bg="#fff"
                   style={{
                     gridTemplateColumns:
-                      "7% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 7%",
+                      "3% 5% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 6%",
                   }}
                 >
                   {GridHeader.map(({ id, label, style }) => (
@@ -378,62 +450,102 @@ const LocationPage = () => {
                       },
                       index
                     ) => (
-                      <Box
-                        key={`table-row-${id}`}
-                        display="grid"
-                        w="100%"
-                        fz="sm"
-                        bg={index % 2 === 0 ? "purple.2" : "blue.2"}
-                        style={{
-                          gridTemplateColumns:
-                            "7% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 7%",
-                        }}
-                      >
-                        <Box style={getColumnStyle()}>
-                          <Text size="sm" mt="0.5rem">
-                            {index + 1}
-                          </Text>
+                      <>
+                        <Box
+                          key={`table-row-${id}`}
+                          display="grid"
+                          w="100%"
+                          fz="sm"
+                          bg={index % 2 === 0 ? "purple.2" : "blue.2"}
+                          style={{
+                            gridTemplateColumns:
+                              "3% 5% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 6%",
+                          }}
+                        >
+                          <Box
+                            style={{
+                              borderBottom: "1px solid #000",
+                              borderRight: "1px solid #000",
+                              padding: "8px",
+                            }}
+                          >
+                            <ActionIcon
+                              variant="light"
+                              color="blue.9"
+                              mt="0.5rem"
+                              onClick={() =>
+                                setSelectedCollapse(
+                                  selectedCollapse === id ? null : id
+                                )
+                              }
+                            >
+                              {selectedCollapse === id ? (
+                                <FaMinus />
+                              ) : (
+                                <FaPlus />
+                              )}
+                            </ActionIcon>
+                          </Box>
+                          <Box style={getColumnStyle()}>
+                            <Text size="sm" mt="0.5rem" mx="auto">
+                              {index + 1}
+                            </Text>
+                          </Box>
+                          <EditableDateInput
+                            id={id}
+                            date={date}
+                            start
+                            onChange={updateActivityDate}
+                          />
+                          <EditableTextInput
+                            id={id}
+                            text={activity}
+                            onChange={updateItineraryActivity}
+                          />
+                          <EditableTimeInput
+                            id={id}
+                            text={time}
+                            onChange={updateActivityTime}
+                          />
+                          <EditableTextInput
+                            id={id}
+                            text={link}
+                            onChange={updateItineraryLink}
+                          />
+                          <EditableNumberInput
+                            id={id}
+                            text={duration}
+                            onChange={updateActivityDuration}
+                          />
+                          <EditableNumberInput
+                            id={id}
+                            text={cost}
+                            precision={2}
+                            preText="R"
+                            onChange={updateActivityCost}
+                          />
+                          <Box style={getColumnStyle(true)}>
+                            {location.itinerary.length > 1 && (
+                              <RemoveActivityModal
+                                locationId={locationId}
+                                activityId={id}
+                              />
+                            )}
+                          </Box>
                         </Box>
-                        <EditableDateInput
-                          id={id}
-                          date={date}
-                          start
-                          onChange={updateActivityDate}
-                        />
-                        <EditableTextInput
-                          id={id}
-                          text={activity}
-                          onChange={updateItineraryActivity}
-                        />
-                        <EditableTimeInput
-                          id={id}
-                          text={time}
-                          onChange={updateActivityTime}
-                        />
-                        <EditableTextInput
-                          id={id}
-                          text={link}
-                          onChange={updateItineraryLink}
-                        />
-                        <EditableNumberInput
-                          id={id}
-                          text={duration}
-                          onChange={updateActivityDuration}
-                        />
-                        <EditableNumberInput
-                          id={id}
-                          text={cost}
-                          onChange={updateActivityCost}
-                        />
-                        <Box style={getColumnStyle(true)}>
-                          {location.itinerary.length > 1 && (
-                            <RemoveLocationModal
-                              tripId={tripId}
-                              locationId={id}
-                            />
-                          )}
-                        </Box>
-                      </Box>
+                        <Collapse
+                          in={selectedCollapse === id}
+                          p={12}
+                          fz="sm"
+                          bg="primary.1"
+                        >
+                          <EditableTextareaInput
+                            id={id}
+                            text={description}
+                            onChange={updateActivityDescription}
+                          />
+                        </Collapse>
+                      </>
                     )
                   )}
               </Flex>

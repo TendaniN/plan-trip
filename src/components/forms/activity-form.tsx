@@ -52,7 +52,7 @@ export const ActivityForm = ({ location, close }: Props) => {
       time: "",
       duration: 0,
       link: "",
-      cost: "",
+      cost: 0,
     },
     onSubmitPreventDefault: "always",
     validate: {
@@ -136,7 +136,7 @@ export const ActivityForm = ({ location, close }: Props) => {
     values.activity === "" ||
     values.time === "" ||
     values.link === "" ||
-    values.cost === "" ||
+    values.cost === 0 ||
     creating;
 
   const ref = useRef<HTMLInputElement>(null);
@@ -173,7 +173,7 @@ export const ActivityForm = ({ location, close }: Props) => {
             required
             label="Activity"
             value={values.activity}
-            {...getInputProps("city")}
+            {...getInputProps("activity")}
           />
         </Flex>
         <Flex gap={8}>
@@ -184,7 +184,8 @@ export const ActivityForm = ({ location, close }: Props) => {
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
             dateParser={dateParser}
-            minDate={dayjs().format("YYYY-MM-DD")}
+            minDate={dayjs(location.start_date).format("YYYY-MM-DD")}
+            maxDate={dayjs(location.end_date).format("YYYY-MM-DD")}
             label="Date"
             value={dayjs(values.date).format("YYYY-MM-DD")}
             {...getInputProps("date")}
