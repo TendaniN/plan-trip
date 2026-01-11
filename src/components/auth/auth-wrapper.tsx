@@ -18,7 +18,7 @@ export const AuthWrapper = ({ renderDenied, children }: Props) => {
   if (isSessionExpired()) {
     clearSession();
 
-    if (location.pathname !== "/login") {
+    if (location.pathname !== "/login" && location.pathname !== "register") {
       showNotification({
         title: "Session ended",
         message: "Redirecting to login...",
