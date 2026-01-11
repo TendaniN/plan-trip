@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { FaHouse, FaPen, FaCheck, FaX, FaEye } from "react-icons/fa6";
 
@@ -21,7 +21,7 @@ import {
   EditableDateInput,
   EditableSelect,
 } from "components";
-import { useDBStore } from "db/store";
+import { useDBStore, useTrip } from "db/store";
 import { db } from "db";
 import logger from "utils/logger";
 import { calcDaysBetween } from "utils/calc-days-between";
@@ -153,25 +153,28 @@ const GridHeader = [
 const TripPage = () => {
   const { tripId } = useParams();
 
-  const {
-    trips,
-    locations,
-    id,
-    updateTrip,
-    updateLocation,
-    budgets,
-    updateBudget,
-  } = useDBStore((state) => state);
+  const { id, updateTrip, updateLocation, locations } = useDBStore(
+    (state) => state
+  );
 
-  if (tripId === undefined) return null;
+  const trip = useTrip(tripId);
+  const tripLocations = locations.filter(
+    (location) => location.tripId === tripId
+  );
 
-  const trip = tripId ? trips.find((trip) => trip.id === tripId) : null;
+  const totalNights = useMemo(() => {
+    return sum(tripLocations.map(({ nights }) => nights));
+  }, [tripLocations]);
 
-  const tripLocations = tripId
-    ? locations.filter((location) => location.tripId === tripId)
-    : [];
+  const totalWorkingDays = useMemo(() => {
+    if (trip) {
+      return workingSumDays(trip.start_date, trip.end_date);
+    }
 
-  const currentBudget = budgets.filter((budget) => budget.tripId === tripId)[0];
+    return 0;
+  }, [trip]);
+
+  if (!tripId || !trip) return null;
 
   const items = [
     { title: "Home", to: "/", icon: <FaHouse /> },
@@ -234,28 +237,6 @@ const TripPage = () => {
     accommodation?: HotelProps
   ) => {
     try {
-      if (accommodation) {
-        const currentHotel =
-          tripLocations.find((loc) => loc.id === id)?.accommodation ?? null;
-        if (currentHotel) {
-          await db.budgets.update(currentBudget.id, {
-            accommodation: currentBudget.accommodation.filter(
-              (budget) => budget.name !== currentHotel.name
-            ),
-          });
-          updateBudget(currentBudget.id, {
-            accommodation: currentBudget.accommodation.filter(
-              (budget) => budget.name !== currentHotel.name
-            ),
-          });
-        }
-        await db.budgets.update(currentBudget.id, {
-          accommodation: [...currentBudget.accommodation, accommodation],
-        });
-        updateBudget(currentBudget.id, {
-          accommodation: [...currentBudget.accommodation, accommodation],
-        });
-      }
       await db.locations.where({ id }).modify({ accommodation });
       updateLocation(id, { accommodation });
       logger.info("Location accommodation was updated.");
@@ -313,10 +294,11 @@ const TripPage = () => {
             </Box>
             <Box>
               <Flex
-                bg="primary-3"
+                bg="primary.3"
                 bd="6px solid #000"
                 bdrs={12}
                 w="100%"
+                h="calc(100vh - 16rem)"
                 direction="column"
               >
                 <Box
@@ -437,7 +419,7 @@ const TripPage = () => {
                         }}
                       >
                         <Text fw="bold" size="sm" my="auto">
-                          {sum(tripLocations.map(({ nights }) => nights))}
+                          {totalNights}
                         </Text>
                       </Box>
                     </Box>
@@ -476,7 +458,7 @@ const TripPage = () => {
                         }}
                       >
                         <Text fw="bold" size="sm" my="auto">
-                          {workingSumDays(trip.start_date, trip.end_date)}
+                          {totalWorkingDays}
                         </Text>
                       </Box>
                     </Box>

@@ -37,10 +37,7 @@ export const LocationForm = ({ trip, close }: Props) => {
 
   const locationId = useId();
 
-  const { updateTrip, addLocation, budgets, updateBudget } = useDBStore(
-    (state) => state
-  );
-  const budget = budgets.filter(({ tripId }) => tripId === trip.id)[0];
+  const { updateTrip, addLocation } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -75,14 +72,6 @@ export const LocationForm = ({ trip, close }: Props) => {
     end: string,
     accommodation?: HotelProps
   ) => {
-    if (accommodation) {
-      await db.budgets.update(budget.id, {
-        accommodation: [...budget.accommodation, accommodation],
-      });
-      updateBudget(budget.id, {
-        accommodation: [...budget.accommodation, accommodation],
-      });
-    }
     const location = {
       id: locationId,
       tripId: trip.id,
@@ -96,13 +85,13 @@ export const LocationForm = ({ trip, close }: Props) => {
     };
     try {
       let start_date = trip.start_date;
-      if (dayjs(start).isBefore(start_date)) {
+      if (dayjs(start).isBefore(dayjs(start_date))) {
         start_date = dayjs(start, DEFAULT_DATE_FORMAT).format(
           DEFAULT_DATE_FORMAT
         );
       }
       let end_date = trip.end_date;
-      if (dayjs(end).isAfter(end_date)) {
+      if (dayjs(end).isAfter(dayjs(end_date))) {
         end_date = dayjs(end, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT);
       }
       await db.trips.update(trip.id, {

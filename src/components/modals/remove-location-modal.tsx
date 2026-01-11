@@ -28,29 +28,10 @@ export const RemoveLocationModal = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [removing, setRemoving] = useState(false);
 
-  const { removeLocation, locations, updateBudget, budgets } = useDBStore(
-    (state) => state
-  );
+  const { removeLocation } = useDBStore((state) => state);
 
   const deleteLocation = async () => {
     try {
-      const location = locations.filter(({ id }) => id === locationId)[0];
-      const currentBudget = budgets.filter(
-        (budget) => budget.tripId === tripId
-      )[0];
-      const currentHotel = location.accommodation;
-      if (currentHotel) {
-        await db.budgets.update(currentBudget.id, {
-          accommodation: currentBudget.accommodation.filter(
-            (budget) => budget.name !== currentHotel.name
-          ),
-        });
-        updateBudget(currentBudget.id, {
-          accommodation: currentBudget.accommodation.filter(
-            (budget) => budget.name !== currentHotel.name
-          ),
-        });
-      }
       await db.trips.update(tripId, (trip) => {
         trip.locations = trip.locations.filter((id) => id !== locationId);
       });

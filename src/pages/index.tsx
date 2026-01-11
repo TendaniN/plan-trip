@@ -12,6 +12,8 @@ import HomePage from "./home-page";
 import TripPage from "./trip-page";
 import { showNotification } from "@mantine/notifications";
 import LocationPage from "./location-page";
+import BudgetPage from "./budget-page";
+import TripsPage from "./trips-page";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -77,13 +79,13 @@ const Pages = () => {
       <Navbar />
       <Routes>
         <Route path="*" element={<HomePage />} />
+        <Route path="/trip" element={<TripsPage />} />
         <Route path="/trip/:tripId" element={<TripPage />} />
         <Route
           path="/trip/:tripId/location/:locationId"
           element={<LocationPage />}
         />
-        <Route path="/trip/:tripId/budget" element={<div>Trip Budget</div>} />
-        <Route path="/city/:cityId" element={<div>City</div>} />
+        <Route path="/trip/:tripId/budget" element={<BudgetPage />} />
         <Route path="/profile" element={<div>Profile</div>} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />

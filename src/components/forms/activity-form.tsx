@@ -23,7 +23,6 @@ import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
 import { useRef } from "react";
-import { sum } from "utils/sum";
 
 const dateParser: DateInputProps["dateParser"] = (input) => {
   if (input === "WW2") {
@@ -43,12 +42,7 @@ export const ActivityForm = ({ location, close }: Props) => {
 
   const activityId = useId();
 
-  const { updateLocation, addActivity, updateBudget, budgets, itinerary } =
-    useDBStore((state) => state);
-
-  const currentBudget = budgets.filter(
-    ({ tripId }) => tripId === location.tripId
-  )[0];
+  const { updateLocation, addActivity } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -92,15 +86,12 @@ export const ActivityForm = ({ location, close }: Props) => {
     };
     try {
       await db.itinerary.add(newActivity);
+      await db.locations.update(location.id, {
+        itinerary: [...location.itinerary, activityId],
+      });
       addActivity(newActivity);
       updateLocation(location.id, {
         itinerary: [...location.itinerary, activityId],
-      });
-      await db.budgets
-        .where({ id: currentBudget.id })
-        .modify({ itinerary: sum(itinerary.map(({ cost }) => Number(cost))) });
-      updateBudget(currentBudget.id, {
-        itinerary: sum(itinerary.map(({ cost }) => Number(cost))),
       });
 
       logger.info(

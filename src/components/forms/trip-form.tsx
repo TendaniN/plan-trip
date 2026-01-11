@@ -89,9 +89,7 @@ export const TripForm = () => {
     const budget = {
       id: budgetId,
       tripId,
-      accommodation: [],
-      itinerary: 0,
-      travel: 0,
+      travel: [],
       buffer: 0,
     };
     try {
@@ -149,11 +147,7 @@ export const TripForm = () => {
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
       <Box
-        bdrs={12}
-        bd="6px solid #000"
-        p={20}
         display="flex"
-        bg="primary.3"
         style={{
           flexDirection: "column",
           gap: 18,
@@ -222,7 +216,12 @@ export const TripForm = () => {
             }
           />
         </Flex>
-        <Button type="submit" color="green.4" w="100%" disabled={formDisabled}>
+        <Button
+          type="submit"
+          color="secondary.2"
+          w="100%"
+          disabled={formDisabled}
+        >
           Create
         </Button>
       </Box>

@@ -17,6 +17,7 @@ import { AddLocationModal } from "./modals/add-location-modal";
 import { RemoveLocationModal } from "./modals/remove-location-modal";
 import { AddActivityModal } from "./modals/add-activity-modal";
 import { RemoveActivityModal } from "./modals/remove-activity-modal";
+import { AddTripModal } from "./modals/add-trip-modal";
 
 import { EditableDateInput } from "./editable/editable-date-input";
 import { EditableNumberInput } from "./editable/editable-number-input";
@@ -40,6 +41,7 @@ export {
   RemoveLocationModal,
   AddActivityModal,
   RemoveActivityModal,
+  AddTripModal,
   EditableDateInput,
   EditableNumberInput,
   EditableSelect,

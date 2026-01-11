@@ -34,14 +34,13 @@ export interface Travel {
   time: string;
   date: string;
   carrier: string;
+  cost: number;
 }
 
 export interface Budget {
   id: string;
   tripId: string;
-  accommodation: HotelProps[];
-  itinerary: number;
-  travel: number;
+  travel: string[];
   buffer: number;
 }
 

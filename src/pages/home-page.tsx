@@ -25,7 +25,10 @@ const HomePage = () => {
           <Title mt={36} mb={18} order={2} ta="center">
             Plan a Trip
           </Title>
-          <TripForm />
+
+          <Box bdrs={12} bd="6px solid #000" p={20} bg="primary.3">
+            <TripForm />
+          </Box>
         </>
       )}
 

@@ -30,7 +30,7 @@ import {
   RemoveActivityModal,
   EditableTextareaInput,
 } from "components";
-import { useDBStore } from "db/store";
+import { useDBStore, useLocation, useTrip } from "db/store";
 import { db } from "db";
 import logger from "utils/logger";
 import { type DexieError } from "dexie";
@@ -55,9 +55,9 @@ const GridHeader = [
     label: "",
   },
   {
-    id: "day",
+    id: "item",
     style: getColumnStyle(),
-    label: "Day",
+    label: "",
   },
   {
     id: "date",
@@ -101,24 +101,18 @@ const LocationPage = () => {
 
   const { tripId, locationId } = useParams();
 
-  const {
-    trips,
-    locations,
-    updateLocation,
-    updateActivity,
-    itinerary,
-    updateBudget,
-    budgets,
-  } = useDBStore((state) => state);
+  const { updateLocation, updateActivity, itinerary } = useDBStore(
+    (state) => state
+  );
 
-  if (tripId === undefined) return null;
-  if (locationId === undefined) return null;
+  const trip = useTrip(tripId);
+  const location = useLocation(locationId);
+  const locationItinerary = itinerary.filter(
+    (itinerary) => itinerary.locationId === locationId
+  );
 
-  const trip = tripId ? trips.find((trip) => trip.id === tripId) : null;
-  const location = locationId
-    ? locations.find((loc) => loc.id === locationId)
-    : null;
-  const currentBudget = budgets.filter((budget) => budget.tripId === tripId)[0];
+  if (tripId === undefined || !trip) return null;
+  if (locationId === undefined || !location) return null;
 
   const getAccommodations = () => {
     if (location) {
@@ -131,16 +125,12 @@ const LocationPage = () => {
     return [];
   };
 
-  const locationItinerary = locationId
-    ? itinerary.filter((act) => act.locationId === locationId)
-    : [];
-
   const items = [
     { title: "Home", to: "/", icon: <FaHouse /> },
     { title: "Trip", to: "/trip" },
-    { title: trip ? trip.name : "", to: `/trip/${tripId}` },
+    { title: trip.name, to: `/trip/${tripId}` },
     {
-      title: location ? location.city : "",
+      title: location.city,
       to: `/trip/${tripId}/location/${locationId}`,
     },
   ];
@@ -151,25 +141,6 @@ const LocationPage = () => {
       : undefined;
     try {
       if (accommodation) {
-        const currentHotel = location?.accommodation;
-        if (currentHotel) {
-          await db.budgets.update(currentBudget.id, {
-            accommodation: currentBudget.accommodation.filter(
-              (budget) => budget.name !== currentHotel.name
-            ),
-          });
-          updateBudget(currentBudget.id, {
-            accommodation: currentBudget.accommodation.filter(
-              (budget) => budget.name !== currentHotel.name
-            ),
-          });
-        }
-        await db.budgets.update(currentBudget.id, {
-          accommodation: [...currentBudget.accommodation, accommodation],
-        });
-        updateBudget(currentBudget.id, {
-          accommodation: [...currentBudget.accommodation, accommodation],
-        });
         await db.locations.where({ id: locationId }).modify({
           accommodation,
         });
@@ -261,12 +232,7 @@ const LocationPage = () => {
     try {
       await db.itinerary.where({ id }).modify({ cost });
       updateActivity(id, { cost });
-      await db.budgets
-        .where({ id: currentBudget.id })
-        .modify({ itinerary: sum(itinerary.map(({ cost }) => Number(cost))) });
-      updateBudget(currentBudget.id, {
-        itinerary: sum(itinerary.map(({ cost }) => Number(cost))),
-      });
+
       logger.info("Itinerary cost was updated.");
       showNotification({
         message: "Itinerary cost was updated.",
@@ -418,10 +384,11 @@ const LocationPage = () => {
             </Box>
             <Box>
               <Flex
-                bg="primary-3"
+                bg="primary.3"
                 bd="6px solid #000"
                 bdrs={12}
                 w="100%"
+                h="calc(100vh - 19rem)"
                 direction="column"
               >
                 <Box
@@ -430,7 +397,7 @@ const LocationPage = () => {
                   bg="#fff"
                   style={{
                     gridTemplateColumns:
-                      "3% 5% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 6%",
+                      "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
                   }}
                 >
                   {GridHeader.map(({ id, label, style }) => (
@@ -466,7 +433,7 @@ const LocationPage = () => {
                           bg={index % 2 === 0 ? "purple.2" : "blue.2"}
                           style={{
                             gridTemplateColumns:
-                              "3% 5% 14.33% 14.33% 14.33% 14.33% 14.33% 14.33% 6%",
+                              "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
                           }}
                         >
                           <Box
@@ -562,7 +529,7 @@ const LocationPage = () => {
                     fz="sm"
                     bg="primary.2"
                     style={{
-                      gridTemplateColumns: "65.34% 34.66%",
+                      gridTemplateColumns: "73.34% 26.66%",
                     }}
                   >
                     <Box
