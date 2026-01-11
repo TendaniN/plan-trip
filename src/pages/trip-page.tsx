@@ -11,7 +11,14 @@ import { showNotification } from "@mantine/notifications";
 import { useParams, Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { FaHouse, FaPen, FaCheck, FaX, FaEye } from "react-icons/fa6";
+import {
+  FaHouse,
+  FaPen,
+  FaCheck,
+  FaX,
+  FaEye,
+  FaFileExcel,
+} from "react-icons/fa6";
 
 import {
   Breadcrumbs,
@@ -20,6 +27,7 @@ import {
   RemoveLocationModal,
   EditableDateInput,
   EditableSelect,
+  Button,
 } from "components";
 import { useDBStore, useTrip } from "db/store";
 import { db } from "db";
@@ -29,6 +37,7 @@ import type { HotelProps } from "types/hotel";
 import { type DexieError } from "dexie";
 import { workingSumDays } from "utils/sum-days";
 import { sum } from "utils/sum";
+import { exportTripExcel } from "utils/export-trip-excel";
 
 interface Props {
   id: string;
@@ -256,6 +265,10 @@ const TripPage = () => {
     }
   };
 
+  const handleTripExport = () => {
+    exportTripExcel(trip.id);
+  };
+
   return (
     <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
       <Breadcrumbs items={items} />
@@ -289,7 +302,12 @@ const TripPage = () => {
                 <Title my="auto" order={6}>
                   Locations
                 </Title>
-                <AddLocationModal trip={trip} />
+                <Flex gap={8}>
+                  <AddLocationModal trip={trip} />
+                  <Button onClick={() => handleTripExport()}>
+                    <FaFileExcel /> Export
+                  </Button>
+                </Flex>
               </Flex>
             </Box>
             <Box>
