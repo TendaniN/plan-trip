@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import type { Trip, User, Location, Itinerary, Budget, Travel } from "types/db";
 
 interface AccountState {
@@ -57,16 +58,18 @@ const initialState = {
 export const useDBStore = create<AccountState>((set) => ({
   ...initialState,
 
-  setState: (user, trips, locations, itinerary) =>
+  setState: (user, trips, locations, itinerary, budgets, travel) =>
     set({
       id: user.id,
       username: user.username,
       password: user.password,
       first_name: user.first_name,
       last_name: user.last_name,
-      trips: trips,
-      locations: locations,
-      itinerary: itinerary,
+      trips,
+      locations,
+      itinerary,
+      budgets,
+      travels: travel,
     }),
 
   clearState: () => set(initialState),
@@ -153,18 +156,30 @@ export const useDBStore = create<AccountState>((set) => ({
     })),
 }));
 
-// Locations for a specific trip
-export const useTripLocations = (tripId: string): Location[] =>
+export const useTrip = (tripId?: string): Trip | null =>
+  useDBStore((state) => state.trips.find((trip) => trip.id === tripId) ?? null);
+
+export const useTripLocations = (tripId?: string): Location[] =>
   useDBStore(
-    (state) =>
-      state.locations.filter((location) => location.tripId === tripId) ?? []
+    useShallow((state) =>
+      state.locations.filter((location) => location.tripId === tripId)
+    )
   );
 
-// Itinerary for a specific location
-export const useLocationItinerary = (locationId: string): Itinerary[] =>
+export const useLocation = (locationId?: string): Location | null =>
   useDBStore(
     (state) =>
-      state.itinerary.filter(
-        (itinerary) => itinerary.locationId === locationId
-      ) ?? []
+      state.locations.find((location) => location.id === locationId) ?? null
+  );
+
+export const useLocationItinerary = (locationId?: string): Itinerary[] =>
+  useDBStore(
+    useShallow((state) =>
+      state.itinerary.filter((itinerary) => itinerary.locationId === locationId)
+    )
+  );
+
+export const useTripBudget = (tripId?: string): Budget | null =>
+  useDBStore(
+    (state) => state.budgets.find((budget) => budget.tripId === tripId) ?? null
   );

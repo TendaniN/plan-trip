@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
+import { calcDaysBetween } from "./calc-days-between";
 
 export const workingSumDays = (start: string, end: string) => {
   let count = 0;
-  let daysRemaining = dayjs(end).diff(dayjs(start), "days", true);
+  let daysRemaining = calcDaysBetween(start, end);
   let newDate = dayjs(start).clone();
   while (daysRemaining > -1) {
     if (newDate.day() !== 0 && newDate.day() !== 6) {
