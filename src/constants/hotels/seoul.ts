@@ -165,4 +165,48 @@ export const hotels: HotelProps[] = [
     },
     breakfast: true,
   },
+  {
+    id: "signiel-seoul",
+    name: "Signiel Seoul",
+    area: "Songpa-Gu",
+    rating: { booking: 9.2, naver: 4.63, google: 4.6 },
+    stars: 5,
+    price: 11179 + 2348,
+    distance: {
+      centre: 12000,
+      metro: 350,
+    },
+    link: "https://www.booking.com/hotel/kr/signiel-seoul.en-us.html",
+    room: {
+      title: "Grand Deluxe Double Room",
+      sharing: false,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "l7-myeongdong-by-lotte-hotels",
+    name: "L7 MYEONGDONG by LOTTE HOTELS",
+    area: "Jung-Gu",
+    rating: { booking: 8.8, naver: 4, google: 4.4 },
+    stars: 4,
+    price: 3613 + 361,
+    distance: {
+      centre: 500,
+      metro: 350,
+    },
+    link: "https://www.booking.com/hotel/kr/l7-myeongdong-by-lotte.en-us.html",
+    room: {
+      title: "Standard Double Room",
+      sharing: false,
+      bed: {
+        total: 1,
+        type: "Double",
+      },
+    },
+    breakfast: false,
+  },
 ];

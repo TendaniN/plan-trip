@@ -127,4 +127,40 @@ export const hotels: HotelProps[] = [
     },
     breakfast: true,
   },
+  {
+    id: "karaksa-hotel-premier-tokyo-ginza",
+    name: "karaksa hotel premier Tokyo Ginza",
+    area: "Minato",
+    rating: { booking: 9.0, google: 4.6 },
+    stars: 4,
+    price: 4751,
+    link: "http://booking.com/hotel/jp/jia-cheng-karakusahoterudong-jing-yin-zuo-puremia.html",
+    room: {
+      title: "Standard Double Room",
+      sharing: false,
+      bed: {
+        total: 1,
+        type: "Double",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "shibuya-stream-hotel-formerly-shibuya-stream-excel-hotel-tokyu",
+    name: "SHIBUYA STREAM HOTEL formerly Shibuya Stream Excel Hotel Tokyu",
+    area: "Shibuya Ward",
+    rating: { booking: 9.1, google: 4.5 },
+    stars: 4,
+    price: 6570,
+    link: "https://www.booking.com/hotel/jp/shibuya-stream-excel-tokyu.en-us.html",
+    room: {
+      title: "Standard Double Room",
+      sharing: false,
+      bed: {
+        total: 1,
+        type: "Double",
+      },
+    },
+    breakfast: false,
+  },
 ];
