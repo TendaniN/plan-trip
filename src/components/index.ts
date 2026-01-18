@@ -19,12 +19,12 @@ import { AddActivityModal } from "./modals/add-activity-modal";
 import { RemoveActivityModal } from "./modals/remove-activity-modal";
 import { AddTripModal } from "./modals/add-trip-modal";
 
-import { EditableDateInput } from "./editable/editable-date-input";
-import { EditableNumberInput } from "./editable/editable-number-input";
-import { EditableSelect } from "./editable/editable-select";
-import { EditableTextInput } from "./editable/editable-text-input";
-import { EditableTextareaInput } from "./editable/editable-textarea-input";
-import { EditableTimeInput } from "./editable/editable-time-input";
+import { EditableDateInput } from "./editable-inputs/editable-date-input";
+import { EditableNumberInput } from "./editable-inputs/editable-number-input";
+import { EditableSelect } from "./editable-inputs/editable-select";
+import { EditableTextInput } from "./editable-inputs/editable-text-input";
+import { EditableTextareaInput } from "./editable-inputs/editable-textarea-input";
+import { EditableTimeInput } from "./editable-inputs/editable-time-input";
 
 export {
   AuthWrapper,
