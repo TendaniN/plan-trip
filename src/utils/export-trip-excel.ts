@@ -4,17 +4,18 @@ import { sum } from "./sum";
 import { workingSumDays } from "./sum-days";
 import type { Location, Trip } from "types/db";
 import { useDBStore } from "db/store";
+import { ALL_HOTELS } from "constants/hotels";
 
 const summarySheet = (
   locations: Location[],
   trip: Trip,
-  workbook: XLSX.WorkBook
+  workbook: XLSX.WorkBook,
 ) => {
   const header = ["Country", "Location", "Arrive", "Depart", "Nights"];
 
   const locationJSON: unknown[] = locations
     .sort(
-      (a, b) => dayjs(a.start_date).valueOf() - dayjs(b.start_date).valueOf()
+      (a, b) => dayjs(a.start_date).valueOf() - dayjs(b.start_date).valueOf(),
     )
     .map((location) => {
       return {
@@ -42,7 +43,7 @@ const summarySheet = (
         Location: workingSumDays(trip.start_date, trip.end_date),
       },
     ],
-    { skipHeader: true, origin: -1 }
+    { skipHeader: true, origin: -1 },
   );
   ws["!cols"] = header.map(() => ({ wch: 20 }));
   XLSX.utils.book_append_sheet(workbook, ws, "Summary");
@@ -91,6 +92,106 @@ const locationSheet = async (location: Location, workbook: XLSX.WorkBook) => {
   XLSX.utils.book_append_sheet(workbook, ws, `${location.city} Itinerary`);
 };
 
+const accommodationSheet = async (
+  location: Location,
+  workbook: XLSX.WorkBook,
+) => {
+  const { currency, rate } = useDBStore.getState();
+
+  const hotels = ALL_HOTELS.find(({ type }) => type === location.city);
+  let hotelJSON: unknown[] = [];
+
+  if (hotels) {
+    hotelJSON = hotels.hotels.map((hotel, index) => [
+      index + 1,
+      hotel.name,
+      hotel.area,
+      hotel.room.title,
+      hotel.rating.booking,
+      hotel.rating.google,
+
+      Math.round(((hotel.rating.booking + hotel.rating.google) / 15) * 500) /
+        100,
+      Math.round(hotel.price * location.nights * rate * 100) / 100,
+      hotel.link,
+      hotel.stars,
+      hotel.breakfast,
+    ]);
+  }
+
+  const hotelAOA: unknown[][] = [
+    [
+      "#",
+      "Name",
+      "Area",
+      "Room",
+      "Ratings",
+      "",
+      "",
+      `Cost (in ${currency})`,
+      "Link",
+      "Stars",
+      "Breakfast Included",
+    ],
+    ["", "", "", "", "Booking", "Google", "Average", "", "", "", ""],
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(hotelAOA.concat(hotelJSON));
+  hotelJSON.forEach((_, i) => {
+    const row = i + 3;
+    const cellRef = `H${row}`;
+
+    if (ws[cellRef]) {
+      ws[cellRef].z = `${currency}#,##0.00`;
+    }
+  });
+
+  ws["!merges"] = [
+    {
+      s: { r: 0, c: 4 },
+      e: { r: 0, c: 6 },
+    },
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 1, c: 0 },
+    },
+    {
+      s: { r: 0, c: 1 },
+      e: { r: 1, c: 1 },
+    },
+    {
+      s: { r: 0, c: 2 },
+      e: { r: 1, c: 2 },
+    },
+    {
+      s: { r: 0, c: 3 },
+      e: { r: 1, c: 3 },
+    },
+    {
+      s: { r: 0, c: 7 },
+      e: { r: 1, c: 7 },
+    },
+    {
+      s: { r: 0, c: 8 },
+      e: { r: 1, c: 8 },
+    },
+    {
+      s: { r: 0, c: 9 },
+      e: { r: 1, c: 9 },
+    },
+    {
+      s: { r: 0, c: 10 },
+      e: { r: 1, c: 10 },
+    },
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    ws,
+    `Accommodation in ${location.city}`,
+  );
+};
+
 export const exportTripExcel = async (tripId: string) => {
   const { trips, locations } = useDBStore.getState();
 
@@ -104,6 +205,7 @@ export const exportTripExcel = async (tripId: string) => {
 
   for (const location of locations) {
     locationSheet(location, workbook);
+    accommodationSheet(location, workbook);
   }
 
   XLSX.writeFile(workbook, `${trip.name}.xlsx`);
