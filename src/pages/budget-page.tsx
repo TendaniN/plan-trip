@@ -32,7 +32,7 @@ const GridHeader = [
   {
     id: "cost",
     style: getColumnStyle(),
-    label: "Cost (nights x price)",
+    label: "Cost *",
   },
   {
     id: "timespan",
@@ -43,7 +43,7 @@ const GridHeader = [
   {
     id: "monthly",
     style: getColumnStyle(),
-    label: "Monthly (cost / timespan)",
+    label: "Monthly (cost / timespan) *",
   },
   {
     id: "remove",
@@ -55,7 +55,7 @@ const GridHeader = [
 const BudgetPage = () => {
   const { tripId } = useParams();
 
-  const { travels, itinerary } = useDBStore((state) => state);
+  const { travels, itinerary, currency, rate } = useDBStore((state) => state);
 
   const trip = useTrip(tripId);
   const budget = useTripBudget(tripId);
@@ -75,7 +75,7 @@ const BudgetPage = () => {
 
   const getBudgetMap = () => {
     const months = Math.floor(
-      dayjs(trip.start_date).diff(dayjs(), "months", true)
+      dayjs(trip.start_date).diff(dayjs(), "months", true),
     );
     const output: {
       name: string;
@@ -100,7 +100,7 @@ const BudgetPage = () => {
     budget.travel.map((travelId) => {
       const travel = travels.filter(({ id }) => id === travelId)[0];
       const travelMonths = Math.floor(
-        dayjs(trip.start_date).diff(dayjs(), "months", true)
+        dayjs(trip.start_date).diff(dayjs(), "months", true),
       );
       const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
 
@@ -127,17 +127,15 @@ const BudgetPage = () => {
 
     tripLocations.map((loc) => {
       const locMonths = Math.floor(
-        dayjs(loc.start_date).diff(dayjs(), "months", true)
+        dayjs(loc.start_date).diff(dayjs(), "months", true),
       );
       if (loc.accommodation) {
+        const cost = loc.nights * loc.accommodation.price;
         output.push({
           name: loc.accommodation.name,
           type: "Accommodation",
-          cost: loc.nights * loc.accommodation.price,
-          monthly:
-            Math.round(
-              ((loc.nights * loc.accommodation.price) / locMonths) * 100
-            ) / 100,
+          cost: Math.round(cost * rate * 100) / 100,
+          monthly: Math.round(((cost * rate) / locMonths) * 100) / 100,
           timespan: locMonths,
           canRemove: false,
         });
@@ -147,13 +145,13 @@ const BudgetPage = () => {
       if (activities.length > 0) {
         output.push({
           name: `${loc.city} ${dayjs(loc.start_date).format(
-            "(DD MMM - "
+            "(DD MMM - ",
           )}${dayjs(loc.end_date).format("DD MMM)")}`,
           type: "Itinerary",
           cost: sum(activities.map(({ cost }) => Number(cost))),
           monthly:
             Math.round(
-              (sum(activities.map(({ cost }) => Number(cost))) / months) * 100
+              (sum(activities.map(({ cost }) => Number(cost))) / months) * 100,
             ) / 100,
           timespan: months,
           canRemove: false,
@@ -198,7 +196,7 @@ const BudgetPage = () => {
             <Flex fz="sm">
               <Text>{`${calcDaysBetween(
                 trip.start_date,
-                trip.end_date
+                trip.end_date,
               )} nights`}</Text>
             </Flex>
           </Box>
@@ -256,7 +254,7 @@ const BudgetPage = () => {
                       </Box>
                       <Box style={getColumnStyle()}>
                         <Text size="sm" my="auto">
-                          {`R ${cost}`}
+                          {`${currency} ${cost}`}
                         </Text>
                       </Box>
                       <Box style={getColumnStyle()}>
@@ -266,12 +264,12 @@ const BudgetPage = () => {
                       </Box>
                       <Box style={getColumnStyle()}>
                         <Text size="sm" my="auto">
-                          {`R ${monthly}`}
+                          {`${currency} ${monthly}`}
                         </Text>
                       </Box>
                       <Box style={getColumnStyle(true)}></Box>
                     </Box>
-                  )
+                  ),
                 )}
                 {getBudgetMap().length > 0 && (
                   <Box
@@ -306,7 +304,7 @@ const BudgetPage = () => {
                       }}
                     >
                       <Text fw="bold" size="sm" my="auto">
-                        {`R ${sum(getBudgetMap().map(({ cost }) => cost))}`}
+                        {`${currency} ${sum(getBudgetMap().map(({ cost }) => cost))}`}
                       </Text>
                     </Box>
                     <Box
@@ -318,13 +316,43 @@ const BudgetPage = () => {
                       }}
                     >
                       <Text fw="bold" size="sm" my="auto">
-                        {`R ${sum(
-                          getBudgetMap().map(({ monthly }) => monthly)
+                        {`${currency} ${sum(
+                          getBudgetMap().map(({ monthly }) => monthly),
                         )}`}
                       </Text>
                     </Box>
                   </Box>
                 )}
+                <Box
+                  display="grid"
+                  w="100%"
+                  fz="sm"
+                  bg="primary.2"
+                  style={{
+                    gridTemplateColumns: "100%",
+                  }}
+                >
+                  <Box
+                    style={{
+                      borderRight: "1px solid #000",
+                      borderBottom: "1px solid #000",
+                      padding: "8px 16px",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 4,
+                    }}
+                  >
+                    <Text size="sm" my="auto" ta="right">
+                      *{" "}
+                      <b>
+                        Only accommodation costs are automatically converted
+                        when you change the currency.
+                      </b>{" "}
+                      Other budget items are entered manually and remain
+                      unchanged.
+                    </Text>
+                  </Box>
+                </Box>
               </Flex>
             </Box>
           </Flex>

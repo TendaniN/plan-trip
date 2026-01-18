@@ -24,6 +24,8 @@
     "@mantine/hooks": "^8.3.10",
     "@mantine/modals": "^8.3.10",
     "@mantine/notifications": "^8.3.10",
+    "axios": "^1.13.2",
+    "currency-symbol-map": "^5.1.0",
     "dayjs": "^1.11.19",
     "dexie": "^4.2.1",
     "react": "^19.2.0",

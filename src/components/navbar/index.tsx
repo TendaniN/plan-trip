@@ -1,9 +1,9 @@
-import { Flex, Image, Title } from "@mantine/core";
+import { Box, Flex, Image, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 import { UnAuthenticated } from "./unauthenticated";
 import { Authenticated } from "./authenticated";
-import { AuthWrapper } from "components";
+import { AuthWrapper, CurrencyDropdown } from "components";
 import logoImg from "assets/branding/logo-transparent.png";
 
 const boxStyle = {
@@ -34,7 +34,12 @@ export const Navbar = () => (
       </Link>
     </AuthWrapper>
     <AuthWrapper renderDenied={<UnAuthenticated />}>
-      <Authenticated />
+      <Flex gap={12}>
+        <Box my="auto">
+          <CurrencyDropdown />
+        </Box>
+        <Authenticated />
+      </Flex>
     </AuthWrapper>
   </Flex>
 );

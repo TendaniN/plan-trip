@@ -13,6 +13,9 @@ interface AccountState {
   itinerary: Itinerary[];
   budgets: Budget[];
   travels: Travel[];
+  currencyRates: Record<string, number>;
+  rate: number;
+  currency: string;
 
   setState: (
     user: User,
@@ -20,9 +23,13 @@ interface AccountState {
     locations: Location[],
     itinerary: Itinerary[],
     budget: Budget[],
-    travel: Travel[]
+    travel: Travel[],
   ) => void;
   clearState: () => void;
+
+  setCurrencyRates: (currencyRates: Record<string, number>) => void;
+  setRate: (rate: number) => void;
+  setCurrency: (currency: string | undefined) => void;
 
   addTrip: (trip: Trip) => void;
   updateTrip: (tripId: string, updates: Partial<Trip>) => void;
@@ -53,6 +60,9 @@ const initialState = {
   itinerary: [] as Itinerary[],
   budgets: [] as Budget[],
   travels: [] as Travel[],
+  currencyRates: { ZAR: 1 },
+  rate: 1,
+  currency: "R",
 };
 
 export const useDBStore = create<AccountState>((set) => ({
@@ -74,6 +84,15 @@ export const useDBStore = create<AccountState>((set) => ({
 
   clearState: () => set(initialState),
 
+  setCurrencyRates: (currencyRates) =>
+    set({
+      currencyRates,
+    }),
+
+  setRate: (rate) => set({ rate }),
+
+  setCurrency: (currency) => set({ currency: currency ? currency : "R" }),
+
   addTrip: (trip) =>
     set((state) => ({
       trips: [...state.trips, trip],
@@ -81,7 +100,7 @@ export const useDBStore = create<AccountState>((set) => ({
   updateTrip: (tripId, updates) =>
     set((state) => ({
       trips: state.trips.map((trip) =>
-        trip.id === tripId ? { ...trip, ...updates } : trip
+        trip.id === tripId ? { ...trip, ...updates } : trip,
       ),
     })),
 
@@ -92,7 +111,7 @@ export const useDBStore = create<AccountState>((set) => ({
   updateLocation: (locationId, updates) =>
     set((state) => ({
       locations: state.locations.map((location) =>
-        location.id === locationId ? { ...location, ...updates } : location
+        location.id === locationId ? { ...location, ...updates } : location,
       ),
     })),
   removeLocation: (tripId, locationId) =>
@@ -105,7 +124,7 @@ export const useDBStore = create<AccountState>((set) => ({
               locations:
                 trip.locations?.filter((id) => id !== locationId) ?? [],
             }
-          : trip
+          : trip,
       ),
     })),
 
@@ -116,7 +135,7 @@ export const useDBStore = create<AccountState>((set) => ({
   updateActivity: (itineraryId, updates) =>
     set((state) => ({
       itinerary: state.itinerary.map((itinerary) =>
-        itinerary.id === itineraryId ? { ...itinerary, ...updates } : itinerary
+        itinerary.id === itineraryId ? { ...itinerary, ...updates } : itinerary,
       ),
     })),
   removeActivity: (locationId, activityId) =>
@@ -129,7 +148,7 @@ export const useDBStore = create<AccountState>((set) => ({
               locations:
                 location.itinerary?.filter((id) => id !== activityId) ?? [],
             }
-          : location
+          : location,
       ),
     })),
 
@@ -140,7 +159,7 @@ export const useDBStore = create<AccountState>((set) => ({
   updateBudget: (budgetId, updates) =>
     set((state) => ({
       budgets: state.budgets.map((budget) =>
-        budget.id === budgetId ? { ...budget, ...updates } : budget
+        budget.id === budgetId ? { ...budget, ...updates } : budget,
       ),
     })),
 
@@ -151,7 +170,7 @@ export const useDBStore = create<AccountState>((set) => ({
   updateTravel: (travelId, updates) =>
     set((state) => ({
       travels: state.travels.map((travel) =>
-        travel.id === travelId ? { ...travel, ...updates } : travel
+        travel.id === travelId ? { ...travel, ...updates } : travel,
       ),
     })),
 }));
@@ -162,24 +181,26 @@ export const useTrip = (tripId?: string): Trip | null =>
 export const useTripLocations = (tripId?: string): Location[] =>
   useDBStore(
     useShallow((state) =>
-      state.locations.filter((location) => location.tripId === tripId)
-    )
+      state.locations.filter((location) => location.tripId === tripId),
+    ),
   );
 
 export const useLocation = (locationId?: string): Location | null =>
   useDBStore(
     (state) =>
-      state.locations.find((location) => location.id === locationId) ?? null
+      state.locations.find((location) => location.id === locationId) ?? null,
   );
 
 export const useLocationItinerary = (locationId?: string): Itinerary[] =>
   useDBStore(
     useShallow((state) =>
-      state.itinerary.filter((itinerary) => itinerary.locationId === locationId)
-    )
+      state.itinerary.filter(
+        (itinerary) => itinerary.locationId === locationId,
+      ),
+    ),
   );
 
 export const useTripBudget = (tripId?: string): Budget | null =>
   useDBStore(
-    (state) => state.budgets.find((budget) => budget.tripId === tripId) ?? null
+    (state) => state.budgets.find((budget) => budget.tripId === tripId) ?? null,
   );
