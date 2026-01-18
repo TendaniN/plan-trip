@@ -26,6 +26,8 @@ import { EditableTextInput } from "./editable-inputs/editable-text-input";
 import { EditableTextareaInput } from "./editable-inputs/editable-textarea-input";
 import { EditableTimeInput } from "./editable-inputs/editable-time-input";
 
+import { CurrencyDropdown } from "./currency-dropdown";
+
 export {
   AuthWrapper,
   Button,
@@ -48,4 +50,5 @@ export {
   EditableTextInput,
   EditableTextareaInput,
   EditableTimeInput,
+  CurrencyDropdown,
 };

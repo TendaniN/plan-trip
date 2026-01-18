@@ -42,7 +42,9 @@ export const ActivityForm = ({ location, close }: Props) => {
 
   const activityId = useId();
 
-  const { updateLocation, addActivity } = useDBStore((state) => state);
+  const { updateLocation, addActivity, currency } = useDBStore(
+    (state) => state,
+  );
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -71,7 +73,7 @@ export const ActivityForm = ({ location, close }: Props) => {
     time: string,
     duration: number,
     link: string,
-    cost: string | number
+    cost: string | number,
   ) => {
     const newActivity = {
       id: activityId,
@@ -95,7 +97,7 @@ export const ActivityForm = ({ location, close }: Props) => {
       });
 
       logger.info(
-        `Itinerary activity (${activityId}) added to Location (${location.id}).`
+        `Itinerary activity (${activityId}) added to Location (${location.id}).`,
       );
       showNotification({
         message: `Activity - ${activity} - was added.`,
@@ -125,7 +127,7 @@ export const ActivityForm = ({ location, close }: Props) => {
       vals.time,
       vals.duration,
       vals.link,
-      vals.cost
+      vals.cost,
     );
   };
 
@@ -221,6 +223,7 @@ export const ActivityForm = ({ location, close }: Props) => {
             required
             label="Cost"
             value={values.cost}
+            leftSection={currency}
             {...getInputProps("cost")}
           />
           <NumberInput

@@ -101,14 +101,14 @@ const LocationPage = () => {
 
   const { tripId, locationId } = useParams();
 
-  const { updateLocation, updateActivity, itinerary } = useDBStore(
-    (state) => state
+  const { updateLocation, updateActivity, itinerary, currency } = useDBStore(
+    (state) => state,
   );
 
   const trip = useTrip(tripId);
   const location = useLocation(locationId);
   const locationItinerary = itinerary.filter(
-    (itinerary) => itinerary.locationId === locationId
+    (itinerary) => itinerary.locationId === locationId,
   );
 
   if (tripId === undefined || !trip) return null;
@@ -252,7 +252,7 @@ const LocationPage = () => {
 
   const updateActivityDuration = async (
     id: string,
-    duration: number | string
+    duration: number | string,
   ) => {
     try {
       await db.itinerary.where({ id }).modify({ duration: Number(duration) });
@@ -408,7 +408,7 @@ const LocationPage = () => {
                 </Box>
                 {locationItinerary
                   .sort(
-                    (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf()
+                    (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
                   )
                   .map(
                     (
@@ -422,7 +422,7 @@ const LocationPage = () => {
                         link,
                         cost,
                       },
-                      index
+                      index,
                     ) => (
                       <>
                         <Box
@@ -449,7 +449,7 @@ const LocationPage = () => {
                               mt="0.25rem"
                               onClick={() =>
                                 setSelectedCollapse(
-                                  selectedCollapse === id ? null : id
+                                  selectedCollapse === id ? null : id,
                                 )
                               }
                             >
@@ -489,7 +489,7 @@ const LocationPage = () => {
                           <EditableNumberInput
                             id={id}
                             text={cost}
-                            preText="R "
+                            preText={`${currency} `}
                             onChange={updateActivityCost}
                           />
                           <EditableNumberInput
@@ -520,7 +520,7 @@ const LocationPage = () => {
                           />
                         </Collapse>
                       </>
-                    )
+                    ),
                   )}
                 {locationItinerary.length > 0 && (
                   <Box
@@ -555,7 +555,7 @@ const LocationPage = () => {
                     >
                       <Text fw="bold" size="sm" my="auto">
                         {`R ${sum(
-                          locationItinerary.map(({ cost }) => Number(cost))
+                          locationItinerary.map(({ cost }) => Number(cost)),
                         )}`}
                       </Text>
                     </Box>

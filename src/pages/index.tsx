@@ -1,5 +1,6 @@
 import { Navbar } from "components/index";
 import { db } from "db";
+import { api } from "api";
 import { useDBStore } from "db/store";
 import { useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +20,9 @@ const Pages = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { setState, id, username } = useDBStore((state) => state);
+  const { setState, id, username, setCurrencyRates, setRate } = useDBStore(
+    (state) => state,
+  );
 
   const addToStore = async () => {
     try {
@@ -37,7 +40,7 @@ const Pages = () => {
           locations,
           itinerary,
           budgets,
-          travels
+          travels,
         );
 
         logger.info("Restoring session...");
@@ -64,6 +67,22 @@ const Pages = () => {
       navigate("/register");
     }
   };
+
+  const setExchangeRates = async () => {
+    try {
+      const response = await api.get("ZAR");
+      if (response.data) {
+        setCurrencyRates(response.data.rates);
+        setRate(1);
+      }
+    } catch (error) {
+      logger.error("Failed to fetch exchange rate: " + error);
+    }
+  };
+
+  useEffect(() => {
+    setExchangeRates();
+  }, []);
 
   useEffect(() => {
     if (isSessionExpired()) {
