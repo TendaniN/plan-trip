@@ -22,7 +22,7 @@ interface RoomProps {
 export interface HotelProps {
   id: string;
   name: string;
-  area: string;
+  area?: string;
   rating: RatingProps;
   stars: number;
   distance?: DistanceProps;
@@ -30,4 +30,7 @@ export interface HotelProps {
   link: string;
   room: RoomProps;
   breakfast: boolean;
+  lunch?: boolean;
+  dinner?: boolean;
+  note?: string;
 }

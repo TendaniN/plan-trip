@@ -1,0 +1,191 @@
+import type { HotelProps } from "types/hotel";
+
+export const hotels: HotelProps[] = [
+  {
+    id: "crowne-plaza-muscat",
+    name: "Crowne Plaza Muscat by IHG",
+    rating: { booking: 9.1, google: 4.5 },
+    stars: 4,
+    price: 4343,
+    link: "https://www.booking.com/hotel/om/crowne-plaza-muscat.html",
+    room: {
+      title: "Standard Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+  {
+    id: "intercityhotel-muscat",
+    name: "IntercityHotel Muscat",
+    rating: { booking: 8.7, google: 4.6 },
+    stars: 4,
+    price: 1218,
+    link: "https://www.booking.com/hotel/om/intercityhotel-muscat.html",
+    room: {
+      title: "Standard King Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "royal-tulip-muscat",
+    name: "Royal Tulip Muscat",
+    rating: { booking: 8.8, google: 4.5 },
+    stars: 5,
+    price: 2478,
+    link: "https://www.booking.com/hotel/om/royal-tulip-muscat.html",
+    room: {
+      title: "Deluxe King Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+  {
+    id: "ramada-encore-by-wyndham-muscat-al-ghubrah",
+    name: "Ramada Encore by Wyndham Muscat Al-Ghubra",
+    rating: { booking: 8.8, google: 4.5 },
+    stars: 4,
+    price: 1357,
+    link: "https://www.booking.com/hotel/om/ramada-encore-by-wyndham-muscat-al-ghubrah.html",
+    room: {
+      title: "King Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "ramada-encore-by-wyndham-muscat-al-ghubrah",
+    name: "Ramada Encore by Wyndham Muscat Al-Ghubra",
+    rating: { booking: 8.8, google: 4.5 },
+    stars: 4,
+    price: 1357,
+    link: "https://www.booking.com/hotel/om/ramada-encore-by-wyndham-muscat-al-ghubrah.html",
+    room: {
+      title: "King Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "doubletree-by-hilton-muscat-qurum",
+    name: "DoubleTree by Hilton Muscat Qurum",
+    rating: { booking: 8.8, google: 4.6 },
+    stars: 4,
+    price: 2759,
+    link: "https://www.booking.com/hotel/om/doubletree-by-hilton-muscat-qurum.html",
+    room: {
+      title: "One-Bedroom King Suite",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "mercure-muscat",
+    name: "Mercure Muscat",
+    rating: { booking: 8.7, google: 4.7 },
+    stars: 4,
+    price: 1297,
+    link: "https://www.booking.com/hotel/om/mercure-muscat.html",
+    room: {
+      title: "Deluxe King Room with City View",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: false,
+  },
+  {
+    id: "aloft-muscat",
+    name: "Aloft Muscat",
+    rating: { booking: 8.7, google: 4.3 },
+    stars: 4,
+    price: 1603,
+    link: "https://www.booking.com/hotel/om/aloft-muscat.html",
+    room: {
+      title: "AloftRroom",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+  {
+    id: "aloft-muscat",
+    name: "Aloft Muscat",
+    rating: { booking: 8.7, google: 4.3 },
+    stars: 4,
+    price: 1603,
+    link: "https://www.booking.com/hotel/om/aloft-muscat.html",
+    room: {
+      title: "AloftRroom",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+  {
+    id: "aloft-muscat",
+    name: "Aloft Muscat",
+    rating: { booking: 8.7, google: 4.3 },
+    stars: 4,
+    price: 1603,
+    link: "https://www.booking.com/hotel/om/aloft-muscat.html",
+    room: {
+      title: "Aloft Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+  {
+    id: "holiday-inn-muscat-al-seeb",
+    name: "Holiday Inn Muscat AlSeeb by IHG",
+    rating: { booking: 8.6, google: 4.4 },
+    stars: 4,
+    price: 2022,
+    link: "https://www.booking.com/hotel/om/holiday-inn-muscat-al-seeb.html",
+    room: {
+      title: "Standard King Room",
+      sharing: true,
+      bed: {
+        total: 1,
+        type: "King",
+      },
+    },
+    breakfast: true,
+  },
+];

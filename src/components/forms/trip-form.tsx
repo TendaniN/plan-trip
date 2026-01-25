@@ -63,7 +63,7 @@ export const TripForm = () => {
     end: string,
     city: CityValues,
     country: CountryValues,
-    trip_name: string
+    trip_name: string,
   ) => {
     const name = trip_name ? trip_name : `${city} ${start.substring(0, 4)}`;
     const trip = {
@@ -100,7 +100,7 @@ export const TripForm = () => {
       addLocation(location);
       addBudget(budget);
       logger.info(
-        `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`
+        `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`,
       );
       showNotification({
         title: "New trip and location created.",
@@ -125,7 +125,7 @@ export const TripForm = () => {
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
     const country = CITY_MAP.find(
-      ({ cities }) => cities.filter((val) => val === vals.cityValue).length > 0
+      ({ cities }) => cities.filter((val) => val === vals.cityValue).length > 0,
     );
     if (country) {
       createTrip(
@@ -133,7 +133,7 @@ export const TripForm = () => {
         vals.end_date,
         vals.cityValue as CityValues,
         country.country as CountryValues,
-        vals.trip_name
+        vals.trip_name,
       );
     }
   };
