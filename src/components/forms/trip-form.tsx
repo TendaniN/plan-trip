@@ -161,6 +161,7 @@ export const TripForm = () => {
           <Select
             w="100%"
             radius="md"
+            classNames={{ groupLabel: "group-label", option: "group-option" }}
             required
             label="City"
             placeholder="Select a city you want to travel to..."

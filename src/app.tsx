@@ -8,6 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { initDB } from "db";
 import Pages from "./pages";
+import "./styles.css";
 import { emotionTransform, MantineEmotionProvider } from "@mantine/emotion";
 
 const theme = createTheme({
