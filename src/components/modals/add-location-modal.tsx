@@ -21,7 +21,7 @@ export const AddLocationModal = ({ trip }: Props) => {
       <ModalRoot opened={opened} onClose={close}>
         <ModalOverlay />
         <ModalContent bd="2px solid #000" bdrs={12} bg="green.3" p={12}>
-          <Title ta="center" order={4}>
+          <Title ta="center" order={4} td="underline">
             New Location
           </Title>
           <LocationForm trip={trip} close={close} />

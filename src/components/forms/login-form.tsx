@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
-import { Flex, TextInput, LoadingOverlay, Loader, Box } from "@mantine/core";
+import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
 import { db } from "db";
 import { useDBStore } from "db/store";
@@ -50,7 +50,7 @@ export const LoginForm = () => {
           locations,
           itinerary,
           budgets,
-          travels
+          travels,
         );
         startSession();
         logger.info(`User (${user.username}) logged in.`);
@@ -72,16 +72,13 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Box
+      <Flex
+        direction="column"
+        gap={18}
         bdrs={12}
         bd="6px solid #000"
         p={20}
-        display="flex"
-        style={{
-          flexDirection: "column",
-          gap: 18,
-          backgroundColor: "var(--mantine-color-primary-3)",
-        }}
+        bg="primary.3"
       >
         <LoadingOverlay
           visible={submitting}
@@ -119,7 +116,7 @@ export const LoginForm = () => {
           </Link>
           .
         </Flex>
-      </Box>
+      </Flex>
     </form>
   );
 };

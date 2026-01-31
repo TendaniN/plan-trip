@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   LoadingOverlay,
   Loader,
@@ -158,13 +157,7 @@ export const ActivityForm = ({ location, close }: Props) => {
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Box
-        display="flex"
-        style={{
-          flexDirection: "column",
-          gap: 18,
-        }}
-      >
+      <Flex direction="column" gap={18}>
         <LoadingOverlay
           visible={creating}
           loaderProps={{
@@ -247,7 +240,7 @@ export const ActivityForm = ({ location, close }: Props) => {
         <Button type="submit" color="green.4" w="100%" disabled={formDisabled}>
           Add Activity
         </Button>
-      </Box>
+      </Flex>
     </form>
   );
 };

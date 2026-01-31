@@ -1,14 +1,7 @@
 import { useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
 import { isNotEmpty, useForm } from "@mantine/form";
-import {
-  Flex,
-  TextInput,
-  LoadingOverlay,
-  Loader,
-  Box,
-  Select,
-} from "@mantine/core";
+import { Flex, TextInput, LoadingOverlay, Loader, Select } from "@mantine/core";
 import { DateInput, type DateInputProps } from "@mantine/dates";
 
 import { db } from "db";
@@ -146,13 +139,7 @@ export const TripForm = () => {
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Box
-        display="flex"
-        style={{
-          flexDirection: "column",
-          gap: 18,
-        }}
-      >
+      <Flex direction="column" gap={18}>
         <LoadingOverlay
           visible={creating}
           loaderProps={{ children: <Loader color="blue.5" type="dots" /> }}
@@ -225,7 +212,7 @@ export const TripForm = () => {
         >
           Create
         </Button>
-      </Box>
+      </Flex>
     </form>
   );
 };
