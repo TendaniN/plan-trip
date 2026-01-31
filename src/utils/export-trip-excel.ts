@@ -192,7 +192,10 @@ const accommodationSheet = async (
   );
 };
 
-export const exportTripExcel = async (tripId: string) => {
+export const exportTripExcel = async (
+  tripId: string,
+  values: { summary: boolean; location: boolean; accommodation: boolean },
+) => {
   const { trips, locations } = useDBStore.getState();
 
   const trip = trips.find(({ id }) => id === tripId) ?? null;
@@ -203,9 +206,15 @@ export const exportTripExcel = async (tripId: string) => {
 
   summarySheet(locations, trip, workbook);
 
-  for (const location of locations) {
-    locationSheet(location, workbook);
-    accommodationSheet(location, workbook);
+  if (values.location || values.accommodation) {
+    for (const location of locations) {
+      if (values.location) {
+        locationSheet(location, workbook);
+      }
+      if (values.accommodation) {
+        accommodationSheet(location, workbook);
+      }
+    }
   }
 
   XLSX.writeFile(workbook, `${trip.name}.xlsx`);

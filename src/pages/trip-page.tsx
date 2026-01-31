@@ -11,14 +11,7 @@ import { showNotification } from "@mantine/notifications";
 import { useParams, Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import {
-  FaHouse,
-  FaPen,
-  FaCheck,
-  FaX,
-  FaEye,
-  FaFileExcel,
-} from "react-icons/fa6";
+import { FaHouse, FaPen, FaCheck, FaX, FaEye } from "react-icons/fa6";
 
 import {
   Breadcrumbs,
@@ -27,7 +20,7 @@ import {
   RemoveLocationModal,
   EditableDateInput,
   EditableSelect,
-  Button,
+  ExportModal,
 } from "components";
 import { useDBStore, useTrip } from "db/store";
 import { db } from "db";
@@ -37,7 +30,6 @@ import type { HotelProps } from "types/hotel";
 import { type DexieError } from "dexie";
 import { workingSumDays } from "utils/sum-days";
 import { sum } from "utils/sum";
-import { exportTripExcel } from "utils/export-trip-excel";
 
 interface Props {
   id: string;
@@ -163,12 +155,12 @@ const TripPage = () => {
   const { tripId } = useParams();
 
   const { id, updateTrip, updateLocation, locations } = useDBStore(
-    (state) => state
+    (state) => state,
   );
 
   const trip = useTrip(tripId);
   const tripLocations = locations.filter(
-    (location) => location.tripId === tripId
+    (location) => location.tripId === tripId,
   );
 
   const totalNights = useMemo(() => {
@@ -217,7 +209,7 @@ const TripPage = () => {
       const location = tripLocations.filter((loc) => loc.id === id);
       const nights = calcDaysBetween(
         start ? date : location[0].start_date,
-        start ? location[0].end_date : date
+        start ? location[0].end_date : date,
       );
       const change = start
         ? { start_date: date, nights }
@@ -243,7 +235,7 @@ const TripPage = () => {
 
   const updateLocationHotel = async (
     id: string,
-    accommodation?: HotelProps
+    accommodation?: HotelProps,
   ) => {
     try {
       await db.locations.where({ id }).modify({ accommodation });
@@ -263,10 +255,6 @@ const TripPage = () => {
         icon: <FaX />,
       });
     }
-  };
-
-  const handleTripExport = () => {
-    exportTripExcel(trip.id);
   };
 
   return (
@@ -304,9 +292,7 @@ const TripPage = () => {
                 </Title>
                 <Flex gap={8}>
                   <AddLocationModal trip={trip} />
-                  <Button onClick={() => handleTripExport()}>
-                    <FaFileExcel /> Export
-                  </Button>
+                  <ExportModal tripId={trip.id} />
                 </Flex>
               </Flex>
             </Box>
@@ -337,12 +323,12 @@ const TripPage = () => {
                   .sort(
                     (a, b) =>
                       dayjs(a.start_date).valueOf() -
-                      dayjs(b.start_date).valueOf()
+                      dayjs(b.start_date).valueOf(),
                   )
                   .map(
                     (
                       { id, city, start_date, end_date, accommodation, nights },
-                      index
+                      index,
                     ) => (
                       <Box
                         key={`table-row-${id}`}
@@ -401,7 +387,7 @@ const TripPage = () => {
                           )}
                         </Box>
                       </Box>
-                    )
+                    ),
                   )}
                 {tripLocations.length > 0 && (
                   <>

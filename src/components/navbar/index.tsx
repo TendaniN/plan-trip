@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Title } from "@mantine/core";
+import { Box, Flex, Image } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 import { UnAuthenticated } from "./unauthenticated";
@@ -23,18 +23,35 @@ const boxStyle = {
   },
 };
 
+const linkStyle = {
+  root: {
+    a: {
+      fontWeight: 700,
+      padding: "6px 12px",
+      borderRadius: 12,
+      border: "2px solid transparent",
+      backgroundColor: "var(--mantine-color-blue-4)",
+
+      ":hover": {
+        borderColor: "#000",
+        textDecoration: "none",
+      },
+    },
+  },
+};
+
 export const Navbar = () => (
-  <Flex justify="space-between" w="100%" styles={boxStyle}>
-    <Link to="/">
+  <Flex w="100%" styles={boxStyle}>
+    <Link to="/" style={{ width: "33.33%" }}>
       <Image w="5rem" src={logoImg} />
     </Link>
     <AuthWrapper renderDenied={null}>
-      <Link to="/trip">
-        <Title fz="h2">My Trips</Title>
-      </Link>
+      <Flex w="33.33%" justify="center" styles={linkStyle}>
+        <Link to="/country">Countries</Link>
+      </Flex>
     </AuthWrapper>
     <AuthWrapper renderDenied={<UnAuthenticated />}>
-      <Flex gap={12}>
+      <Flex w="33.33%" justify="flex-end" gap={12}>
         <Box my="auto">
           <CurrencyDropdown />
         </Box>

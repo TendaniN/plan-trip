@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm, hasLength, matchesField } from "@mantine/form";
-import { Flex, TextInput, LoadingOverlay, Loader, Box } from "@mantine/core";
+import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
 import { db } from "db";
 import { useDBStore } from "db/store";
@@ -46,7 +46,7 @@ export const RegisterForm = () => {
     validate: {
       username: hasLength(
         { min: 5 },
-        "Username must be at least 6 characters."
+        "Username must be at least 6 characters.",
       ),
       password: (value) => {
         if (value.length < 8) {
@@ -103,16 +103,13 @@ export const RegisterForm = () => {
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Box
+      <Flex
+        direction="column"
+        gap={18}
         bdrs={12}
         bd="6px solid #000"
         p={20}
-        display="flex"
-        style={{
-          flexDirection: "column",
-          gap: 18,
-          backgroundColor: "var(--mantine-color-primary-3)",
-        }}
+        bg="primary.3"
       >
         <LoadingOverlay
           visible={submitting}
@@ -179,7 +176,7 @@ export const RegisterForm = () => {
           </Link>
           .
         </Flex>
-      </Box>
+      </Flex>
     </form>
   );
 };

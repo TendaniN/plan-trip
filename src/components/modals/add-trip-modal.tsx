@@ -16,7 +16,7 @@ export const AddTripModal = () => {
       <ModalRoot opened={opened} onClose={close}>
         <ModalOverlay />
         <ModalContent bd="2px solid #000" bdrs={12} bg="primary.3" p={12}>
-          <Title ta="center" order={4}>
+          <Title ta="center" order={4} td="underline">
             New Trip
           </Title>
           <TripForm />

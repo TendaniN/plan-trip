@@ -15,6 +15,8 @@ import { showNotification } from "@mantine/notifications";
 import LocationPage from "./location-page";
 import BudgetPage from "./budget-page";
 import TripsPage from "./trips-page";
+import CountriesPage from "./countries-page";
+import AccommodationPage from "./accommodation-page";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -109,6 +111,11 @@ const Pages = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<div>Logout</div>} />
+        <Route path="/country" element={<CountriesPage />} />
+        <Route
+          path="/country/:city/accommodation"
+          element={<AccommodationPage />}
+        />
       </Routes>
     </div>
   );

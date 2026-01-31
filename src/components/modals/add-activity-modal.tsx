@@ -18,7 +18,7 @@ export const AddActivityModal = ({ location }: Props) => {
       <ModalRoot opened={opened} onClose={close}>
         <ModalOverlay />
         <ModalContent bd="2px solid #000" bdrs={12} bg="blue.3" p={12}>
-          <Title ta="center" order={4}>
+          <Title ta="center" order={4} td="underline">
             New Activity
           </Title>
           <ActivityForm close={close} location={location} />

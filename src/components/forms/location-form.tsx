@@ -1,4 +1,4 @@
-import { Box, Flex, Select, LoadingOverlay, Loader } from "@mantine/core";
+import { Flex, Select, LoadingOverlay, Loader } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { DateInput, type DateInputProps } from "@mantine/dates";
 import dayjs from "dayjs";
@@ -70,7 +70,7 @@ export const LocationForm = ({ trip, close }: Props) => {
     country: CountryValues,
     start: string,
     end: string,
-    accommodation?: HotelProps
+    accommodation?: HotelProps,
   ) => {
     const location = {
       id: locationId,
@@ -87,7 +87,7 @@ export const LocationForm = ({ trip, close }: Props) => {
       let start_date = trip.start_date;
       if (dayjs(start).isBefore(dayjs(start_date))) {
         start_date = dayjs(start, DEFAULT_DATE_FORMAT).format(
-          DEFAULT_DATE_FORMAT
+          DEFAULT_DATE_FORMAT,
         );
       }
       let end_date = trip.end_date;
@@ -126,7 +126,7 @@ export const LocationForm = ({ trip, close }: Props) => {
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
     const country = CITY_MAP.find(
-      ({ cities }) => cities.filter((val) => val === vals.city).length > 0
+      ({ cities }) => cities.filter((val) => val === vals.city).length > 0,
     );
 
     const hotel = vals.accommodation
@@ -139,7 +139,7 @@ export const LocationForm = ({ trip, close }: Props) => {
         country.country as CountryValues,
         vals.start_date,
         vals.end_date,
-        hotel
+        hotel,
       );
     }
   };
@@ -157,13 +157,7 @@ export const LocationForm = ({ trip, close }: Props) => {
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Box
-        display="flex"
-        style={{
-          flexDirection: "column",
-          gap: 18,
-        }}
-      >
+      <Flex direction="column" gap={18}>
         <LoadingOverlay
           visible={creating}
           loaderProps={{
@@ -229,7 +223,7 @@ export const LocationForm = ({ trip, close }: Props) => {
         <Button type="submit" color="purple.3" w="100%" disabled={formDisabled}>
           Add Location
         </Button>
-      </Box>
+      </Flex>
     </form>
   );
 };
