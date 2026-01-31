@@ -10,6 +10,7 @@ import { LoginForm } from "./forms/login-form";
 import { TripForm } from "./forms/trip-form";
 import { ActivityForm } from "./forms/activity-form";
 import { LocationForm } from "./forms/location-form";
+import { ExcelExportForm } from "./forms/excel-export-form";
 
 import { Breadcrumbs } from "./breadcrumb";
 
@@ -18,6 +19,7 @@ import { RemoveLocationModal } from "./modals/remove-location-modal";
 import { AddActivityModal } from "./modals/add-activity-modal";
 import { RemoveActivityModal } from "./modals/remove-activity-modal";
 import { AddTripModal } from "./modals/add-trip-modal";
+import { ExportModal } from "./modals/export-modal";
 
 import { EditableDateInput } from "./editable-inputs/editable-date-input";
 import { EditableNumberInput } from "./editable-inputs/editable-number-input";
@@ -38,12 +40,14 @@ export {
   TripForm,
   ActivityForm,
   LocationForm,
+  ExcelExportForm,
   Breadcrumbs,
   AddLocationModal,
   RemoveLocationModal,
   AddActivityModal,
   RemoveActivityModal,
   AddTripModal,
+  ExportModal,
   EditableDateInput,
   EditableNumberInput,
   EditableSelect,

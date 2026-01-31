@@ -29,8 +29,13 @@ const linkStyle = {
       fontWeight: 700,
       padding: "6px 12px",
       borderRadius: 12,
-      border: "2px solid #000",
+      border: "2px solid transparent",
       backgroundColor: "var(--mantine-color-blue-4)",
+
+      ":hover": {
+        borderColor: "#000",
+        textDecoration: "none",
+      },
     },
   },
 };
