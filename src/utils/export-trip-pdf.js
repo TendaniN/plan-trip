@@ -3,7 +3,6 @@ import pdfMake from "./pdf";
 import dayjs from "dayjs";
 import { sum } from "./sum";
 import { workingSumDays } from "./sum-days";
-import type { Budget, Location, Trip } from "types/db";
 
 const styles = {
   title: {
@@ -24,19 +23,19 @@ const styles = {
   },
 };
 
-const buildSummaryPage = (trip: Trip, locations: Location[]) => [
+const buildSummaryPage = (trip, locations) => [
   { text: trip.name, style: "title" },
   {
     text: [
       { text: "Total number of nights: ", bold: true },
-      { text: sum(locations.map(({ nights }) => nights)) },
+      String(sum(locations.map(({ nights }) => nights))),
     ],
     alignment: "center",
   },
   {
     text: [
       { text: "Total number of working days: ", bold: true },
-      { text: workingSumDays(trip.start_date, trip.end_date) },
+      String(workingSumDays(trip.start_date, trip.end_date)),
     ],
     alignment: "center",
     margin: [0, 0, 0, 8],
@@ -47,9 +46,20 @@ const buildSummaryPage = (trip: Trip, locations: Location[]) => [
       columns: [
         {
           ul: [
-            [{ text: [{ text: "City: ", bold: true }, { text: l.city }] }],
+            [
+              {
+                text: [{ text: "City: ", bold: true }, { text: l.city }],
+              },
+            ],
 
-            [{ text: [{ text: "Nights: ", bold: true }, { text: l.nights }] }],
+            [
+              {
+                text: [
+                  { text: "Nights: ", bold: true },
+                  { text: String(l.nights) },
+                ],
+              },
+            ],
           ],
         },
         {
@@ -123,7 +133,7 @@ const buildSummaryPage = (trip: Trip, locations: Location[]) => [
   ]),
 ];
 
-const buildLocationPage = (location: Location) => {
+const buildLocationPage = (location) => {
   const { itinerary, currency } = useDBStore.getState();
 
   const itineraryMAP = itinerary
@@ -134,7 +144,7 @@ const buildLocationPage = (location: Location) => {
       { text: activity.time, alignment: "center" },
       activity.activity,
       { text: `${currency}${activity.cost}`, alignment: "center" },
-      { text: activity.duration, alignment: "center" },
+      { text: String(activity.duration), alignment: "center" },
       {
         text: "link",
         link: activity.link,
@@ -160,13 +170,13 @@ const buildLocationPage = (location: Location) => {
           ],
         },
         {
-          text: [{ text: "Depart: ", bold: true }, { text: location.end_date }],
+          text: [{ text: "Depart: ", bold: true }, String(location.end_date)],
         },
       ],
     },
     {
       columns: [
-        { text: [{ text: "Nights: ", bold: true }, { text: location.nights }] },
+        { text: [{ text: "Nights: ", bold: true }, String(location.nights)] },
         {
           text: [
             { text: "Hotel: ", bold: true },
@@ -223,7 +233,7 @@ const buildLocationPage = (location: Location) => {
   ];
 };
 
-const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
+const buildBudgetPage = (budget, trip, locations) => {
   const { travels, itinerary, rate, currency } = useDBStore.getState();
 
   const months = Math.floor(
@@ -244,7 +254,7 @@ const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
         text: `${currency} ${travel.cost}`,
         alignment: "center",
       },
-      timespan,
+      String(timespan),
       {
         text: `${currency} ${Math.round((travel.cost / timespan) * 100) / 100}`,
         alignment: "center",
@@ -267,7 +277,7 @@ const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
             text: `${currency} ${Math.round(cost * rate * 100) / 100}`,
             alignment: "center",
           },
-          locMonths,
+          String(locMonths),
           {
             text: `${currency} ${Math.round(((cost * rate) / locMonths) * 100) / 100}`,
             alignment: "center",
@@ -291,7 +301,7 @@ const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
             text: `${currency} ${sum(activities.map(({ cost }) => Number(cost)))}`,
             alignment: "center",
           },
-          months,
+          String(months),
           {
             text: `${currency} ${
               Math.round(
@@ -342,7 +352,7 @@ const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
               text: `${currency} ${budget.buffer}`,
               alignment: "center",
             },
-            months,
+            String(months),
             {
               text: `${currency} ${Math.round((budget.buffer / months) * 100) / 100}`,
               alignment: "center",
@@ -357,10 +367,7 @@ const buildBudgetPage = (budget: Budget, trip: Trip, locations: Location[]) => {
   ];
 };
 
-export const exportTripPDF = (
-  tripId: string,
-  values: { summary: boolean; location: boolean; budget: boolean },
-) => {
+export const exportTripPDF = (tripId, values) => {
   const { trips, locations, budgets } = useDBStore.getState();
 
   const trip = trips.find(({ id }) => id === tripId) ?? null;
@@ -369,7 +376,7 @@ export const exportTripPDF = (
 
   if (!trip) return;
 
-  let content: unknown[] = [...buildSummaryPage(trip, tripLocations)];
+  let content = [...buildSummaryPage(trip, tripLocations)];
 
   if (values.location || values.budget) {
     for (const location of tripLocations) {
@@ -389,7 +396,7 @@ export const exportTripPDF = (
     pageMargins: [40, 60, 40, 60],
     content,
     styles,
-    footer: (currentPage: number, pageCount: number) => ({
+    footer: (currentPage, pageCount) => ({
       text: `${currentPage} / ${pageCount}`,
       alignment: "center",
       fontSize: 8,
