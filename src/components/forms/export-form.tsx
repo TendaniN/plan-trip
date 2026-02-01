@@ -1,10 +1,18 @@
 import { Checkbox, Flex, InputDescription } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Button } from "components/button";
+import type { ExportValues } from "constants/export";
 
 import { exportTripExcel } from "utils/export-trip-excel";
+import { exportTripPDF } from "utils/export-trip-pdf";
 
-export const ExcelExportForm = ({ tripId }: { tripId: string }) => {
+export const ExportForm = ({
+  tripId,
+  type = "excel",
+}: {
+  tripId: string;
+  type: ExportValues;
+}) => {
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
       summary: true,
@@ -16,7 +24,11 @@ export const ExcelExportForm = ({ tripId }: { tripId: string }) => {
   });
 
   const handleSubmit = (vals: typeof values) => {
-    exportTripExcel(tripId, vals);
+    if (type === "excel") {
+      exportTripExcel(tripId, vals);
+    } else if (type === "pdf") {
+      exportTripPDF(tripId, vals);
+    }
   };
 
   return (
@@ -55,6 +67,7 @@ export const ExcelExportForm = ({ tripId }: { tripId: string }) => {
           <Checkbox
             color="secondary.5"
             iconColor="#000"
+            disabled={type === "pdf"}
             value={values.accommodation}
             checked={values.accommodation}
             label="Accommodation"

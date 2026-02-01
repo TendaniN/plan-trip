@@ -216,7 +216,8 @@ const budgetSheet = async (
       Name: "Buffer Total",
       Type: "Buffer",
       Cost: budget.buffer,
-      "Monthly (cost / timespan)": Math.round(budget.buffer * 100) / 100,
+      "Monthly (cost / timespan)":
+        Math.round((budget.buffer / months) * 100) / 100,
       "Timespan (now - departure)": months,
     },
   ];
@@ -232,20 +233,11 @@ const budgetSheet = async (
       Name: `${travel.carrier} ${travel.type}`,
       Type: "Travel",
       Cost: travel.cost,
-      "Monthly (cost / timespan)": Math.round(travel.cost * 100) / 100,
+      "Monthly (cost / timespan)":
+        Math.round((travel.cost / timespan) * 100) / 100,
       "Timespan (now - departure)": timespan,
     });
   });
-
-  if (budget.travel.length > 0) {
-    budgetJSON.push({
-      Name: "Buffer Total",
-      Type: "Buffer",
-      Cost: budget.buffer,
-      "Monthly (cost / timespan)": Math.round(budget.buffer * 100) / 100,
-      "Timespan (now - departure)": months,
-    });
-  }
 
   locations.map((loc) => {
     const locMonths = Math.floor(

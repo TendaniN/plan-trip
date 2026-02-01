@@ -10,7 +10,7 @@ import { LoginForm } from "./forms/login-form";
 import { TripForm } from "./forms/trip-form";
 import { ActivityForm } from "./forms/activity-form";
 import { LocationForm } from "./forms/location-form";
-import { ExcelExportForm } from "./forms/excel-export-form";
+import { ExportForm } from "./forms/export-form";
 
 import { Breadcrumbs } from "./breadcrumb";
 
@@ -40,7 +40,7 @@ export {
   TripForm,
   ActivityForm,
   LocationForm,
-  ExcelExportForm,
+  ExportForm,
   Breadcrumbs,
   AddLocationModal,
   RemoveLocationModal,
