@@ -1,5 +1,5 @@
 import { Container, Title, Box, Flex, Alert } from "@mantine/core";
-import { LinkButton, TripForm } from "components";
+import { InfoTooltip, LinkButton, TripForm } from "components";
 import { MAX_DB_ENTRIES } from "constants/db";
 import { useDBStore } from "db/store";
 import { FaEye, FaCircleInfo } from "react-icons/fa6";
@@ -24,6 +24,7 @@ const HomePage = () => {
         <>
           <Title mt={36} mb={18} order={2} ta="center">
             Plan a Trip
+            <InfoTooltip label="Hell" />
           </Title>
 
           <Box bdrs={12} bd="6px solid #000" p={20} bg="primary.3">
@@ -41,7 +42,7 @@ const HomePage = () => {
             {trips
               .sort(
                 (a, b) =>
-                  dayjs(b.start_date).valueOf() - dayjs(a.start_date).valueOf()
+                  dayjs(b.start_date).valueOf() - dayjs(a.start_date).valueOf(),
               )
               .map(({ id, name }, index) => (
                 <Flex

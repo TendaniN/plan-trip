@@ -2,7 +2,7 @@ import { useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader, Select } from "@mantine/core";
-import { DateInput, type DateInputProps } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 
 import { db } from "db";
 import { useDBStore } from "db/store";
@@ -16,14 +16,6 @@ import type { CountryValues } from "constants/country";
 import { showNotification } from "@mantine/notifications";
 import { FaCheck, FaX } from "react-icons/fa6";
 import type { DexieError } from "dexie";
-
-const dateParser: DateInputProps["dateParser"] = (input) => {
-  if (input === "WW2") {
-    return "1939-09-01";
-  }
-
-  return dayjs(input, "YYYY-MM-DD").format("YYYY-MM-DD");
-};
 
 export const TripForm = () => {
   const navigate = useNavigate();
@@ -170,7 +162,6 @@ export const TripForm = () => {
             required
             valueFormat="YYYY-MM-DD"
             placeholder="YYYY-MM-DD"
-            dateParser={dateParser}
             minDate={dayjs().format("YYYY-MM-DD")}
             label="Start Date"
             value={dayjs(values.start_date).format("YYYY-MM-DD")}
@@ -182,7 +173,6 @@ export const TripForm = () => {
             required
             valueFormat="YYYY-MM-DD"
             placeholder="YYYY-MM-DD"
-            dateParser={dateParser}
             minDate={
               values.start_date
                 ? dayjs(values.start_date).format("YYYY-MM-DD")

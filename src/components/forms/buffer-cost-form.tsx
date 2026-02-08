@@ -53,7 +53,9 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
       logger.error("Failed to add cost:" + error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message:
+          (error as DexieError).message ||
+          "Failed to add cost. Please try again.",
         color: "red",
         icon: <FaX />,
       });
@@ -71,7 +73,7 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
     close();
   };
 
-  const formDisabled = values.cost === 0 || creating;
+  const formDisabled = values.cost <= 0 || creating;
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>

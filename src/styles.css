@@ -3,5 +3,5 @@
 }
 
 .mantine-InputWrapper-description {
-  color: #474747;
+  color: var(--mantine-color-gray-9);
 }

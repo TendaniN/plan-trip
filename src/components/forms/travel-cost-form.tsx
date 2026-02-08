@@ -8,7 +8,7 @@ import {
   Select,
 } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
-import { DateInput, TimeInput, type DateInputProps } from "@mantine/dates";
+import { DateInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { Button } from "components";
 import { FaCheck, FaX, FaRegClock } from "react-icons/fa6";
@@ -21,13 +21,6 @@ import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
 import { useRef } from "react";
-const dateParser: DateInputProps["dateParser"] = (input) => {
-  if (input === "WW2") {
-    return "1939-09-01";
-  }
-
-  return dayjs(input, "YYYY-MM-DD").format("YYYY-MM-DD");
-};
 
 interface Props {
   tripId: string;
@@ -53,6 +46,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
     onSubmitPreventDefault: "always",
     validate: {
       date: isNotEmpty("Required."),
+      duration: isNotEmpty("Required."),
       cost: isNotEmpty("Required."),
       time: isNotEmpty("Required."),
       type: isNotEmpty("Required."),
@@ -121,7 +115,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
 
   const formDisabled =
     values.type === "" ||
-    values.cost === 0 ||
+    values.cost <= 0 ||
     values.duration === "" ||
     values.time === "" ||
     values.date === "" ||
@@ -178,7 +172,6 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
             required
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
-            dateParser={dateParser}
             minDate={dayjs().format("YYYY-MM-DD")}
             label="Date"
             value={dayjs(values.date).format("YYYY-MM-DD")}
@@ -207,6 +200,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
           />
           <NumberInput
             w="50%"
+            required
             radius="md"
             label="Duration"
             value={values.duration}

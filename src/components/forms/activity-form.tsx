@@ -8,7 +8,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
-import { DateInput, TimeInput, type DateInputProps } from "@mantine/dates";
+import { DateInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { Button } from "components";
 import { FaCheck, FaX, FaRegClock } from "react-icons/fa6";
@@ -22,14 +22,6 @@ import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
 import { useRef } from "react";
-
-const dateParser: DateInputProps["dateParser"] = (input) => {
-  if (input === "WW2") {
-    return "1939-09-01";
-  }
-
-  return dayjs(input, "YYYY-MM-DD").format("YYYY-MM-DD");
-};
 
 interface Props {
   location: Location;
@@ -140,7 +132,7 @@ export const ActivityForm = ({ location, close }: Props) => {
     values.activity === "" ||
     values.time === "" ||
     values.link === "" ||
-    values.cost === 0 ||
+    values.cost <= 0 ||
     creating;
 
   const ref = useRef<HTMLInputElement>(null);
@@ -181,7 +173,6 @@ export const ActivityForm = ({ location, close }: Props) => {
             required
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
-            dateParser={dateParser}
             minDate={dayjs(location.start_date).format("YYYY-MM-DD")}
             maxDate={dayjs(location.end_date).format("YYYY-MM-DD")}
             label="Date"
