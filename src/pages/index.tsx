@@ -17,6 +17,7 @@ import BudgetPage from "./budget-page";
 import TripsPage from "./trips-page";
 import CountriesPage from "./countries-page";
 import AccommodationPage from "./accommodation-page";
+import HelpPage from "./help-page";
 
 const Pages = () => {
   const navigate = useNavigate();
@@ -116,6 +117,7 @@ const Pages = () => {
           path="/country/:city/accommodation"
           element={<AccommodationPage />}
         />
+        <Route path="/help" element={<HelpPage />} />
       </Routes>
     </div>
   );
