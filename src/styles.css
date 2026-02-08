@@ -1,3 +1,7 @@
 .group-label, .group-option {
   text-transform: capitalize;
 }
+
+.mantine-InputWrapper-description {
+  color: #474747;
+}
