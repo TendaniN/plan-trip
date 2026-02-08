@@ -189,8 +189,8 @@ const buildLocationSlide = (pptx: PptxGenJS, location: Location) => {
       {
         text: "link",
         options: {
-          hyperlink: { url: activity.link },
-          color: "0000FF",
+          hyperlink: activity.link ? { url: activity.link } : undefined,
+          color: activity.link ? "0000FF" : "808080",
           underline: { style: "dashLong" as const },
         },
       },

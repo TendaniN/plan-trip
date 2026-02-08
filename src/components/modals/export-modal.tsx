@@ -13,7 +13,12 @@ import {
 
 import { Button, ExportForm } from "components";
 
-import { FaDownload, FaFileExcel, FaFilePdf } from "react-icons/fa6";
+import {
+  FaDownload,
+  FaFileExcel,
+  FaFilePdf,
+  FaRegFilePowerpoint,
+} from "react-icons/fa6";
 import { useState } from "react";
 import { type ExportValues } from "constants/export";
 import type { IconType } from "react-icons/lib";
@@ -81,7 +86,7 @@ export const ExportModal = ({ tripId }: { tripId: string }) => {
                   checked={"pptx" === type}
                   onChange={setType}
                   type={"pptx" as ExportValues}
-                  icon={FaFilePdf}
+                  icon={FaRegFilePowerpoint}
                   label="PPTX"
                 />
               </Flex>

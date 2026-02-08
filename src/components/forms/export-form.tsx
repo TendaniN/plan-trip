@@ -2,7 +2,6 @@ import { Checkbox, Flex, InputDescription } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Button } from "components/button";
 import type { ExportValues } from "constants/export";
-import { useEffect } from "react";
 
 import { exportTripExcel } from "utils/export-trip-excel";
 import { exportTripPDF } from "utils/export-trip-pdf";
@@ -15,7 +14,7 @@ export const ExportForm = ({
   tripId: string;
   type: ExportValues;
 }) => {
-  const { values, getInputProps, onSubmit, reset } = useForm({
+  const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
       summary: true,
       location: false,
@@ -34,10 +33,6 @@ export const ExportForm = ({
       exportTripPPT(tripId, vals);
     }
   };
-
-  useEffect(() => {
-    reset();
-  }, [reset, type]);
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
@@ -74,6 +69,7 @@ export const ExportForm = ({
           <Checkbox
             color="secondary.5"
             iconColor="#000"
+            // Note: Excel is still planning stage so accommodations are visible. PDF and PPTX are treated as final exports
             disabled={type !== "excel"}
             value={values.accommodation}
             checked={values.accommodation}
