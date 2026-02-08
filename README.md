@@ -1,73 +1,166 @@
-# React + TypeScript + Vite
+# ✈️ Plan-Trip
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+  <img src="src/assets/branding/plan-trip-high-resolution-logo-transparent.svg" alt="Plan-Trip Logo" width="180" />
+</p>
 
-Currently, two official plugins are available:
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/status-active%20development-yellow.svg" alt="Status" />
+  <img src="https://img.shields.io/badge/react-19.x-61dafb.svg" alt="React" />
+  <img src="https://img.shields.io/badge/typescript-strict-blue.svg" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/license-TBD-lightgrey.svg" alt="License" />
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Plan-Trip** is a trip-planning web application designed to make organising complex trips easier and more structured.  
+It allows users to plan trips with multiple locations, manage itineraries, and keep track of budgets — all in one place.
 
-## React Compiler
+> **Current version:** `0.1.0`  
+> 🚧 This project is under active development.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🌍 Project Goal
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Planning a trip often involves juggling dates, locations, activities, and budgets across multiple tools.  
+**Plan-Trip** aims to simplify this by providing:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- A single source of truth for trip planning
+- Clear visibility of schedules and costs
+- Easy export of plans (PDF & PowerPoint)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## ✨ Features
+
+### 🧳 Trips
+
+- Create trips with a start and end date
+- Each trip can contain:
+  - Multiple locations
+  - Travel entries (flights, trains, buses, cars)
+  - One or more budgets
+
+### 📍 Locations
+
+- Each trip can have **multiple locations**
+- A location includes:
+  - Country & city
+  - Arrival and departure dates
+  - Number of nights
+  - Optional accommodation
+  - Linked itinerary items
+
+### 🗓️ Itinerary
+
+- Each location can have a detailed itinerary
+- Itinerary items support:
+  - Activity name & description
+  - Date & time
+  - Duration
+  - Cost
+  - External links (e.g. booking pages)
+
+### 💰 Budgeting
+
+- Track travel costs, accommodation costs, and itinerary costs
+- Add a buffer amount
+- Automatically calculate:
+  - Total cost
+  - Monthly contribution until departure
+
+### 📄 Export
+
+- Export trips to:
+  - **Excel** (using `xlsx`)
+  - **PDF** (using `pdfmake`)
+  - **PowerPoint** (using `pptxgenjs`)
+
+---
+
+## 🧠 Data Model Overview
+
+Key domain models used in the project:
+
+- **User**
+- **Trip**
+- **Location**
+- **Itinerary**
+- **Travel**
+- **Budget**
+- **Hotel / Accommodation**
+
+Types are fully defined in `src/types` and are shared across the app to ensure consistency.
+
+---
+
+## 🗂️ Project Structure
+
+```txt
+src
+├── api          # API & external integrations
+├── assets
+│   └── branding # Logos and brand assets
+├── components   # Reusable UI components
+├── constants    # Static values (countries, cities, etc.)
+├── db           # Local database (Dexie / IndexedDB)
+├── pages        # Route-level pages
+├── types        # TypeScript domain models
+└── utils        # Helpers (PDF, PPT, formatting, calculations)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tech Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Frontend
+  - React 19
+  - TypeScript
+  - Vite
+  - React Router
+- UI & Styling
+  - Mantine
+  - Emotion
+  - Fontsource (Inter, Chango)
+- State & Data
+  - Zustand – state management
+  - Dexie – IndexedDB wrapper
+- Utilities
+  - Day.js – date handling
+  - Axios – HTTP requests
+  - xlsx – Excel exports
+  - pdfmake – PDF generation
+  - pptxgenjs – PowerPoint generation
+
+---
+
+## Running the Project Locally
+
+### Prerequisites
+
+- Node.js (v18 or later recommended)
+- npm or yarn
+
+```bash
+// Install dependencies
+npm install
+
+// Start development server
+npm run dev
+
+// The app will be available at:
+http://localhost:5173
 ```
+
+## 🧪 Status
+
+- ✅ Core trip, location, itinerary & budget models
+- ✅ Local persistence with IndexedDB
+- ✅ Excel, PDF & PowerPoint exports
+- 🚧 Authentication & backend integration (planned)
+- 🚧 Sharing & collaboration features (planned)
+
+## 👤 Author
+
+Tendani Netshitenzhe
+@TendaniN
