@@ -30,6 +30,8 @@ import { EditableTimeInput } from "./editable-inputs/editable-time-input";
 
 import { CurrencyDropdown } from "./currency-dropdown";
 
+import { InfoTooltip } from "./info-tooltip";
+
 export {
   AuthWrapper,
   Button,
@@ -55,4 +57,5 @@ export {
   EditableTextareaInput,
   EditableTimeInput,
   CurrencyDropdown,
+  InfoTooltip,
 };
