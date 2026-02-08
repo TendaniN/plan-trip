@@ -103,7 +103,7 @@ const HelpPage = () => {
                     <a href="https://www.exchangerate-api.com/docs/supported-currencies">
                       here
                     </a>
-                    . Note the reference currency is ZAR
+                    . <small>Note: the reference currency is ZAR</small>
                   </ListItem>
                 </List>
               </Flex>
