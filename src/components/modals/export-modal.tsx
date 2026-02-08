@@ -77,6 +77,13 @@ export const ExportModal = ({ tripId }: { tripId: string }) => {
                   icon={FaFilePdf}
                   label="PDF"
                 />
+                <TypeRadio
+                  checked={"pptx" === type}
+                  onChange={setType}
+                  type={"pptx" as ExportValues}
+                  icon={FaFilePdf}
+                  label="PPTX"
+                />
               </Flex>
             </Flex>
             <Divider my="md" />
