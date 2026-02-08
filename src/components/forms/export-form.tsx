@@ -5,6 +5,7 @@ import type { ExportValues } from "constants/export";
 
 import { exportTripExcel } from "utils/export-trip-excel";
 import { exportTripPDF } from "utils/export-trip-pdf";
+import { exportTripPPT } from "utils/export-trip-ppt";
 
 export const ExportForm = ({
   tripId,
@@ -28,6 +29,8 @@ export const ExportForm = ({
       exportTripExcel(tripId, vals);
     } else if (type === "pdf") {
       exportTripPDF(tripId, vals);
+    } else if (type === "pptx") {
+      exportTripPPT(tripId, vals);
     }
   };
 
@@ -39,7 +42,6 @@ export const ExportForm = ({
             color="blue.5"
             iconColor="#000"
             required
-            disabled
             value={values.summary}
             checked={values.summary}
             label="Summary"
@@ -67,7 +69,8 @@ export const ExportForm = ({
           <Checkbox
             color="secondary.5"
             iconColor="#000"
-            disabled={type === "pdf"}
+            // Note: Excel is still planning stage so accommodations are visible. PDF and PPTX are treated as final exports
+            disabled={type !== "excel"}
             value={values.accommodation}
             checked={values.accommodation}
             label="Accommodation"

@@ -287,10 +287,9 @@ const buildBudgetPage = (budget, trip, locations) => {
     });
 
   const locItineraryMAP = locations
-    .filter((loc) => loc.itinerary.length > 0)
     .map((loc) => {
       const activities =
-        itinerary.filter((itinerary) => itinerary.locationId === loc.id) ?? [];
+        itinerary.filter((itinerary) => itinerary.locationId === loc.id);
       if (activities.length > 0) {
         return [
           `${loc.city} ${dayjs(loc.start_date).format(
