@@ -40,7 +40,6 @@ export interface Travel {
 export interface Budget {
   id: string;
   tripId: string;
-  travel: string[];
   buffer: number;
 }
 
