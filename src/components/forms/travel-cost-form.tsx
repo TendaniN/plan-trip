@@ -4,8 +4,8 @@ import {
   Loader,
   TextInput,
   NumberInput,
-  Textarea,
   ActionIcon,
+  Select,
 } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { DateInput, TimeInput } from "@mantine/dates";
@@ -13,7 +13,6 @@ import dayjs from "dayjs";
 import { Button } from "components";
 import { FaCheck, FaX, FaRegClock } from "react-icons/fa6";
 import { useState, useId } from "react";
-import type { Location } from "types/db";
 
 import { db } from "db";
 import { useDBStore } from "db/store";
@@ -24,81 +23,69 @@ import type { DexieError } from "dexie";
 import { useRef } from "react";
 
 interface Props {
-  location: Location;
+  tripId: string;
   close: () => void;
 }
 
-export const ActivityForm = ({ location, close }: Props) => {
+export const TravelCostForm = ({ tripId, close }: Props) => {
   const [creating, setCreating] = useState(false);
 
-  const activityId = useId();
+  const travelId = useId();
 
-  const { updateLocation, addActivity, currency } = useDBStore(
-    (state) => state,
-  );
+  const { addTravel, currency } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
-      date: "",
-      activity: "",
-      description: "",
-      time: "",
-      duration: 0,
-      link: "",
       cost: 0,
+      type: "",
+      duration: "",
+      time: "",
+      date: "",
+      carrier: "",
     },
     onSubmitPreventDefault: "always",
     validate: {
       date: isNotEmpty("Required."),
-      activity: isNotEmpty("Required."),
-      time: isNotEmpty("Required."),
-      link: isNotEmpty("Required."),
+      duration: isNotEmpty("Required."),
       cost: isNotEmpty("Required."),
+      time: isNotEmpty("Required."),
+      type: isNotEmpty("Required."),
+      carrier: isNotEmpty("Required."),
     },
   });
 
-  const createActivity = async (
+  const createCost = async (
     date: string,
-    activity: string,
-    description: string,
+    cost: number,
+    type: "flight" | "train" | "bus" | "car",
+    duration: string,
     time: string,
-    duration: number,
-    link: string,
-    cost: string | number,
+    carrier: string,
   ) => {
-    const newActivity = {
-      id: activityId,
-      locationId: location.id,
+    const newCost = {
+      id: travelId,
+      tripId,
       date,
-      activity,
-      description,
-      time,
+      type,
       duration,
-      link,
+      time,
+      carrier,
       cost,
     };
     try {
-      await db.itinerary.add(newActivity);
-      await db.locations.update(location.id, {
-        itinerary: [...location.itinerary, activityId],
-      });
-      addActivity(newActivity);
-      updateLocation(location.id, {
-        itinerary: [...location.itinerary, activityId],
-      });
+      await db.travels.add(newCost);
+      addTravel(newCost);
 
-      logger.info(
-        `Itinerary activity (${activityId}) added to Location (${location.id}).`,
-      );
+      logger.info(`Travel cost (${travelId}) added to Trip (${tripId}).`);
       showNotification({
-        message: `Activity - ${activity} - was added.`,
+        message: `Travel cost - ${type} - was added.`,
         color: "green.7",
         icon: <FaCheck />,
       });
       setCreating(false);
       handleClose();
     } catch (error) {
-      logger.error("Failed to add itinerary activity:" + error);
+      logger.error("Failed to add travel cost:" + error);
       showNotification({
         title: "Something Went Wrong",
         message: (error as DexieError).message,
@@ -111,14 +98,13 @@ export const ActivityForm = ({ location, close }: Props) => {
 
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
-    createActivity(
+    createCost(
       vals.date,
-      vals.activity,
-      vals.description,
-      vals.time,
-      vals.duration,
-      vals.link,
       vals.cost,
+      vals.type as "flight" | "train" | "bus" | "car",
+      vals.duration,
+      vals.time,
+      vals.carrier,
     );
   };
 
@@ -128,11 +114,12 @@ export const ActivityForm = ({ location, close }: Props) => {
   };
 
   const formDisabled =
-    values.date === "" ||
-    values.activity === "" ||
-    values.time === "" ||
-    values.link === "" ||
+    values.type === "" ||
     values.cost <= 0 ||
+    values.duration === "" ||
+    values.time === "" ||
+    values.date === "" ||
+    values.carrier === "" ||
     creating;
 
   const ref = useRef<HTMLInputElement>(null);
@@ -156,14 +143,26 @@ export const ActivityForm = ({ location, close }: Props) => {
             children: <Loader color="blue.5" type="dots" />,
           }}
         />
-        <Flex>
+        <Flex gap={8}>
+          <Select
+            w="100%"
+            radius="md"
+            required
+            label="Type"
+            placeholder="Select the type of travel..."
+            value={values.type}
+            data={["Flight", "Train", "Bus", "Car"]}
+            {...getInputProps("type")}
+          />
+        </Flex>
+        <Flex gap={8}>
           <TextInput
             w="100%"
             radius="md"
             required
-            label="Activity"
-            value={values.activity}
-            {...getInputProps("activity")}
+            label="Carrier"
+            value={values.carrier}
+            {...getInputProps("carrier")}
           />
         </Flex>
         <Flex gap={8}>
@@ -173,8 +172,7 @@ export const ActivityForm = ({ location, close }: Props) => {
             required
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
-            minDate={dayjs(location.start_date).format("YYYY-MM-DD")}
-            maxDate={dayjs(location.end_date).format("YYYY-MM-DD")}
+            minDate={dayjs().format("YYYY-MM-DD")}
             label="Date"
             value={dayjs(values.date).format("YYYY-MM-DD")}
             {...getInputProps("date")}
@@ -190,16 +188,6 @@ export const ActivityForm = ({ location, close }: Props) => {
             {...getInputProps("time")}
           />
         </Flex>
-        <Flex>
-          <TextInput
-            w="100%"
-            radius="md"
-            required
-            label="Link"
-            value={values.link}
-            {...getInputProps("link")}
-          />
-        </Flex>
         <Flex gap={8}>
           <NumberInput
             w="50%"
@@ -212,24 +200,15 @@ export const ActivityForm = ({ location, close }: Props) => {
           />
           <NumberInput
             w="50%"
+            required
             radius="md"
             label="Duration"
             value={values.duration}
             {...getInputProps("duration")}
           />
         </Flex>
-        <Flex>
-          <Textarea
-            w="100%"
-            radius="md"
-            label="Description"
-            value={values.description}
-            {...getInputProps("description")}
-            resize="vertical"
-          />
-        </Flex>
         <Button type="submit" color="green.4" w="100%" disabled={formDisabled}>
-          Add Activity
+          Add Cost
         </Button>
       </Flex>
     </form>

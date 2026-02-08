@@ -1,6 +1,6 @@
 import { Flex, Select, LoadingOverlay, Loader } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
-import { DateInput, type DateInputProps } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { Button } from "components";
 import { CITY_MAP, type CityValues } from "constants/city";
@@ -18,14 +18,6 @@ import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
-
-const dateParser: DateInputProps["dateParser"] = (input) => {
-  if (input === "WW2") {
-    return "1939-09-01";
-  }
-
-  return dayjs(input, "YYYY-MM-DD").format("YYYY-MM-DD");
-};
 
 interface Props {
   trip: Trip;
@@ -185,7 +177,6 @@ export const LocationForm = ({ trip, close }: Props) => {
             required
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
-            dateParser={dateParser}
             minDate={dayjs().format("YYYY-MM-DD")}
             label="Start Date"
             value={dayjs(values.start_date).format("YYYY-MM-DD")}
@@ -197,7 +188,6 @@ export const LocationForm = ({ trip, close }: Props) => {
             required
             valueFormat={DEFAULT_DATE_FORMAT}
             placeholder={DEFAULT_DATE_FORMAT}
-            dateParser={dateParser}
             minDate={
               values.start_date
                 ? dayjs(values.start_date).format("YYYY-MM-DD")

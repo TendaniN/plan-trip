@@ -74,7 +74,7 @@ export const hotels: HotelProps[] = [
   },
   {
     id: "hilton-mendoza2",
-    name: "Hilton Mendoza",
+    name: "Hilton Mendoza 2",
     rating: { booking: 8.7, google: 4.6 },
     stars: 5,
     price: 2907,

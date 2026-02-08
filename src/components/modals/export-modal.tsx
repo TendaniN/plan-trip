@@ -9,6 +9,7 @@ import {
   Radio,
   InputLabel,
   Divider,
+  Tooltip,
 } from "@mantine/core";
 
 import { Button, ExportForm } from "components";
@@ -96,9 +97,11 @@ export const ExportModal = ({ tripId }: { tripId: string }) => {
           </ModalBody>
         </ModalContent>
       </ModalRoot>
-      <Button color="secondary.2" onClick={open}>
-        <FaDownload /> Export
-      </Button>
+      <Tooltip label="Download trip details in a customisable file.">
+        <Button color="secondary.2" onClick={open}>
+          <FaDownload /> Export
+        </Button>
+      </Tooltip>
     </>
   );
 };

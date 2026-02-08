@@ -7,7 +7,7 @@ import {
   MenuItem,
   Flex,
 } from "@mantine/core";
-import { FaCircleUser, FaRoute, FaUserGear, FaDoorOpen } from "react-icons/fa6";
+import { FaCircleUser, FaUserGear, FaDoorOpen } from "react-icons/fa6";
 import { createStyles } from "@mantine/emotion";
 
 import { useDBStore } from "db/store";
@@ -72,18 +72,10 @@ export const Authenticated = () => {
         <Box px={8}>
           <Flex c="#000" fz="sm">{`${first_name} ${last_name}`}</Flex>
           <Flex c="gray.8" fz="xs">{`Session Ends: ${formatDuration(
-            remainingMs
+            remainingMs,
           )}`}</Flex>
         </Box>
         <MenuDivider style={{ borderColor: "#000" }} />
-        <MenuItem
-          classNames={classes}
-          component={Link}
-          to="/trip"
-          leftSection={<FaRoute />}
-        >
-          My Trips
-        </MenuItem>
         <MenuItem
           classNames={classes}
           component={Link}

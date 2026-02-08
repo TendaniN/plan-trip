@@ -1,16 +1,8 @@
-import { DateInput, type DateInputProps } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { ActionIcon, Flex, Text, Box } from "@mantine/core";
 import { FaCheck, FaX, FaPen } from "react-icons/fa6";
-
-const dateParser: DateInputProps["dateParser"] = (input) => {
-  if (input === "WW2") {
-    return "1939-09-01";
-  }
-
-  return dayjs(input, "YYYY-MM-DD").format("YYYY-MM-DD");
-};
 
 type Props = {
   date: string;
@@ -27,7 +19,7 @@ export const EditableDateInput = ({
 }: Props) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<string | null>(
-    dayjs(date).format("ddd, DD MMM YY")
+    dayjs(date).format("ddd, DD MMM YY"),
   );
 
   const handleSave = () => {
@@ -73,7 +65,6 @@ export const EditableDateInput = ({
         <DateInput
           mt="0.25rem"
           value={dayjs(value).format("ddd, DD MMM YY")}
-          dateParser={dateParser}
           minDate={dayjs().format("YYYY-MM-DD")}
           onChange={setValue}
           size="xs"

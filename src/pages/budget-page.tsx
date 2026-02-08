@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { FaHouse } from "react-icons/fa6";
 
-import { Breadcrumbs } from "components";
+import { AddCostModal, Breadcrumbs } from "components";
 import { useDBStore, useTrip, useTripBudget, useTripLocations } from "db/store";
 import { sum } from "utils/sum";
 import { calcDaysBetween } from "utils/calc-days-between";
@@ -97,33 +97,23 @@ const BudgetPage = () => {
       });
     }
 
-    budget.travel.map((travelId) => {
-      const travel = travels.filter(({ id }) => id === travelId)[0];
-      const travelMonths = Math.floor(
-        dayjs(trip.start_date).diff(dayjs(), "months", true),
-      );
-      const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
+    travels
+      .filter((travel) => travel.tripId === tripId)
+      .map((travel) => {
+        const travelMonths = Math.floor(
+          dayjs(trip.start_date).diff(dayjs(), "months", true),
+        );
+        const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
 
-      output.push({
-        name: `${travel.carrier} ${travel.type}`,
-        type: "Travel",
-        cost: travel.cost,
-        monthly: Math.round(travel.cost * 100) / 100,
-        timespan,
-        canRemove: true,
+        output.push({
+          name: `${travel.carrier} ${travel.type}`,
+          type: "Travel",
+          cost: travel.cost,
+          monthly: Math.round(travel.cost * 100) / 100,
+          timespan,
+          canRemove: true,
+        });
       });
-    });
-
-    if (budget.travel.length > 0) {
-      output.push({
-        name: "Buffer Total",
-        type: "Buffer",
-        cost: budget.buffer,
-        monthly: Math.round(budget.buffer * 100) / 100,
-        timespan: months,
-        canRemove: true,
-      });
-    }
 
     tripLocations.map((loc) => {
       const locMonths = Math.floor(
@@ -166,7 +156,7 @@ const BudgetPage = () => {
     <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
       <Breadcrumbs items={items} />
       {trip && (
-        <Flex direction="column" gap="xl">
+        <Flex direction="column" gap="lg">
           <Box>
             <Flex justify="space-between">
               <Title
@@ -206,6 +196,12 @@ const BudgetPage = () => {
                 <Title my="auto" order={6}>
                   Budget Items
                 </Title>
+                <Flex gap={8}>
+                  {!budget.buffer && (
+                    <AddCostModal type="buffer" tripId={tripId} />
+                  )}
+                  <AddCostModal type="travel" tripId={tripId} />
+                </Flex>
               </Flex>
             </Box>
             <Box>
