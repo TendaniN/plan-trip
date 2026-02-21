@@ -284,29 +284,28 @@ const buildBudgetSlide = (
   ]);
 
   // Travel rows
-  budget.travel.forEach((travelId) => {
-    const travel = travels.find(({ id }) => id === travelId);
-    if (!travel) return;
+  travels
+    .filter(({ tripId }) => tripId === trip.id)
+    .forEach((travel) => {
+      const travelMonths = Math.floor(
+        dayjs(trip.start_date).diff(dayjs(), "months", true),
+      );
+      const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
 
-    const travelMonths = Math.floor(
-      dayjs(trip.start_date).diff(dayjs(), "months", true),
-    );
-    const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
-
-    tableRows.push([
-      { text: `${travel.carrier} ${travel.type}` },
-      { text: "Travel" },
-      {
-        text: `${currency} ${travel.cost}`,
-        options: { align: "center" },
-      },
-      { text: String(timespan), options: { align: "center" } },
-      {
-        text: `${currency} ${Math.round((travel.cost / timespan) * 100) / 100}`,
-        options: { align: "center" },
-      },
-    ]);
-  });
+      tableRows.push([
+        { text: `${travel.carrier} ${travel.type}` },
+        { text: "Travel" },
+        {
+          text: `${currency} ${travel.cost}`,
+          options: { align: "center" },
+        },
+        { text: String(timespan), options: { align: "center" } },
+        {
+          text: `${currency} ${Math.round((travel.cost / timespan) * 100) / 100}`,
+          options: { align: "center" },
+        },
+      ]);
+    });
 
   // Accommodation rows
   locations
