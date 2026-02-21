@@ -222,22 +222,23 @@ const budgetSheet = async (
     },
   ];
 
-  budget.travel.map((travelId) => {
-    const travel = travels.filter(({ id }) => id === travelId)[0];
-    const travelMonths = Math.floor(
-      dayjs(trip.start_date).diff(dayjs(), "months", true),
-    );
-    const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
+  travels
+    .filter(({ tripId }) => tripId === trip.id)
+    .map((travel) => {
+      const travelMonths = Math.floor(
+        dayjs(trip.start_date).diff(dayjs(), "months", true),
+      );
+      const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
 
-    budgetJSON.push({
-      Name: `${travel.carrier} ${travel.type}`,
-      Type: "Travel",
-      Cost: travel.cost,
-      "Monthly (cost / timespan)":
-        Math.round((travel.cost / timespan) * 100) / 100,
-      "Timespan (now - departure)": timespan,
+      budgetJSON.push({
+        Name: `${travel.carrier} ${travel.type}`,
+        Type: "Travel",
+        Cost: travel.cost,
+        "Monthly (cost / timespan)":
+          Math.round((travel.cost / timespan) * 100) / 100,
+        "Timespan (now - departure)": timespan,
+      });
     });
-  });
 
   locations.map((loc) => {
     const locMonths = Math.floor(

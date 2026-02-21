@@ -12,6 +12,12 @@
   <img src="https://img.shields.io/badge/license-TBD-lightgrey.svg" alt="License" />
 </p>
 
+<p align="center">
+  <a href="http://plan-trip.co.za/">
+    <img src="https://img.shields.io/badge/live-demo-brightgreen" />
+  </a>
+</p>
+
 **Plan-Trip** is a trip-planning web application designed to make organising complex trips easier and more structured.  
 It allows users to plan trips with multiple locations, manage itineraries, and keep track of budgets — all in one place.
 
