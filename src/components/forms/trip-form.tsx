@@ -22,7 +22,7 @@ export const TripForm = () => {
 
   const [creating, setCreating] = useState(false);
 
-  const { id, addTrip, addLocation, addBudget } = useDBStore((state) => state);
+  const { uid, addTrip, addLocation, addBudget } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
@@ -51,50 +51,53 @@ export const TripForm = () => {
     trip_name: string,
   ) => {
     const name = trip_name ? trip_name : `${city} ${start.substring(0, 4)}`;
-    const trip = {
-      id: tripId,
-      userId: id,
-      name,
-      start_date: start,
-      end_date: end,
-      locations: [locationId],
-      travels: [],
-      budgets: [],
-    };
-    const location = {
-      id: locationId,
-      tripId,
-      city,
-      country,
-      start_date: start,
-      end_date: end,
-      nights: calcDaysBetween(start, end),
-      itinerary: [],
-    };
-    const budget = {
-      id: budgetId,
-      tripId,
-      travel: [],
-      buffer: 0,
-    };
+
     try {
-      await db.trips.add(trip);
-      await db.locations.add(location);
-      await db.budgets.add(budget);
-      addTrip(trip);
-      addLocation(location);
-      addBudget(budget);
-      logger.info(
-        `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`,
-      );
-      showNotification({
-        title: "New trip and location created.",
-        message: "Redirecting to your trip now...",
-        color: "green.7",
-        icon: <FaCheck />,
-      });
-      setCreating(false);
-      navigate(`/trip/${tripId}`);
+      if (uid) {
+        const trip = {
+          id: tripId,
+          userId: uid,
+          name,
+          start_date: start,
+          end_date: end,
+          locations: [locationId],
+          travels: [],
+          budgets: [],
+        };
+        const location = {
+          id: locationId,
+          tripId,
+          city,
+          country,
+          start_date: start,
+          end_date: end,
+          nights: calcDaysBetween(start, end),
+          itinerary: [],
+        };
+        const budget = {
+          id: budgetId,
+          tripId,
+          travel: [],
+          buffer: 0,
+        };
+        await db.trips.add(trip);
+        await db.locations.add(location);
+        await db.budgets.add(budget);
+        addTrip(trip);
+        addLocation(location);
+        addBudget(budget);
+        logger.info(
+          `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`,
+        );
+        showNotification({
+          title: "New trip and location created.",
+          message: "Redirecting to your trip now...",
+          color: "green.7",
+          icon: <FaCheck />,
+        });
+        setCreating(false);
+        navigate(`/trip/${tripId}`);
+      }
     } catch (error) {
       logger.error("Failed to update:" + error);
       setCreating(false);
