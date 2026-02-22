@@ -10,12 +10,9 @@ import {
 import { FaCircleUser, FaUserGear, FaDoorOpen } from "react-icons/fa6";
 import { createStyles } from "@mantine/emotion";
 
-import { useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db/store";
 import { Button } from "components";
 import { Link } from "react-router-dom";
-import { formatDuration } from "utils/format-duration";
-import { clearSession, getSessionRemainingMs } from "utils/session";
-import { useEffect, useState } from "react";
 
 const useStyles = createStyles(() => ({
   item: {
@@ -29,34 +26,16 @@ const useStyles = createStyles(() => ({
 }));
 
 export const Authenticated = () => {
-  const [remainingMs, setRemainingMs] = useState(getSessionRemainingMs());
-
   const { classes } = useStyles();
 
-  const { username, first_name, last_name } = useDBStore((state) => state);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const remaining = getSessionRemainingMs();
-
-      if (remaining <= 0) {
-        clearSession();
-        setRemainingMs(0);
-        clearInterval(interval);
-        return;
-      }
-
-      setRemainingMs(remaining);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { firstName, lastName } = useDBStore((state) => state);
+  const { email } = useAuthStore((state) => state);
 
   return (
     <Menu width={200}>
       <MenuTarget>
         <Button>
-          {username}
+          {firstName}
           <FaCircleUser size={28} />
         </Button>
       </MenuTarget>
@@ -70,10 +49,10 @@ export const Authenticated = () => {
         }}
       >
         <Box px={8}>
-          <Flex c="#000" fz="sm">{`${first_name} ${last_name}`}</Flex>
-          <Flex c="gray.8" fz="xs">{`Session Ends: ${formatDuration(
-            remainingMs,
-          )}`}</Flex>
+          <Flex c="#000" fz="sm">{`${firstName} ${lastName}`}</Flex>
+          <Flex c="gray.8" fz="xs">
+            {email}
+          </Flex>
         </Box>
         <MenuDivider style={{ borderColor: "#000" }} />
         <MenuItem
