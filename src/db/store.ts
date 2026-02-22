@@ -1,13 +1,13 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
-import type { Trip, User, Location, Itinerary, Budget, Travel } from "types/db";
+import type { User, Trip, Location, Itinerary, Budget, Travel } from "types/db";
 
 interface AccountState {
-  id: string;
-  username: string;
-  password: string;
-  first_name?: string;
-  last_name?: string;
+  uid: string | null;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
   trips: Trip[];
   locations: Location[];
   itinerary: Itinerary[];
@@ -26,6 +26,8 @@ interface AccountState {
     travel: Travel[],
   ) => void;
   clearState: () => void;
+
+  setUser: (user: User) => void;
 
   setCurrencyRates: (currencyRates: Record<string, number>) => void;
   setRate: (rate: number) => void;
@@ -50,11 +52,10 @@ interface AccountState {
 }
 
 const initialState = {
-  id: "",
-  username: "",
-  password: "",
-  first_name: undefined,
-  last_name: undefined,
+  uid: null,
+  email: null,
+  firstName: null,
+  lastName: null,
   trips: [] as Trip[],
   locations: [] as Location[],
   itinerary: [] as Itinerary[],
@@ -65,16 +66,46 @@ const initialState = {
   currency: "R",
 };
 
+interface AuthState {
+  uid: string | null;
+  email: string | null;
+  setUser: (user: { uid: string; email: string | null }) => void;
+  clear: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      uid: null,
+      email: null,
+
+      setUser: (user: { uid: string; email: string | null }) =>
+        set({
+          uid: user.uid,
+          email: user.email,
+        }),
+
+      clear: () => set({ uid: "", email: "" }),
+    }),
+    {
+      name: "plantrip-auth", // localStorage key
+      partialize: (state) => ({
+        uid: state.uid,
+        email: state.email,
+      }),
+    },
+  ),
+);
+
 export const useDBStore = create<AccountState>((set) => ({
   ...initialState,
 
   setState: (user, trips, locations, itinerary, budgets, travel) =>
     set({
-      id: user.id,
-      username: user.username,
-      password: user.password,
-      first_name: user.first_name,
-      last_name: user.last_name,
+      uid: user.uid,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
       trips,
       locations,
       itinerary,
@@ -83,6 +114,14 @@ export const useDBStore = create<AccountState>((set) => ({
     }),
 
   clearState: () => set(initialState),
+
+  setUser: (user) =>
+    set({
+      uid: user.uid,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }),
 
   setCurrencyRates: (currencyRates) =>
     set({

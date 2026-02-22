@@ -1,9 +1,8 @@
 import Dexie, { type EntityTable } from "dexie";
-import type { User, Trip, Location, Budget, Travel, Itinerary } from "types/db";
+import type { Trip, Location, Budget, Travel, Itinerary } from "types/db";
 import logger from "utils/logger";
 
 const db = new Dexie("PlanTripDB") as Dexie & {
-  user: EntityTable<User, "id">;
   trips: EntityTable<Trip, "id">;
   locations: EntityTable<Location, "id">;
   budgets: EntityTable<Budget, "id">;
@@ -12,7 +11,6 @@ const db = new Dexie("PlanTripDB") as Dexie & {
 };
 
 db.version(1).stores({
-  user: "++id, &username, password, first_name, last_name, *trips",
   trips:
     "++id, userId, name, start_date, end_date, *locations, *travels, *budgets",
   budgets: "++id, &tripId, accommodation, itinerary, travel, buffer",
