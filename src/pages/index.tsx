@@ -1,4 +1,4 @@
-import { Navbar } from "components/index";
+import { Navbar } from "components";
 import { api } from "api";
 import { useAuthStore, useDBStore } from "db/store";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ import AccommodationPage from "./accommodation-page";
 import HelpPage from "./help-page";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "api/firebase";
-import { Box, Flex, Loader } from "@mantine/core";
+import { Flex, Loader } from "@mantine/core";
 import { getUser } from "api/user";
 
 const Pages = () => {
