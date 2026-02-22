@@ -1,38 +1,15 @@
-import { showNotification } from "@mantine/notifications";
-import { useDBStore } from "db/store";
 import { type ReactNode } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { clearSession, isSessionExpired } from "utils/session";
+import { useAuthStore } from "db/store";
 
 interface Props {
   renderDenied: ReactNode;
   children: ReactNode;
 }
 
-export const AuthWrapper = ({ renderDenied, children }: Props) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+export const AuthWrapper = ({ children, renderDenied }: Props) => {
+  const { uid } = useAuthStore((state) => state);
 
-  const { id, username } = useDBStore((state) => state);
-
-  if (isSessionExpired()) {
-    clearSession();
-
-    if (location.pathname !== "/login" && location.pathname !== "register") {
-      showNotification({
-        title: "Session ended",
-        message: "Redirecting to login...",
-      });
-
-      navigate("/login", {
-        state: { from: location.pathname + location.search },
-      });
-    }
-
-    return null;
-  }
-
-  if (id === "" || username === "") {
+  if (uid === "") {
     return renderDenied;
   }
 

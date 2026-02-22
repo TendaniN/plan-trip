@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useForm, hasLength, matchesField } from "@mantine/form";
+import { useForm, matchesField } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db/store";
 
-import { startSession } from "utils/session";
 import logger from "utils/logger";
 import { Button } from "components";
 import { showNotification } from "@mantine/notifications";
+import { registerUser } from "api/auth";
+import { getUser } from "api/user";
 
 const hasNumber = (value: string) => /\d/.test(value);
 const hasNoNumbers = (value: string) => !/\d/.test(value);
@@ -31,23 +31,21 @@ export const RegisterForm = () => {
   const navigate = useNavigate();
 
   const setState = useDBStore((state) => state.setState);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const [submitting, setSubmitting] = useState(false);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
       password2: "",
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
     },
     onSubmitPreventDefault: "always",
     validate: {
-      username: hasLength(
-        { min: 5 },
-        "Username must be at least 6 characters.",
-      ),
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
       password: (value) => {
         if (value.length < 8) {
           return "Password must be at least 8 characters.";
@@ -61,29 +59,37 @@ export const RegisterForm = () => {
         return null;
       },
       password2: matchesField("password", "Passwords must match."),
-      first_name: (value) => nameValidation(value),
-      last_name: (value) => nameValidation(value),
+      firstName: (value) => nameValidation(value),
+      lastName: (value) => nameValidation(value),
     },
   });
 
-  const createUser = async (user: {
-    username: string;
+  const createUser = async ({
+    email,
+    password,
+    firstName,
+    lastName,
+  }: {
+    email: string;
     password: string;
-    first_name: string;
-    last_name: string;
-    trips: string[];
+    firstName: string;
+    lastName: string;
   }) => {
     try {
-      const userId = await db.user.add(user);
-      setState({ ...user, id: userId }, [], [], [], [], []);
-      logger.info(`User (${userId}) created.`);
-      showNotification({
-        message: "Registration successful",
-        color: "green.7",
-      });
-      startSession();
-      setSubmitting(false);
-      navigate("/");
+      const newUser = await registerUser(email, password, firstName, lastName);
+      const user = await getUser(newUser.uid);
+      if (user && newUser) {
+        setUser(newUser);
+        setState(user, [], [], [], [], []);
+
+        logger.info(`User (${newUser}) created.`);
+        showNotification({
+          message: "Registration successful",
+          color: "green.7",
+        });
+        setSubmitting(false);
+        navigate("/");
+      }
     } catch (error) {
       logger.error("Failed to create user:" + error);
       setSubmitting(false);
@@ -93,11 +99,10 @@ export const RegisterForm = () => {
   const handleSubmit = (vals: typeof values) => {
     setSubmitting(true);
     createUser({
-      username: vals.username,
+      email: vals.email,
       password: vals.password,
-      first_name: vals.first_name,
-      last_name: vals.last_name,
-      trips: new Array<string>(),
+      firstName: vals.firstName,
+      lastName: vals.lastName,
     });
   };
 
@@ -117,13 +122,13 @@ export const RegisterForm = () => {
         />
         <Flex>
           <TextInput
-            {...getInputProps("username")}
+            {...getInputProps("email")}
             w="100%"
             radius="md"
-            value={values.username}
+            value={values.email}
             required
-            label="Username"
-            placeholder="janeDoe"
+            label="Email"
+            placeholder="jane.doe@example.com"
           />
         </Flex>
         <Flex gap={10}>
@@ -149,18 +154,18 @@ export const RegisterForm = () => {
         <Flex gap={10}>
           <TextInput
             w="50%"
-            {...getInputProps("first_name")}
+            {...getInputProps("firstName")}
             radius="md"
-            value={values.first_name}
+            value={values.firstName}
             required
             placeholder="Jane"
             label="First Name"
           />
           <TextInput
             w="50%"
-            {...getInputProps("last_name")}
+            {...getInputProps("lastName")}
             radius="md"
-            value={values.last_name}
+            value={values.lastName}
             required
             placeholder="Doe"
             label="Last Name"

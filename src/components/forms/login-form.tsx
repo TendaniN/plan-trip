@@ -4,56 +4,53 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
 import { db } from "db";
-import { useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db/store";
 
-import { startSession } from "utils/session";
 import logger from "utils/logger";
 import { Button } from "components";
 import { showNotification } from "@mantine/notifications";
+import { loginUser } from "api/auth";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const { setState, trips } = useDBStore((state) => state);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const [submitting, setSubmitting] = useState(false);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     onSubmitPreventDefault: "always",
     validate: {
-      username: isNotEmpty("Required."),
+      email: isNotEmpty("Required."),
       password: isNotEmpty("Required."),
     },
   });
 
-  const findUser = async (username: string, password: string) => {
+  const findUser = async (email: string, password: string) => {
     try {
-      const user = await db.user
-        .where("username")
-        .equals(username)
-        .and((user) => user.password === password)
-        .first();
+      const user = await loginUser(email, password);
       if (user) {
+        setUser(user.authUser);
         const locations = await db.locations.toArray();
         const itinerary = await db.itinerary.toArray();
         const budgets = await db.budgets.toArray();
         const travels = await db.travels.toArray();
 
         setState(
-          user,
-          trips.filter((trip) => trip.userId === user.id),
+          user.userDoc,
+          trips.filter((trip) => trip.userId === user.authUser.uid),
           locations,
           itinerary,
           budgets,
           travels,
         );
-        startSession();
-        logger.info(`User (${user.username}) logged in.`);
+        logger.info(`User (${user.authUser.email}) logged in.`);
         showNotification({ message: "Login successful", color: "green.7" });
 
         const from = location.state?.from ?? "/";
@@ -61,13 +58,17 @@ export const LoginForm = () => {
       }
       setSubmitting(false);
     } catch (error) {
-      logger.error("Failed to create user:" + error);
+      logger.error("Error logging in", error);
       setSubmitting(false);
+      showNotification({
+        color: "red",
+        message: "Login failed. Please try again.",
+      });
     }
   };
   const handleSubmit = (vals: typeof values) => {
     setSubmitting(true);
-    findUser(vals.username, vals.password);
+    findUser(vals.email, vals.password);
   };
 
   return (
@@ -86,10 +87,10 @@ export const LoginForm = () => {
         />
         <Flex>
           <TextInput
-            {...getInputProps("username")}
+            {...getInputProps("email")}
             w="100%"
             radius="md"
-            value={values.username}
+            value={values.email}
             required
             label="Username"
             placeholder="janeDoe"

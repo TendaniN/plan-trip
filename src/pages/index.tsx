@@ -1,75 +1,34 @@
-import { Navbar } from "components/index";
-import { db } from "db";
+import { Navbar } from "components";
 import { api } from "api";
-import { useDBStore } from "db/store";
-import { useEffect } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore, useDBStore } from "db/store";
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import logger from "utils/logger";
 
-import { clearSession, isSessionExpired } from "utils/session";
 import RegisterPage from "./register-page";
 import LoginPage from "./login-page";
 import HomePage from "./home-page";
 import TripPage from "./trip-page";
-import { showNotification } from "@mantine/notifications";
 import LocationPage from "./location-page";
 import BudgetPage from "./budget-page";
 import TripsPage from "./trips-page";
 import CountriesPage from "./countries-page";
 import AccommodationPage from "./accommodation-page";
 import HelpPage from "./help-page";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "api/firebase";
+import { Flex, Loader } from "@mantine/core";
+import { getUser } from "api/user";
+import LogoutPage from "./logout-page";
 
 const Pages = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const { setState, id, username, setCurrencyRates, setRate } = useDBStore(
-    (state) => state,
-  );
-
-  const addToStore = async () => {
-    try {
-      const users = await db.user.toArray();
-      const trips = await db.trips.toArray();
-      const locations = await db.locations.toArray();
-      const itinerary = await db.itinerary.toArray();
-      const travels = await db.travels.toArray();
-      const budgets = await db.budgets.toArray();
-
-      if (users.length > 0) {
-        setState(
-          users[0],
-          trips.filter(({ userId }) => userId === users[0].id),
-          locations,
-          itinerary,
-          budgets,
-          travels,
-        );
-
-        logger.info("Restoring session...");
-
-        if (
-          location.pathname === "/register" ||
-          location.pathname === "/login"
-        ) {
-          navigate("/");
-        }
-      } else if (
-        location.pathname !== "/register" &&
-        location.pathname !== "/login"
-      ) {
-        logger.info("No users found in db.");
-        showNotification({
-          title: "No users found in database",
-          message: "Redirecting to register...",
-        });
-        navigate("/register");
-      }
-    } catch (error) {
-      logger.error("Could not find a user in db: ", error);
-      navigate("/register");
-    }
-  };
+  const {
+    setCurrencyRates,
+    setRate,
+    setUser: resetUser,
+  } = useDBStore((state) => state);
+  const { setUser, clear } = useAuthStore((state) => state);
+  const [loading, setLoading] = useState(true);
 
   const setExchangeRates = async () => {
     try {
@@ -87,14 +46,48 @@ const Pages = () => {
     setExchangeRates();
   }, []);
 
-  useEffect(() => {
-    if (isSessionExpired()) {
-      clearSession();
-      addToStore();
-    } else if (id === "" && username === "") {
-      addToStore();
+  const authUser = async (uid: string) => {
+    try {
+      const user = await getUser(uid);
+      if (user) {
+        resetUser({
+          uid: user.uid,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          trips: user.trips,
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to reset user: " + error);
     }
-  }, [id, username]);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+        });
+        authUser(firebaseUser.uid);
+      } else {
+        clear();
+      }
+
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [clear, setUser]);
+
+  if (loading) {
+    return (
+      <Flex w="100%" h="100%">
+        <Loader mx="auto" my="auto" size="5rem" color="primary.6" />
+      </Flex>
+    );
+  }
 
   return (
     <div>
@@ -111,7 +104,7 @@ const Pages = () => {
         <Route path="/profile" element={<div>Profile</div>} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/logout" element={<div>Logout</div>} />
+        <Route path="/logout" element={<LogoutPage />} />
         <Route path="/country" element={<CountriesPage />} />
         <Route
           path="/country/:city/accommodation"
