@@ -19,6 +19,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "api/firebase";
 import { Flex, Loader } from "@mantine/core";
 import { getUser } from "api/user";
+import LogoutPage from "./logout-page";
 
 const Pages = () => {
   const {
@@ -48,13 +49,15 @@ const Pages = () => {
   const authUser = async (uid: string) => {
     try {
       const user = await getUser(uid);
-      resetUser({
-        uid: user.uid,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        trips: user.trips,
-      });
+      if (user) {
+        resetUser({
+          uid: user.uid,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          trips: user.trips,
+        });
+      }
     } catch (error) {
       logger.error("Failed to reset user: " + error);
     }
@@ -101,7 +104,7 @@ const Pages = () => {
         <Route path="/profile" element={<div>Profile</div>} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/logout" element={<div>Logout</div>} />
+        <Route path="/logout" element={<LogoutPage />} />
         <Route path="/country" element={<CountriesPage />} />
         <Route
           path="/country/:city/accommodation"
