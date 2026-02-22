@@ -1,4 +1,5 @@
 import { AuthWrapper } from "./auth/auth-wrapper";
+import { ProtectedRoute } from "./auth/protected-route";
 
 import { Button } from "./button";
 import { LinkButton } from "./button/link-button";
@@ -37,6 +38,7 @@ import { InfoTooltip } from "./info-tooltip";
 
 export {
   AuthWrapper,
+  ProtectedRoute,
   Button,
   LinkButton,
   Navbar,

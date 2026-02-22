@@ -10,7 +10,7 @@ import {
   ListItem,
   ScrollArea,
 } from "@mantine/core";
-import { Breadcrumbs } from "components";
+import { Breadcrumbs, ProtectedRoute } from "components";
 import { FaHouse } from "react-icons/fa6";
 import tripFormImg from "assets/help/trip-form.png";
 import tripPageImg from "assets/help/trip-page.png";
@@ -23,8 +23,8 @@ const items = [
   { title: "Help", to: "/help" },
 ];
 
-const HelpPage = () => {
-  return (
+const HelpPage = () => (
+  <ProtectedRoute>
     <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
       <Breadcrumbs items={items} />
       <Flex direction="column" gap="xl">
@@ -147,7 +147,7 @@ const HelpPage = () => {
         </ScrollArea>
       </Flex>
     </Container>
-  );
-};
+  </ProtectedRoute>
+);
 
 export default HelpPage;

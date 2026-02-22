@@ -29,6 +29,7 @@ import {
   EditableTimeInput,
   RemoveActivityModal,
   EditableTextareaInput,
+  ProtectedRoute,
 } from "components";
 import { useDBStore, useLocation, useTrip } from "db/store";
 import { db } from "db";
@@ -317,256 +318,259 @@ const LocationPage = () => {
   };
 
   return (
-    <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
-      <Breadcrumbs items={items} />
-      {trip && location && (
-        <Flex direction="column" gap="xl">
-          <Box>
-            <Flex justify="space-between">
-              <Title
-                my="auto"
-                display="flex"
-                style={{
-                  gap: "0.5rem",
-                  textTransform: "capitalize",
-                }}
-              >
-                {location.city}
-              </Title>
-              <Flex direction="column" my="auto">
-                <Text size="sm">
-                  <b style={{ marginRight: "0.5rem" }}>Arrive:</b>
-                  {dayjs(location.start_date).format("dddd, DD MMM YYYY")}
-                </Text>
-                <Text size="sm">
-                  <b style={{ marginRight: "0.5rem" }}>Depart:</b>
-                  {dayjs(location.end_date).format("dddd, DD MMM YYYY")}
-                </Text>
-              </Flex>
-            </Flex>
-            <Flex justify="space-between">
-              <Text fw={600} fz="md" my="auto">{`For ${trip.name}`}</Text>
-              <Select
-                value={location.accommodation?.name}
-                data={getAccommodations().map(({ name }) => name)}
-                onChange={updateLocationHotel}
-                size="sm"
-                searchable
-                clearable={false}
-                rightSection={<FaChevronDown size="0.75rem" color="#000" />}
-                styles={{
-                  root: {
-                    border: "2px solid #000",
-                    borderRadius: 12,
-
-                    "& input": {
-                      borderRadius: 12,
-                      border: "none",
-                      backgroundColor: "var(--mantine-color-primary-2)",
-                    },
-                  },
-                }}
-              />
-            </Flex>
-            <Flex fz="sm">
-              <Text>{`${location.nights} nights`}</Text>
-            </Flex>
-          </Box>
-          <Flex direction="column" gap={8}>
+    <ProtectedRoute>
+      <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
+        <Breadcrumbs items={items} />
+        {trip && location && (
+          <Flex direction="column" gap="xl">
             <Box>
               <Flex justify="space-between">
-                <Title my="auto" order={6}>
-                  Itinerary
-                </Title>
-
-                <AddActivityModal location={location} />
-              </Flex>
-            </Box>
-            <Box>
-              <Flex
-                bg="primary.3"
-                bd="6px solid #000"
-                bdrs={12}
-                w="100%"
-                h="calc(100vh - 19rem)"
-                direction="column"
-              >
-                <Box
-                  display="grid"
-                  w="100%"
-                  bg="#fff"
+                <Title
+                  my="auto"
+                  display="flex"
                   style={{
-                    gridTemplateColumns:
-                      "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
+                    gap: "0.5rem",
+                    textTransform: "capitalize",
                   }}
                 >
-                  {GridHeader.map(({ id, label, style }) => (
-                    <Box key={`table-header-${id}`} style={style} fw={600}>
-                      {label}
-                    </Box>
-                  ))}
-                </Box>
-                {locationItinerary
-                  .sort(
-                    (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
-                  )
-                  .map(
-                    (
-                      {
-                        id,
-                        date,
-                        activity,
-                        description,
-                        time,
-                        duration,
-                        link,
-                        cost,
+                  {location.city}
+                </Title>
+                <Flex direction="column" my="auto">
+                  <Text size="sm">
+                    <b style={{ marginRight: "0.5rem" }}>Arrive:</b>
+                    {dayjs(location.start_date).format("dddd, DD MMM YYYY")}
+                  </Text>
+                  <Text size="sm">
+                    <b style={{ marginRight: "0.5rem" }}>Depart:</b>
+                    {dayjs(location.end_date).format("dddd, DD MMM YYYY")}
+                  </Text>
+                </Flex>
+              </Flex>
+              <Flex justify="space-between">
+                <Text fw={600} fz="md" my="auto">{`For ${trip.name}`}</Text>
+                <Select
+                  value={location.accommodation?.name}
+                  data={getAccommodations().map(({ name }) => name)}
+                  onChange={updateLocationHotel}
+                  size="sm"
+                  searchable
+                  clearable={false}
+                  rightSection={<FaChevronDown size="0.75rem" color="#000" />}
+                  styles={{
+                    root: {
+                      border: "2px solid #000",
+                      borderRadius: 12,
+
+                      "& input": {
+                        borderRadius: 12,
+                        border: "none",
+                        backgroundColor: "var(--mantine-color-primary-2)",
                       },
-                      index,
-                    ) => (
-                      <>
-                        <Box
-                          key={`table-row-${id}`}
-                          display="grid"
-                          w="100%"
-                          fz="sm"
-                          bg={index % 2 === 0 ? "purple.2" : "blue.2"}
-                          style={{
-                            gridTemplateColumns:
-                              "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
-                          }}
-                        >
-                          <Box
-                            style={{
-                              borderBottom: "1px solid #000",
-                              borderRight: "1px solid #000",
-                              padding: "8px",
-                            }}
-                          >
-                            <ActionIcon
-                              variant="light"
-                              color="blue.9"
-                              mt="0.25rem"
-                              onClick={() =>
-                                setSelectedCollapse(
-                                  selectedCollapse === id ? null : id,
-                                )
-                              }
-                            >
-                              {selectedCollapse === id ? (
-                                <FaMinus />
-                              ) : (
-                                <FaPlus />
-                              )}
-                            </ActionIcon>
-                          </Box>
-                          <Box style={getColumnStyle()}>
-                            <Text size="sm" mt="0.5rem" mx="auto">
-                              {index + 1}
-                            </Text>
-                          </Box>
-                          <EditableDateInput
-                            id={id}
-                            date={date}
-                            start
-                            onChange={updateActivityDate}
-                          />
-                          <EditableTextInput
-                            id={id}
-                            text={activity}
-                            onChange={updateItineraryActivity}
-                          />
-                          <EditableTimeInput
-                            id={id}
-                            text={time}
-                            onChange={updateActivityTime}
-                          />
-                          <EditableTextInput
-                            id={id}
-                            text={link}
-                            onChange={updateItineraryLink}
-                          />
-                          <EditableNumberInput
-                            id={id}
-                            text={cost}
-                            preText={`${currency} `}
-                            onChange={updateActivityCost}
-                          />
-                          <EditableNumberInput
-                            id={id}
-                            text={duration}
-                            postText="hours"
-                            onChange={updateActivityDuration}
-                          />
-                          <Box style={getColumnStyle(true)}>
-                            {locationItinerary.length > 1 && (
-                              <RemoveActivityModal
-                                locationId={locationId}
-                                activityId={id}
-                              />
-                            )}
-                          </Box>
-                        </Box>
-                        <Collapse
-                          in={selectedCollapse === id}
-                          p={12}
-                          fz="sm"
-                          bg="primary.1"
-                        >
-                          <EditableTextareaInput
-                            id={id}
-                            text={description}
-                            onChange={updateActivityDescription}
-                          />
-                        </Collapse>
-                      </>
-                    ),
-                  )}
-                {locationItinerary.length > 0 && (
+                    },
+                  }}
+                />
+              </Flex>
+              <Flex fz="sm">
+                <Text>{`${location.nights} nights`}</Text>
+              </Flex>
+            </Box>
+            <Flex direction="column" gap={8}>
+              <Box>
+                <Flex justify="space-between">
+                  <Title my="auto" order={6}>
+                    Itinerary
+                  </Title>
+
+                  <AddActivityModal location={location} />
+                </Flex>
+              </Box>
+              <Box>
+                <Flex
+                  bg="primary.3"
+                  bd="6px solid #000"
+                  bdrs={12}
+                  w="100%"
+                  h="calc(100vh - 19rem)"
+                  direction="column"
+                >
                   <Box
                     display="grid"
                     w="100%"
-                    fz="sm"
-                    bg="primary.2"
+                    bg="#fff"
                     style={{
-                      gridTemplateColumns: "73.34% 26.66%",
+                      gridTemplateColumns:
+                        "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
                     }}
                   >
-                    <Box
-                      style={{
-                        borderRight: "1px solid #000",
-                        borderBottom: "1px solid #000",
-                        padding: "8px 16px",
-                        display: "flex",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <Text fw="bold" size="sm" my="auto" ta="right">
-                        Total itinerary cost
-                      </Text>
-                    </Box>
-                    <Box
-                      style={{
-                        textTransform: "capitalize",
-                        borderBottom: "1px solid #000",
-                        padding: "8px 16px",
-                        display: "flex",
-                      }}
-                    >
-                      <Text fw="bold" size="sm" my="auto">
-                        {`R ${sum(
-                          locationItinerary.map(({ cost }) => Number(cost)),
-                        )}`}
-                      </Text>
-                    </Box>
+                    {GridHeader.map(({ id, label, style }) => (
+                      <Box key={`table-header-${id}`} style={style} fw={600}>
+                        {label}
+                      </Box>
+                    ))}
                   </Box>
-                )}
-              </Flex>
-            </Box>
+                  {locationItinerary
+                    .sort(
+                      (a, b) =>
+                        dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
+                    )
+                    .map(
+                      (
+                        {
+                          id,
+                          date,
+                          activity,
+                          description,
+                          time,
+                          duration,
+                          link,
+                          cost,
+                        },
+                        index,
+                      ) => (
+                        <>
+                          <Box
+                            key={`table-row-${id}`}
+                            display="grid"
+                            w="100%"
+                            fz="sm"
+                            bg={index % 2 === 0 ? "purple.2" : "blue.2"}
+                            style={{
+                              gridTemplateColumns:
+                                "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
+                            }}
+                          >
+                            <Box
+                              style={{
+                                borderBottom: "1px solid #000",
+                                borderRight: "1px solid #000",
+                                padding: "8px",
+                              }}
+                            >
+                              <ActionIcon
+                                variant="light"
+                                color="blue.9"
+                                mt="0.25rem"
+                                onClick={() =>
+                                  setSelectedCollapse(
+                                    selectedCollapse === id ? null : id,
+                                  )
+                                }
+                              >
+                                {selectedCollapse === id ? (
+                                  <FaMinus />
+                                ) : (
+                                  <FaPlus />
+                                )}
+                              </ActionIcon>
+                            </Box>
+                            <Box style={getColumnStyle()}>
+                              <Text size="sm" mt="0.5rem" mx="auto">
+                                {index + 1}
+                              </Text>
+                            </Box>
+                            <EditableDateInput
+                              id={id}
+                              date={date}
+                              start
+                              onChange={updateActivityDate}
+                            />
+                            <EditableTextInput
+                              id={id}
+                              text={activity}
+                              onChange={updateItineraryActivity}
+                            />
+                            <EditableTimeInput
+                              id={id}
+                              text={time}
+                              onChange={updateActivityTime}
+                            />
+                            <EditableTextInput
+                              id={id}
+                              text={link}
+                              onChange={updateItineraryLink}
+                            />
+                            <EditableNumberInput
+                              id={id}
+                              text={cost}
+                              preText={`${currency} `}
+                              onChange={updateActivityCost}
+                            />
+                            <EditableNumberInput
+                              id={id}
+                              text={duration}
+                              postText="hours"
+                              onChange={updateActivityDuration}
+                            />
+                            <Box style={getColumnStyle(true)}>
+                              {locationItinerary.length > 1 && (
+                                <RemoveActivityModal
+                                  locationId={locationId}
+                                  activityId={id}
+                                />
+                              )}
+                            </Box>
+                          </Box>
+                          <Collapse
+                            in={selectedCollapse === id}
+                            p={12}
+                            fz="sm"
+                            bg="primary.1"
+                          >
+                            <EditableTextareaInput
+                              id={id}
+                              text={description}
+                              onChange={updateActivityDescription}
+                            />
+                          </Collapse>
+                        </>
+                      ),
+                    )}
+                  {locationItinerary.length > 0 && (
+                    <Box
+                      display="grid"
+                      w="100%"
+                      fz="sm"
+                      bg="primary.2"
+                      style={{
+                        gridTemplateColumns: "73.34% 26.66%",
+                      }}
+                    >
+                      <Box
+                        style={{
+                          borderRight: "1px solid #000",
+                          borderBottom: "1px solid #000",
+                          padding: "8px 16px",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <Text fw="bold" size="sm" my="auto" ta="right">
+                          Total itinerary cost
+                        </Text>
+                      </Box>
+                      <Box
+                        style={{
+                          textTransform: "capitalize",
+                          borderBottom: "1px solid #000",
+                          padding: "8px 16px",
+                          display: "flex",
+                        }}
+                      >
+                        <Text fw="bold" size="sm" my="auto">
+                          {`R ${sum(
+                            locationItinerary.map(({ cost }) => Number(cost)),
+                          )}`}
+                        </Text>
+                      </Box>
+                    </Box>
+                  )}
+                </Flex>
+              </Box>
+            </Flex>
           </Flex>
-        </Flex>
-      )}
-    </Container>
+        )}
+      </Container>
+    </ProtectedRoute>
   );
 };
 

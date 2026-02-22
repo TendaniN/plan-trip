@@ -7,7 +7,7 @@ import {
   Title,
   Text,
 } from "@mantine/core";
-import { Breadcrumbs } from "components";
+import { Breadcrumbs, ProtectedRoute } from "components";
 import { FaHouse, FaPlus, FaMinus } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import { ALL_HOTELS } from "constants/hotels";
@@ -81,130 +81,132 @@ const AccommodationPage = () => {
   };
 
   return (
-    <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
-      <Breadcrumbs
-        items={[
-          { title: "Home", to: "/", icon: <FaHouse /> },
-          { title: "Cities", to: "/city" },
-          { title: city, to: `/city/${city}` },
-        ]}
-      />
-      <Flex direction="column" gap="xl">
-        <Box>
-          <Flex justify="space-between">
-            <Title tt="capitalize">{`${city} Accommodations`}</Title>
-          </Flex>
-        </Box>
-        <Box>
-          <Flex
-            bg="primary.3"
-            bd="6px solid #000"
-            bdrs={12}
-            w="100%"
-            direction="column"
-          >
-            <Box
-              display="grid"
+    <ProtectedRoute>
+      <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
+        <Breadcrumbs
+          items={[
+            { title: "Home", to: "/", icon: <FaHouse /> },
+            { title: "Cities", to: "/city" },
+            { title: city, to: `/city/${city}` },
+          ]}
+        />
+        <Flex direction="column" gap="xl">
+          <Box>
+            <Flex justify="space-between">
+              <Title tt="capitalize">{`${city} Accommodations`}</Title>
+            </Flex>
+          </Box>
+          <Box>
+            <Flex
+              bg="primary.3"
+              bd="6px solid #000"
+              bdrs={12}
               w="100%"
-              bg="#fff"
-              style={{
-                gridTemplateColumns: "5% 18% 18% 18% 18% 18% 5%",
-              }}
+              direction="column"
             >
-              {GridHeader.map(({ id, label, style }) => (
-                <Box key={`table-header-${id}`} style={style} fw={600}>
-                  {label}
-                </Box>
-              ))}
-            </Box>
-            {getHotels()
-              .sort((a, b) => a.stars - b.stars)
-              .map(({ id, name, area, price, link, room }, index) => (
-                <>
-                  <Box
-                    key={`table-row-${id}`}
-                    display="grid"
-                    w="100%"
-                    fz="sm"
-                    bg={index % 2 === 0 ? "purple.2" : "blue.2"}
-                    style={{
-                      gridTemplateColumns: "5% 18% 18% 18% 18% 18% 5%",
-                    }}
-                  >
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        {index + 1}
-                      </Text>
-                    </Box>
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        {name}
-                      </Text>
-                    </Box>
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        {area ? area : "-"}
-                      </Text>
-                    </Box>
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        {room.title}
-                      </Text>
-                    </Box>
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        {`${currency} ${Math.round(price * rate * 100) / 100}`}
-                      </Text>
-                    </Box>
-                    <Box style={getColumnStyle()}>
-                      <Text size="sm" mt="0.5rem">
-                        <span
-                          style={{
-                            wordBreak: "break-all",
-                            width: "88%",
-                            lineHeight: 1.5,
-                            height: 26,
-                            overflow: "clip",
-                            margin: "auto 0",
-                          }}
-                        >
-                          {link}
-                        </span>
-                      </Text>
-                    </Box>
+              <Box
+                display="grid"
+                w="100%"
+                bg="#fff"
+                style={{
+                  gridTemplateColumns: "5% 18% 18% 18% 18% 18% 5%",
+                }}
+              >
+                {GridHeader.map(({ id, label, style }) => (
+                  <Box key={`table-header-${id}`} style={style} fw={600}>
+                    {label}
+                  </Box>
+                ))}
+              </Box>
+              {getHotels()
+                .sort((a, b) => a.stars - b.stars)
+                .map(({ id, name, area, price, link, room }, index) => (
+                  <>
                     <Box
+                      key={`table-row-${id}`}
+                      display="grid"
+                      w="100%"
+                      fz="sm"
+                      bg={index % 2 === 0 ? "purple.2" : "blue.2"}
                       style={{
-                        borderBottom: "1px solid #000",
-                        borderRight: "1px solid #000",
-                        padding: "8px",
+                        gridTemplateColumns: "5% 18% 18% 18% 18% 18% 5%",
                       }}
                     >
-                      <ActionIcon
-                        variant="light"
-                        color="blue.9"
-                        mt="0.5rem"
-                        onClick={() =>
-                          setSelectedCollapse(
-                            selectedCollapse === id ? null : id,
-                          )
-                        }
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          {index + 1}
+                        </Text>
+                      </Box>
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          {name}
+                        </Text>
+                      </Box>
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          {area ? area : "-"}
+                        </Text>
+                      </Box>
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          {room.title}
+                        </Text>
+                      </Box>
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          {`${currency} ${Math.round(price * rate * 100) / 100}`}
+                        </Text>
+                      </Box>
+                      <Box style={getColumnStyle()}>
+                        <Text size="sm" mt="0.5rem">
+                          <span
+                            style={{
+                              wordBreak: "break-all",
+                              width: "88%",
+                              lineHeight: 1.5,
+                              height: 26,
+                              overflow: "clip",
+                              margin: "auto 0",
+                            }}
+                          >
+                            {link}
+                          </span>
+                        </Text>
+                      </Box>
+                      <Box
+                        style={{
+                          borderBottom: "1px solid #000",
+                          borderRight: "1px solid #000",
+                          padding: "8px",
+                        }}
                       >
-                        {selectedCollapse === id ? <FaMinus /> : <FaPlus />}
-                      </ActionIcon>
+                        <ActionIcon
+                          variant="light"
+                          color="blue.9"
+                          mt="0.5rem"
+                          onClick={() =>
+                            setSelectedCollapse(
+                              selectedCollapse === id ? null : id,
+                            )
+                          }
+                        >
+                          {selectedCollapse === id ? <FaMinus /> : <FaPlus />}
+                        </ActionIcon>
+                      </Box>
                     </Box>
-                  </Box>
-                  <Collapse
-                    in={selectedCollapse === id}
-                    p={12}
-                    fz="sm"
-                    bg="primary.1"
-                  ></Collapse>
-                </>
-              ))}
-          </Flex>
-        </Box>
-      </Flex>
-    </Container>
+                    <Collapse
+                      in={selectedCollapse === id}
+                      p={12}
+                      fz="sm"
+                      bg="primary.1"
+                    ></Collapse>
+                  </>
+                ))}
+            </Flex>
+          </Box>
+        </Flex>
+      </Container>
+    </ProtectedRoute>
   );
 };
 

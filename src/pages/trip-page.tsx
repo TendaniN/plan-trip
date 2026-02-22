@@ -21,6 +21,7 @@ import {
   EditableDateInput,
   EditableSelect,
   ExportModal,
+  ProtectedRoute,
 } from "components";
 import { useDBStore, useTrip } from "db/store";
 import { db } from "db";
@@ -258,222 +259,231 @@ const TripPage = () => {
   };
 
   return (
-    <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
-      <Breadcrumbs items={items} />
-      {trip && (
-        <Flex direction="column" gap="xl">
-          <Box>
-            <Flex justify="space-between">
-              <EditableTitle
-                id="title"
-                initialText={trip.name}
-                onSave={updateTripName}
-              />
-              <Flex direction="column" my="auto">
-                <Text size="sm">
-                  <b style={{ marginRight: "0.5rem" }}>Start:</b>
-                  {dayjs(trip.start_date).format("dddd, DD MMM YYYY")}
-                </Text>
-                <Text size="sm">
-                  <b style={{ marginRight: "0.5rem" }}>End:</b>
-                  {dayjs(trip.end_date).format("dddd, DD MMM YYYY")}
-                </Text>
-              </Flex>
-            </Flex>
-            <Flex fz="sm">
-              <Link to={`/trip/${tripId}/budget`}>View Trip Budget</Link>
-            </Flex>
-          </Box>
-          <Flex direction="column" gap={8}>
+    <ProtectedRoute>
+      <Container py={12} px={24} h="calc(100vh - 60px)" m={0} maw="100%">
+        <Breadcrumbs items={items} />
+        {trip && (
+          <Flex direction="column" gap="xl">
             <Box>
               <Flex justify="space-between">
-                <Title my="auto" order={6}>
-                  Locations
-                </Title>
-                <Flex gap={8}>
-                  <AddLocationModal trip={trip} />
-                  <ExportModal tripId={trip.id} />
+                <EditableTitle
+                  id="title"
+                  initialText={trip.name}
+                  onSave={updateTripName}
+                />
+                <Flex direction="column" my="auto">
+                  <Text size="sm">
+                    <b style={{ marginRight: "0.5rem" }}>Start:</b>
+                    {dayjs(trip.start_date).format("dddd, DD MMM YYYY")}
+                  </Text>
+                  <Text size="sm">
+                    <b style={{ marginRight: "0.5rem" }}>End:</b>
+                    {dayjs(trip.end_date).format("dddd, DD MMM YYYY")}
+                  </Text>
                 </Flex>
               </Flex>
+              <Flex fz="sm">
+                <Link to={`/trip/${tripId}/budget`}>View Trip Budget</Link>
+              </Flex>
             </Box>
-            <Box>
-              <Flex
-                bg="primary.3"
-                bd="6px solid #000"
-                bdrs={12}
-                w="100%"
-                h="calc(100vh - 16rem)"
-                direction="column"
-              >
-                <Box
-                  display="grid"
+            <Flex direction="column" gap={8}>
+              <Box>
+                <Flex justify="space-between">
+                  <Title my="auto" order={6}>
+                    Locations
+                  </Title>
+                  <Flex gap={8}>
+                    <AddLocationModal trip={trip} />
+                    <ExportModal tripId={trip.id} />
+                  </Flex>
+                </Flex>
+              </Box>
+              <Box>
+                <Flex
+                  bg="primary.3"
+                  bd="6px solid #000"
+                  bdrs={12}
                   w="100%"
-                  bg="#fff"
-                  style={{
-                    gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
-                  }}
+                  h="calc(100vh - 16rem)"
+                  direction="column"
                 >
-                  {GridHeader.map(({ id, label, style }) => (
-                    <Box key={`table-header-${id}`} style={style} fw={600}>
-                      {label}
-                    </Box>
-                  ))}
-                </Box>
-                {tripLocations
-                  .sort(
-                    (a, b) =>
-                      dayjs(a.start_date).valueOf() -
-                      dayjs(b.start_date).valueOf(),
-                  )
-                  .map(
-                    (
-                      { id, city, start_date, end_date, accommodation, nights },
-                      index,
-                    ) => (
+                  <Box
+                    display="grid"
+                    w="100%"
+                    bg="#fff"
+                    style={{
+                      gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
+                    }}
+                  >
+                    {GridHeader.map(({ id, label, style }) => (
+                      <Box key={`table-header-${id}`} style={style} fw={600}>
+                        {label}
+                      </Box>
+                    ))}
+                  </Box>
+                  {tripLocations
+                    .sort(
+                      (a, b) =>
+                        dayjs(a.start_date).valueOf() -
+                        dayjs(b.start_date).valueOf(),
+                    )
+                    .map(
+                      (
+                        {
+                          id,
+                          city,
+                          start_date,
+                          end_date,
+                          accommodation,
+                          nights,
+                        },
+                        index,
+                      ) => (
+                        <Box
+                          key={`table-row-${id}`}
+                          display="grid"
+                          w="100%"
+                          fz="sm"
+                          bg={index % 2 === 0 ? "purple.2" : "blue.2"}
+                          style={{
+                            gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
+                          }}
+                        >
+                          <Box style={getColumnStyle()}>
+                            <Text size="sm" mt="0.5rem">
+                              {city}
+                            </Text>
+                          </Box>
+                          <EditableDateInput
+                            id={id}
+                            date={start_date}
+                            start
+                            onChange={updateLocationDate}
+                          />
+                          <EditableDateInput
+                            id={id}
+                            date={end_date}
+                            start={false}
+                            onChange={updateLocationDate}
+                          />
+                          <EditableSelect
+                            id={id}
+                            city={city}
+                            onChange={updateLocationHotel}
+                            accommodation={accommodation}
+                          />
+                          <Box style={getColumnStyle()}>
+                            <Text size="sm" my="auto">
+                              {nights}
+                            </Text>
+                          </Box>
+                          <Box style={getColumnStyle()}>
+                            <LinkButton
+                              w="100%"
+                              my="auto"
+                              color="green.4"
+                              to={`/trip/${tripId}/location/${id}`}
+                            >
+                              <FaEye /> View
+                            </LinkButton>
+                          </Box>
+                          <Box style={getColumnStyle(true)}>
+                            {trip.locations.length > 1 && (
+                              <RemoveLocationModal
+                                tripId={tripId}
+                                locationId={id}
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      ),
+                    )}
+                  {tripLocations.length > 0 && (
+                    <>
                       <Box
-                        key={`table-row-${id}`}
                         display="grid"
                         w="100%"
                         fz="sm"
-                        bg={index % 2 === 0 ? "purple.2" : "blue.2"}
+                        bg="primary.2"
                         style={{
-                          gridTemplateColumns: "15% 15% 15% 24% 9% 15% 7%",
+                          gridTemplateColumns: "69% 31%",
                         }}
                       >
-                        <Box style={getColumnStyle()}>
-                          <Text size="sm" mt="0.5rem">
-                            {city}
-                          </Text>
-                        </Box>
-                        <EditableDateInput
-                          id={id}
-                          date={start_date}
-                          start
-                          onChange={updateLocationDate}
-                        />
-                        <EditableDateInput
-                          id={id}
-                          date={end_date}
-                          start={false}
-                          onChange={updateLocationDate}
-                        />
-                        <EditableSelect
-                          id={id}
-                          city={city}
-                          onChange={updateLocationHotel}
-                          accommodation={accommodation}
-                        />
-                        <Box style={getColumnStyle()}>
-                          <Text size="sm" my="auto">
-                            {nights}
-                          </Text>
-                        </Box>
-                        <Box style={getColumnStyle()}>
-                          <LinkButton
-                            w="100%"
-                            my="auto"
-                            color="green.4"
-                            to={`/trip/${tripId}/location/${id}`}
-                          >
-                            <FaEye /> View
-                          </LinkButton>
-                        </Box>
-                        <Box style={getColumnStyle(true)}>
-                          {trip.locations.length > 1 && (
-                            <RemoveLocationModal
-                              tripId={tripId}
-                              locationId={id}
-                            />
-                          )}
-                        </Box>
-                      </Box>
-                    ),
-                  )}
-                {tripLocations.length > 0 && (
-                  <>
-                    <Box
-                      display="grid"
-                      w="100%"
-                      fz="sm"
-                      bg="primary.2"
-                      style={{
-                        gridTemplateColumns: "69% 31%",
-                      }}
-                    >
-                      <Box
-                        style={{
-                          borderRight: "1px solid #000",
-                          borderBottom: "1px solid #000",
-                          textTransform: "capitalize",
-                          padding: "8px 16px",
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <Text fw="bold" size="sm" my="auto" ta="right">
-                          Total number of nights
-                        </Text>
-                      </Box>
-                      <Box
-                        style={{
-                          textTransform: "capitalize",
-                          borderBottom: "1px solid #000",
-                          padding: "8px 16px",
-                          display: "flex",
-                        }}
-                      >
-                        <Text fw="bold" size="sm" my="auto">
-                          {totalNights}
-                        </Text>
-                      </Box>
-                    </Box>
-                    <Box
-                      display="grid"
-                      w="100%"
-                      fz="sm"
-                      bg="primary.2"
-                      style={{
-                        gridTemplateColumns: "69% 31%",
-                      }}
-                    >
-                      <Box
-                        style={{
-                          borderRight: "1px solid #000",
-                          textTransform: "capitalize",
-                          padding: "8px 16px",
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <Text
-                          fw="bold"
-                          size="sm"
-                          my="auto"
-                          style={{ justifyContent: "flex-end" }}
+                        <Box
+                          style={{
+                            borderRight: "1px solid #000",
+                            borderBottom: "1px solid #000",
+                            textTransform: "capitalize",
+                            padding: "8px 16px",
+                            display: "flex",
+                            justifyContent: "flex-end",
+                          }}
                         >
-                          Total number of working days
-                        </Text>
+                          <Text fw="bold" size="sm" my="auto" ta="right">
+                            Total number of nights
+                          </Text>
+                        </Box>
+                        <Box
+                          style={{
+                            textTransform: "capitalize",
+                            borderBottom: "1px solid #000",
+                            padding: "8px 16px",
+                            display: "flex",
+                          }}
+                        >
+                          <Text fw="bold" size="sm" my="auto">
+                            {totalNights}
+                          </Text>
+                        </Box>
                       </Box>
                       <Box
+                        display="grid"
+                        w="100%"
+                        fz="sm"
+                        bg="primary.2"
                         style={{
-                          textTransform: "capitalize",
-                          padding: "8px 16px",
-                          display: "flex",
+                          gridTemplateColumns: "69% 31%",
                         }}
                       >
-                        <Text fw="bold" size="sm" my="auto">
-                          {totalWorkingDays}
-                        </Text>
+                        <Box
+                          style={{
+                            borderRight: "1px solid #000",
+                            textTransform: "capitalize",
+                            padding: "8px 16px",
+                            display: "flex",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <Text
+                            fw="bold"
+                            size="sm"
+                            my="auto"
+                            style={{ justifyContent: "flex-end" }}
+                          >
+                            Total number of working days
+                          </Text>
+                        </Box>
+                        <Box
+                          style={{
+                            textTransform: "capitalize",
+                            padding: "8px 16px",
+                            display: "flex",
+                          }}
+                        >
+                          <Text fw="bold" size="sm" my="auto">
+                            {totalWorkingDays}
+                          </Text>
+                        </Box>
                       </Box>
-                    </Box>
-                  </>
-                )}
-              </Flex>
-            </Box>
+                    </>
+                  )}
+                </Flex>
+              </Box>
+            </Flex>
           </Flex>
-        </Flex>
-      )}
-    </Container>
+        )}
+      </Container>
+    </ProtectedRoute>
   );
 };
 
