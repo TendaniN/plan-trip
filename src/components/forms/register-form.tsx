@@ -176,7 +176,7 @@ export const RegisterForm = () => {
         </Button>
         <Flex justify="center">
           Already have an account? Login{" "}
-          <Link to="/register" style={{ marginLeft: 4 }}>
+          <Link to="/login" style={{ marginLeft: 4 }}>
             here
           </Link>
           .

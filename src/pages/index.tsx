@@ -2,7 +2,7 @@ import { Navbar } from "components";
 import { api } from "api";
 import { useAuthStore, useDBStore } from "db/store";
 import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import logger from "utils/logger";
 
 import RegisterPage from "./register-page";
@@ -22,6 +22,8 @@ import { getUser } from "api/user";
 import LogoutPage from "./logout-page";
 
 const Pages = () => {
+  const navigate = useNavigate();
+
   const {
     setCurrencyRates,
     setRate,
@@ -73,6 +75,7 @@ const Pages = () => {
         authUser(firebaseUser.uid);
       } else {
         clear();
+        navigate("/login");
       }
 
       setLoading(false);
