@@ -6,7 +6,6 @@ import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 import { db } from "db";
 import { useAuthStore, useDBStore } from "db/store";
 
-import { startSession } from "utils/session";
 import logger from "utils/logger";
 import { Button } from "components";
 import { showNotification } from "@mantine/notifications";
@@ -36,8 +35,8 @@ export const LoginForm = () => {
   const findUser = async (email: string, password: string) => {
     try {
       const user = await loginUser(email, password);
-      setUser(user.authUser);
       if (user) {
+        setUser(user.authUser);
         const locations = await db.locations.toArray();
         const itinerary = await db.itinerary.toArray();
         const budgets = await db.budgets.toArray();
@@ -51,7 +50,6 @@ export const LoginForm = () => {
           budgets,
           travels,
         );
-        startSession();
         logger.info(`User (${user.authUser.email}) logged in.`);
         showNotification({ message: "Login successful", color: "green.7" });
 
@@ -60,8 +58,12 @@ export const LoginForm = () => {
       }
       setSubmitting(false);
     } catch (error) {
-      logger.error("Failed to create user:" + error);
+      logger.error("Error logging in", error);
       setSubmitting(false);
+      showNotification({
+        color: "red",
+        message: "Login failed. Please try again.",
+      });
     }
   };
   const handleSubmit = (vals: typeof values) => {

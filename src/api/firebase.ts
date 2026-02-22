@@ -15,6 +15,10 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain) {
+  throw new Error("Firebase config is incomplete");
+}
+
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);

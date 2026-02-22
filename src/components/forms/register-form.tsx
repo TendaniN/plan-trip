@@ -78,16 +78,18 @@ export const RegisterForm = () => {
     try {
       const newUser = await registerUser(email, password, firstName, lastName);
       const user = await getUser(newUser.uid);
-      setUser(newUser);
-      setState(user, [], [], [], [], []);
+      if (user && newUser) {
+        setUser(newUser);
+        setState(user, [], [], [], [], []);
 
-      logger.info(`User (${newUser}) created.`);
-      showNotification({
-        message: "Registration successful",
-        color: "green.7",
-      });
-      setSubmitting(false);
-      navigate("/");
+        logger.info(`User (${newUser}) created.`);
+        showNotification({
+          message: "Registration successful",
+          color: "green.7",
+        });
+        setSubmitting(false);
+        navigate("/");
+      }
     } catch (error) {
       logger.error("Failed to create user:" + error);
       setSubmitting(false);

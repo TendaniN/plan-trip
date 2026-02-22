@@ -10,6 +10,7 @@ import {
 import { setDoc, getDoc, doc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import type { User } from "types/db";
+import logger from "utils/logger";
 
 export const registerUser = async (
   email: string,
@@ -44,10 +45,11 @@ export const loginUser = async (email: string, password: string) => {
 
   const snapshot = await getDoc(doc(db, "users", authUser.uid));
 
-  return {
-    authUser,
-    userDoc: snapshot.data() as User,
-  };
+  const data = snapshot.data();
+  if (!data) {
+    logger.error("User document not found");
+  }
+  return { authUser, userDoc: data as User };
 };
 
 export const logoutUser = () => signOut(auth);
