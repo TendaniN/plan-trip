@@ -92,8 +92,8 @@ export const LoginForm = () => {
             radius="md"
             value={values.email}
             required
-            label="Username"
-            placeholder="janeDoe"
+            label="Email"
+            placeholder="jane.doe@example.com"
           />
         </Flex>
         <Flex>
