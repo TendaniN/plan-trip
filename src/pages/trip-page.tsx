@@ -154,7 +154,7 @@ const GridHeader = [
 const TripPage = () => {
   const { tripId } = useParams();
 
-  const { id, updateTrip, updateLocation, locations } = useDBStore(
+  const { uid, updateTrip, updateLocation, locations } = useDBStore(
     (state) => state,
   );
 
@@ -185,7 +185,7 @@ const TripPage = () => {
 
   const updateTripName = async (name: string) => {
     try {
-      await db.trips.where({ id: tripId, userId: id }).modify({ name });
+      await db.trips.where({ id: tripId, userId: uid }).modify({ name });
       updateTrip(tripId, { name });
       logger.info("Trip name was updated.");
       showNotification({

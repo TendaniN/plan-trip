@@ -4,8 +4,6 @@ import {
   signOut,
   onAuthStateChanged,
   type User as FirebaseUser,
-  setPersistence,
-  browserLocalPersistence,
 } from "firebase/auth";
 import { setDoc, getDoc, doc } from "firebase/firestore";
 import { auth, db } from "./firebase";
@@ -57,5 +55,3 @@ export const logoutUser = () => signOut(auth);
 export const subscribeToAuth = (
   callback: (user: FirebaseUser | null) => void,
 ) => onAuthStateChanged(auth, callback);
-
-setPersistence(auth, browserLocalPersistence);
