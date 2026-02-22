@@ -78,7 +78,7 @@ const Pages = () => {
     return unsubscribe;
   }, [clear, setUser]);
 
-  if (!loading) {
+  if (loading) {
     return (
       <Flex w="100%" h="100%">
         <Loader mx="auto" my="auto" size="5rem" color="primary.6" />
