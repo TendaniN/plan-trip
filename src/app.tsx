@@ -1,22 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { BrowserRouter } from "react-router-dom";
+import { MantineEmotionProvider, emotionTransform } from "@mantine/emotion";
 
 import { initDB } from "db";
-import Pages from "./pages";
+import AppRoutes from "routes/index";
 import "./styles.css";
-import { emotionTransform, MantineEmotionProvider } from "@mantine/emotion";
 
 const theme = createTheme({
   fontFamily: "Inter, system-ui, sans-serif",
-  headings: {
-    fontFamily: "Chango, cursive",
-    fontWeight: "400",
-  },
+  headings: { fontFamily: "Chango, cursive", fontWeight: "400" },
   colors: {
     primary: [
       "#FEF7FA",
@@ -93,15 +90,13 @@ const theme = createTheme({
   },
 });
 
-const ContainerProps = {
-  bg: "gray.5",
-  h: "100vh",
-  maw: "100%",
-  m: "0",
-  p: "0",
-};
+const ContainerWrapper = ({ children }: { children: ReactNode }) => (
+  <Container bg="gray.5" h="100vh" maw="100%" m={0} p={0}>
+    {children}
+  </Container>
+);
 
-const App = () => {
+export default function App() {
   const [siteLoading, setSiteLoading] = useState(true);
 
   useEffect(() => {
@@ -117,16 +112,18 @@ const App = () => {
         <Notifications />
         <BrowserRouter basename="/plan-trip">
           {siteLoading ? (
-            <Loader c="primary.5" size="xl" />
+            <Loader
+              color="primary.5"
+              size="xl"
+              style={{ margin: "auto", display: "block" }}
+            />
           ) : (
-            <Container {...ContainerProps}>
-              <Pages />
-            </Container>
+            <ContainerWrapper>
+              <AppRoutes />
+            </ContainerWrapper>
           )}
         </BrowserRouter>
       </MantineEmotionProvider>
     </MantineProvider>
   );
-};
-
-export default App;
+}

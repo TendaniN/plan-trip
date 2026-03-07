@@ -12,17 +12,31 @@
     "paths": {
       "api": ["./src/api/index.tsx"],
       "api/*": ["./src/api/*"],
+
       "assets/*": ["./src/assets/*"],
-      "components/*": ["./src/components/*"],
+
       "components": ["./src/components/index.tsx"],
+      "components/*": ["./src/components/*"],
+
       "constants/*": ["./src/constants/*"],
-      "pages/*": ["./src/pages/*"],
+
+      "layouts/*": ["./src/layouts/*"],
+
       "pages": ["./src/pages/index.tsx"],
+      "pages/*": ["./src/pages/*"],
+
+      "features/*": ["./src/features/*"],
+
+      "routes/*": ["./src/routes/*"],
+
       "types/*": ["./src/types/*"],
-      "db/*": ["./src/db/*"],
+
       "db": ["./src/db/index.ts"],
+      "db/*": ["./src/db/*"],
+
       "utils/*": ["./src/utils/*"],
-      "hooks/*": ["./src/hooks/*"],
+
+      "hooks/*": ["./src/hooks/*"]
     },
 
     /* Bundler mode */
