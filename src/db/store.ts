@@ -27,13 +27,20 @@ interface AccountState {
   ) => void;
   clearState: () => void;
 
+  setDb: (
+    trips: Trip[],
+    locations: Location[],
+    itinerary: Itinerary[],
+    budget: Budget[],
+  ) => void;
+
   setUser: (user: User) => void;
 
   setCurrencyRates: (currencyRates: Record<string, number>) => void;
   setRate: (rate: number) => void;
   setCurrency: (currency: string | undefined) => void;
 
-  addTrip: (trip: Trip) => void;
+  addTrip: (trip: Trip, location: Location, budget: Budget) => void;
   updateTrip: (tripId: string, updates: Partial<Trip>) => void;
 
   addLocation: (location: Location) => void;
@@ -115,6 +122,14 @@ export const useDBStore = create<AccountState>((set) => ({
 
   clearState: () => set(initialState),
 
+  setDb: (trips, locations, itinerary, budgets) =>
+    set({
+      trips,
+      locations,
+      itinerary,
+      budgets,
+    }),
+
   setUser: (user) =>
     set({
       uid: user.uid,
@@ -132,9 +147,11 @@ export const useDBStore = create<AccountState>((set) => ({
 
   setCurrency: (currency) => set({ currency: currency ? currency : "R" }),
 
-  addTrip: (trip) =>
+  addTrip: (trip, location, budget) =>
     set((state) => ({
       trips: [...state.trips, trip],
+      locations: [...state.locations, location],
+      budgets: [...state.budgets, budget],
     })),
   updateTrip: (tripId, updates) =>
     set((state) => ({

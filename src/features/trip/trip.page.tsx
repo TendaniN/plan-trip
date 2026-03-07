@@ -164,6 +164,8 @@ const TripPage = () => {
     (location) => location.tripId === tripId,
   );
 
+  console.log(locations);
+
   const totalNights = useMemo(() => {
     return sum(tripLocations.map(({ nights }) => nights));
   }, [tripLocations]);

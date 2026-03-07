@@ -1,28 +1,26 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader, Select } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 
-import { db } from "db";
 import { useDBStore } from "db/store";
 
 import logger from "utils/logger";
 import { Button } from "components";
 import dayjs from "dayjs";
 import { CITY_MAP, type CityValues } from "constants/city";
-import { calcDaysBetween } from "utils/calc-days-between";
 import type { CountryValues } from "constants/country";
 import { showNotification } from "@mantine/notifications";
 import { FaCheck, FaX } from "react-icons/fa6";
-import type { DexieError } from "dexie";
+import { createTrip } from "api/trip";
 
 export const TripForm = () => {
   const navigate = useNavigate();
 
   const [creating, setCreating] = useState(false);
 
-  const { uid, addTrip, addLocation, addBudget } = useDBStore((state) => state);
+  const { uid } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
@@ -39,11 +37,7 @@ export const TripForm = () => {
     },
   });
 
-  const tripId = useId();
-  const locationId = useId();
-  const budgetId = useId();
-
-  const createTrip = async (
+  const addTrip = async (
     start: string,
     end: string,
     city: CityValues,
@@ -52,42 +46,20 @@ export const TripForm = () => {
   ) => {
     const name = trip_name ? trip_name : `${city} ${start.substring(0, 4)}`;
 
-    try {
-      if (uid) {
-        const trip = {
-          id: tripId,
-          userId: uid,
+    if (uid) {
+      try {
+        setCreating(true);
+
+        const { trip, location, budget } = await createTrip({
+          user_uid: uid,
           name,
-          start_date: start,
-          end_date: end,
-          locations: [locationId],
-          travels: [],
-          budgets: [],
-        };
-        const location = {
-          id: locationId,
-          tripId,
           city,
           country,
-          start_date: start,
-          end_date: end,
-          nights: calcDaysBetween(start, end),
-          itinerary: [],
-        };
-        const budget = {
-          id: budgetId,
-          tripId,
-          travel: [],
-          buffer: 0,
-        };
-        await db.trips.add(trip);
-        await db.locations.add(location);
-        await db.budgets.add(budget);
-        addTrip(trip);
-        addLocation(location);
-        addBudget(budget);
+          start,
+          end,
+        });
         logger.info(
-          `Location (${locationId}), Budget (${budgetId}) added to Trip (${tripId}).`,
+          `Location (${location.id}), Budget (${budget.id}) added to Trip (${trip.id}).`,
         );
         showNotification({
           title: "New trip and location created.",
@@ -95,18 +67,20 @@ export const TripForm = () => {
           color: "green.7",
           icon: <FaCheck />,
         });
+
+        navigate(`/trip/${trip.id}`);
+      } catch (error) {
+        logger.error("Failed to create trip", error);
+
+        showNotification({
+          title: "Trip creation failed",
+          message: "Please try again.",
+          color: "red",
+          icon: <FaX />,
+        });
+      } finally {
         setCreating(false);
-        navigate(`/trip/${tripId}`);
       }
-    } catch (error) {
-      logger.error("Failed to update:" + error);
-      setCreating(false);
-      showNotification({
-        title: "Something Went Wrong",
-        message: (error as DexieError).message,
-        color: "red",
-        icon: <FaX />,
-      });
     }
   };
 
@@ -116,7 +90,7 @@ export const TripForm = () => {
       ({ cities }) => cities.filter((val) => val === vals.cityValue).length > 0,
     );
     if (country) {
-      createTrip(
+      addTrip(
         vals.start_date,
         vals.end_date,
         vals.cityValue as CityValues,
