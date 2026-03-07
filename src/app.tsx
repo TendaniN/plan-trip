@@ -115,7 +115,7 @@ const App = () => {
     <MantineProvider theme={theme} stylesTransform={emotionTransform}>
       <MantineEmotionProvider>
         <Notifications />
-        <BrowserRouter basename="/plan-trip">
+        <BrowserRouter>
           {siteLoading ? (
             <Loader c="primary.5" size="xl" />
           ) : (
