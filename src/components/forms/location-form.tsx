@@ -9,15 +9,14 @@ import { FaCheck, FaX } from "react-icons/fa6";
 import { ALL_HOTELS } from "constants/hotels";
 import { useMemo, useState, useId } from "react";
 import type { Trip } from "types/db";
-import { calcDaysBetween } from "utils/calc-days-between";
 import type { CountryValues } from "constants/country";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
+import { createLocation } from "api/location";
+import { editTripLocations } from "api/trip";
 
 interface Props {
   trip: Trip;
@@ -28,8 +27,6 @@ export const LocationForm = ({ trip, close }: Props) => {
   const [creating, setCreating] = useState(false);
 
   const locationId = useId();
-
-  const { updateTrip, addLocation } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -57,43 +54,23 @@ export const LocationForm = ({ trip, close }: Props) => {
     return [];
   }, [values.city]);
 
-  const createLocation = async (
+  const addLocation = async (
     city: CityValues,
     country: CountryValues,
     start: string,
     end: string,
     accommodation?: HotelProps,
   ) => {
-    const location = {
-      id: locationId,
-      tripId: trip.id,
-      city,
-      country,
-      start_date: start,
-      end_date: end,
-      nights: calcDaysBetween(start, end),
-      accommodation,
-      itinerary: [],
-    };
     try {
-      let start_date = trip.start_date;
-      if (dayjs(start).isBefore(dayjs(start_date))) {
-        start_date = dayjs(start, DEFAULT_DATE_FORMAT).format(
-          DEFAULT_DATE_FORMAT,
-        );
-      }
-      let end_date = trip.end_date;
-      if (dayjs(end).isAfter(dayjs(end_date))) {
-        end_date = dayjs(end, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT);
-      }
-      await db.trips.update(trip.id, {
-        start_date: start_date,
-        end_date: end_date,
-        locations: [...trip.locations, locationId],
+      const { location } = await createLocation({
+        tripId: trip.id,
+        city,
+        country,
+        start,
+        end,
+        accommodation,
       });
-      await db.locations.add(location);
-      addLocation(location);
-      updateTrip(trip.id, { locations: [...trip.locations, locationId] });
+      await editTripLocations(trip.id, start, end, location.id);
 
       logger.info(`Location (${locationId}) added to Trip (${trip.id}).`);
       showNotification({
@@ -126,7 +103,7 @@ export const LocationForm = ({ trip, close }: Props) => {
       : undefined;
 
     if (country) {
-      createLocation(
+      addLocation(
         vals.city as CityValues,
         country.country as CountryValues,
         vals.start_date,

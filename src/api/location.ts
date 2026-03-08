@@ -14,9 +14,12 @@ import { v4 as uuidv4 } from "uuid";
 import { useDBStore } from "db/store";
 import type { CityValues } from "constants/city";
 import type { CountryValues } from "constants/country";
-import type { Location, Itinerary } from "types/db";
+import type { Location, Itinerary, Trip } from "types/db";
 import type { HotelProps } from "types/hotel";
 import { sum } from "utils/sum";
+import dayjs from "dayjs";
+
+import { DEFAULT_DATE_FORMAT } from "constants/db";
 
 interface LocationInput {
   tripId: string;
@@ -64,10 +67,12 @@ export const createLocation = async ({
 
 export const editLocationDate = async (
   locationId: string,
+  trip: Trip,
   date: string,
   start = true,
 ) => {
   const locationRef = doc(db, "locations", locationId);
+  const tripRef = doc(db, "trips", trip.id);
 
   const snapshot = await getDoc(locationRef);
   const location = snapshot.data();
@@ -77,11 +82,36 @@ export const editLocationDate = async (
   const start_date = start ? date : location.start_date;
   const end_date = start ? location.end_date : date;
 
+  let trip_start_date = trip.start_date;
+  if (dayjs(start_date).isBefore(dayjs(trip_start_date))) {
+    trip_start_date = dayjs(start_date, DEFAULT_DATE_FORMAT).format(
+      DEFAULT_DATE_FORMAT,
+    );
+  }
+  let trip_end_date = trip.end_date;
+  if (dayjs(end_date).isAfter(dayjs(trip_end_date))) {
+    trip_end_date = dayjs(end_date, DEFAULT_DATE_FORMAT).format(
+      DEFAULT_DATE_FORMAT,
+    );
+  }
+
   const nights = calcDaysBetween(start_date, end_date);
 
   const change = start ? { start_date, nights } : { end_date, nights };
 
   await updateDoc(locationRef, change);
+
+  useDBStore.getState().updateLocation(locationId, change);
+
+  await updateDoc(tripRef, {
+    start_date: trip_start_date,
+    end_date: trip_end_date,
+  });
+
+  useDBStore.getState().updateTrip(trip.id, {
+    start_date: trip_start_date,
+    end_date: trip_end_date,
+  });
 
   return { id: locationId, change };
 };
@@ -93,20 +123,20 @@ export const editLocationHotel = async (
 ) => {
   const locationRef = doc(db, "locations", locationId);
 
-  // update location
   await updateDoc(locationRef, { accommodation });
 
-  // get all locations for the trip
+  // update store immediately
+  useDBStore.getState().updateLocation(locationId, { accommodation });
+
+  // recalc hotel totals
   const locationsSnapshot = await getDocs(
     query(collection(db, "locations"), where("tripId", "==", tripId)),
   );
 
   const locations = locationsSnapshot.docs.map((doc) => doc.data());
 
-  // calculate hotel total
   const hotelTotal = sum(locations.map((loc) => loc.accommodation?.price || 0));
 
-  // get budget
   const budgetSnapshot = await getDocs(
     query(collection(db, "budgets"), where("tripId", "==", tripId)),
   );
@@ -114,7 +144,19 @@ export const editLocationHotel = async (
   const budgetDoc = budgetSnapshot.docs[0];
 
   if (budgetDoc) {
-    await updateDoc(doc(db, "budgets", budgetDoc.id), { hotelTotal });
+    const budgetData = budgetDoc.data();
+
+    await updateDoc(doc(db, "budgets", budgetDoc.id), {
+      "accommodation.hotelTotal": hotelTotal,
+    });
+
+    // update zustand
+    useDBStore.getState().updateBudget(budgetDoc.id, {
+      accommodation: {
+        hotelTotal,
+        itineraryTotal: budgetData.accommodation?.itineraryTotal || 0,
+      },
+    });
   }
 
   return { locationId, accommodation, hotelTotal };
@@ -171,7 +213,7 @@ export const createItineraryActivity = async ({
 
     useDBStore.getState().addActivity(newActivity);
 
-    return { location };
+    return { activity: newActivity };
   } catch (error) {
     console.error("Error creating itinerary activity:", error);
     throw error;

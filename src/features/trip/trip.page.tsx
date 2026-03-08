@@ -25,7 +25,7 @@ import {
   ExportModal,
   ProtectedRoute,
 } from "components";
-import { useDBStore, useTrip, useTripBudget } from "db/store";
+import { useTrip, useTripBudget } from "db/store";
 import logger from "utils/logger";
 import type { HotelProps } from "types/hotel";
 import { type DexieError } from "dexie";
@@ -162,10 +162,6 @@ const GridHeader = [
 const TripPage = () => {
   const { tripId } = useParams();
 
-  const { updateTrip, updateLocation, updateBudget } = useDBStore(
-    (state) => state,
-  );
-
   const [tripLocations, setTripLocations] = useState<Location[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -207,7 +203,6 @@ const TripPage = () => {
   const updateTripName = async (name: string) => {
     try {
       await editTripName(tripId, name);
-      updateTrip(tripId, { name });
       logger.info("Trip name was updated.");
       showNotification({
         message: "Trip name updated.",
@@ -227,11 +222,11 @@ const TripPage = () => {
 
   const updateLocationDate = async (id: string, date: string, start = true) => {
     try {
-      const { change } = await editLocationDate(id, date, start);
-      updateLocation(id, change);
+      const { change } = await editLocationDate(id, trip, date, start);
       setTripLocations((prev) =>
         prev.map((loc) => (loc.id === id ? { ...loc, ...change } : loc)),
       );
+
       logger.info("Location date was updated.");
       showNotification({
         message: "Location date was updated.",
@@ -254,14 +249,7 @@ const TripPage = () => {
     accommodation?: HotelProps,
   ) => {
     try {
-      const { hotelTotal } = await editLocationHotel(id, tripId, accommodation);
-      updateLocation(id, { accommodation });
-      updateBudget(budget.id, {
-        accommodation: {
-          hotelTotal,
-          itineraryTotal: budget.accommodation.itineraryTotal,
-        },
-      });
+      await editLocationHotel(id, tripId, accommodation);
       setTripLocations((prev) =>
         prev.map((loc) => (loc.id === id ? { ...loc, accommodation } : loc)),
       );

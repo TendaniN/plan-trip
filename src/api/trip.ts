@@ -6,6 +6,7 @@ import {
   query,
   where,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "api/firebase";
 import { calcDaysBetween } from "utils/calc-days-between";
@@ -14,6 +15,8 @@ import { useDBStore } from "db/store";
 import type { CityValues } from "constants/city";
 import type { CountryValues } from "constants/country";
 import type { Budget, Trip } from "types/db";
+import dayjs from "dayjs";
+import { DEFAULT_DATE_FORMAT } from "constants/db";
 
 interface TripInput {
   user_uid: string;
@@ -91,7 +94,52 @@ export const editTripName = async (tripId: string, name: string) => {
 
   await updateDoc(tripRef, { name });
 
+  useDBStore.getState().updateTrip(tripId, { name });
+
   return { id: tripId, name };
+};
+
+export const editTripLocations = async (
+  tripId: string,
+  start_date: string,
+  end_date: string,
+  locationId: string,
+) => {
+  const tripRef = doc(db, "trips", tripId);
+
+  const snapshot = await getDoc(tripRef);
+  const trip = snapshot.data();
+
+  if (!trip) throw new Error("Trip not found");
+
+  const locations = [...trip.locations, locationId];
+
+  let trip_start_date = trip.start_date;
+  if (dayjs(start_date).isBefore(dayjs(trip_start_date))) {
+    trip_start_date = dayjs(start_date, DEFAULT_DATE_FORMAT).format(
+      DEFAULT_DATE_FORMAT,
+    );
+  }
+  let trip_end_date = trip.end_date;
+  if (dayjs(end_date).isAfter(dayjs(trip_end_date))) {
+    trip_end_date = dayjs(end_date, DEFAULT_DATE_FORMAT).format(
+      DEFAULT_DATE_FORMAT,
+    );
+  }
+
+  await updateDoc(tripRef, {
+    start_date: trip_start_date,
+    end_date: trip_end_date,
+    locations,
+  });
+
+  useDBStore
+    .getState()
+    .updateTrip(tripId, {
+      start_date: trip_start_date,
+      end_date: trip_end_date,
+      locations,
+    });
 };
 
 export const getTrips = async (userId?: string): Promise<Trip[]> => {

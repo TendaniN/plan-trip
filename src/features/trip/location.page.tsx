@@ -38,6 +38,7 @@ import { type DexieError } from "dexie";
 import { ALL_HOTELS } from "constants/hotels";
 import { useState } from "react";
 import { sum } from "utils/sum";
+import { editLocationHotel } from "api/location";
 
 const getColumnStyle = (last = false) => {
   return {
@@ -102,9 +103,7 @@ const LocationPage = () => {
 
   const { tripId, locationId } = useParams();
 
-  const { updateLocation, updateActivity, itinerary, currency } = useDBStore(
-    (state) => state,
-  );
+  const { updateActivity, itinerary, currency } = useDBStore((state) => state);
 
   const trip = useTrip(tripId);
   const location = useLocation(locationId);
@@ -140,21 +139,16 @@ const LocationPage = () => {
     const accommodation = hotel
       ? getAccommodations().find(({ name }) => name === hotel)
       : undefined;
+    if (!accommodation) return;
+
     try {
-      if (accommodation) {
-        await db.locations.where({ id: locationId }).modify({
-          accommodation,
-        });
-        updateLocation(locationId, {
-          accommodation,
-        });
-        logger.info("Location accommodation was updated.");
-        showNotification({
-          message: "Location accommodation updated.",
-          color: "green.7",
-          icon: <FaCheck />,
-        });
-      }
+      await editLocationHotel(locationId, tripId, accommodation);
+      logger.info("Location accommodation was updated.");
+      showNotification({
+        message: "Location accommodation updated.",
+        color: "green.7",
+        icon: <FaCheck />,
+      });
     } catch (error) {
       logger.error("Location accommodation was not updated:", error);
       showNotification({
