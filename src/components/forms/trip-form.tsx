@@ -20,7 +20,7 @@ export const TripForm = () => {
 
   const [creating, setCreating] = useState(false);
 
-  const { uid } = useDBStore((state) => state);
+  const { uid, addTrip: resetTrip } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
@@ -58,6 +58,7 @@ export const TripForm = () => {
           start,
           end,
         });
+        resetTrip(trip, location, budget);
         logger.info(
           `Location (${location.id}), Budget (${budget.id}) added to Trip (${trip.id}).`,
         );

@@ -12,7 +12,6 @@ interface AccountState {
   locations: Location[];
   itinerary: Itinerary[];
   budgets: Budget[];
-  travels: Travel[];
   currencyRates: Record<string, number>;
   rate: number;
   currency: string;
@@ -23,7 +22,6 @@ interface AccountState {
     locations: Location[],
     itinerary: Itinerary[],
     budget: Budget[],
-    travel: Travel[],
   ) => void;
   clearState: () => void;
 
@@ -53,9 +51,6 @@ interface AccountState {
 
   addBudget: (budget: Budget) => void;
   updateBudget: (budgetId: string, updates: Partial<Budget>) => void;
-
-  addTravel: (travel: Travel) => void;
-  updateTravel: (travelId: string, updates: Partial<Travel>) => void;
 }
 
 const initialState = {
@@ -107,7 +102,7 @@ export const useAuthStore = create<AuthState>()(
 export const useDBStore = create<AccountState>((set) => ({
   ...initialState,
 
-  setState: (user, trips, locations, itinerary, budgets, travel) =>
+  setState: (user, trips, locations, itinerary, budgets) =>
     set({
       uid: user.uid,
       email: user.email,
@@ -117,7 +112,6 @@ export const useDBStore = create<AccountState>((set) => ({
       locations,
       itinerary,
       budgets,
-      travels: travel,
     }),
 
   clearState: () => set(initialState),
@@ -216,17 +210,6 @@ export const useDBStore = create<AccountState>((set) => ({
     set((state) => ({
       budgets: state.budgets.map((budget) =>
         budget.id === budgetId ? { ...budget, ...updates } : budget,
-      ),
-    })),
-
-  addTravel: (travel) =>
-    set((state) => ({
-      travels: [...state.travels, travel],
-    })),
-  updateTravel: (travelId, updates) =>
-    set((state) => ({
-      travels: state.travels.map((travel) =>
-        travel.id === travelId ? { ...travel, ...updates } : travel,
       ),
     })),
 }));

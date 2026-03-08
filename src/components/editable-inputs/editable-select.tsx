@@ -1,4 +1,4 @@
-import { Box, Text, Select } from "@mantine/core";
+import { Text, Select } from "@mantine/core";
 import { ALL_HOTELS } from "constants/hotels";
 import { useState, useMemo } from "react";
 import type { HotelProps } from "types/hotel";
@@ -19,7 +19,7 @@ export const EditableSelect = ({
 }: Props) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<string | null>(
-    accommodation ? accommodation.name : null
+    accommodation ? accommodation.name : null,
   );
 
   const filteredAccommodations = useMemo(() => {
@@ -40,48 +40,37 @@ export const EditableSelect = ({
     setEditing(false);
   };
 
-  return (
-    <Box
-      style={{
-        borderBottom: "1px solid #000",
-        borderRight: "1px solid #000",
-        textTransform: "capitalize",
-        padding: "8px 16px",
+  return !editing ? (
+    <Text
+      size="sm"
+      mt="0.5rem"
+      onClick={() => setEditing(true)}
+      styles={{
+        root: {
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          cursor: "pointer",
+          textDecoration: "none",
+
+          "&:hover": {
+            textDecoration: "underline",
+          },
+        },
       }}
     >
-      {!editing ? (
-        <Text
-          size="sm"
-          mt="0.5rem"
-          onClick={() => setEditing(true)}
-          styles={{
-            root: {
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              cursor: "pointer",
-              textDecoration: "none",
-
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            },
-          }}
-        >
-          {accommodation?.name ?? "none"}
-          <FaChevronDown style={{ margin: "auto 0" }} />
-        </Text>
-      ) : (
-        <Select
-          value={value}
-          data={filteredAccommodations.map(({ name }) => name)}
-          onChange={handleSave}
-          onBlur={() => setEditing(false)}
-          size="xs"
-          autoFocus
-          searchable
-        />
-      )}
-    </Box>
+      {accommodation?.name ?? "none"}
+      <FaChevronDown style={{ margin: "auto 0" }} />
+    </Text>
+  ) : (
+    <Select
+      value={value}
+      data={filteredAccommodations.map(({ name }) => name)}
+      onChange={handleSave}
+      onBlur={() => setEditing(false)}
+      size="xs"
+      autoFocus
+      searchable
+    />
   );
 };

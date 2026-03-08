@@ -80,9 +80,9 @@ export const RegisterForm = () => {
       const user = await getUser(newUser.uid);
       if (user && newUser) {
         setUser(newUser);
-        setState(user, [], [], [], [], []);
+        setState(user, [], [], [], []);
 
-        logger.info(`User (${newUser}) created.`);
+        logger.info(`User (${newUser.uid}) created.`);
         showNotification({
           message: "Registration successful",
           color: "green.7",
