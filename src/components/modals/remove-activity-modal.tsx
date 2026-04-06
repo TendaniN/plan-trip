@@ -11,12 +11,11 @@ import {
 } from "@mantine/core";
 import { FaRegTrashCan } from "react-icons/fa6";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
 import logger from "utils/logger";
 
 import { Button } from "components";
 import { useState } from "react";
+import { deleteActivity } from "api/itinerary";
 
 export const RemoveActivityModal = ({
   locationId,
@@ -28,17 +27,9 @@ export const RemoveActivityModal = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [removing, setRemoving] = useState(false);
 
-  const { removeActivity } = useDBStore((state) => state);
-
-  const deleteActivity = async () => {
+  const removeActivity = async () => {
     try {
-      await db.locations.update(locationId, (location) => {
-        location.itinerary = location.itinerary.filter(
-          (id) => id !== activityId
-        );
-      });
-      await db.itinerary.delete(activityId);
-      removeActivity(locationId, activityId);
+      await deleteActivity(locationId, activityId);
 
       logger.info(`Removed (${activityId}) from Location (${locationId}).`);
 
@@ -52,7 +43,7 @@ export const RemoveActivityModal = ({
 
   const handleDelete = () => {
     setRemoving(true);
-    deleteActivity();
+    removeActivity();
   };
 
   return (

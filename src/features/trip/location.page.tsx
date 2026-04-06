@@ -7,6 +7,7 @@ import {
   Select,
   ActionIcon,
   Collapse,
+  Table,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useParams } from "react-router-dom";
@@ -31,79 +32,26 @@ import {
   EditableTextareaInput,
   ProtectedRoute,
 } from "components";
-import { useDBStore, useLocation, useTrip } from "db/store";
-import { db } from "db";
+import { useDBStore, useLocation, useTrip } from "db";
 import logger from "utils/logger";
 import { type DexieError } from "dexie";
-import { ALL_HOTELS } from "constants/hotels";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sum } from "utils/sum";
 import { editLocationHotel } from "api/location";
-
-const getColumnStyle = (last = false) => {
-  return {
-    borderBottom: "1px solid #000",
-    borderRight: last ? "" : "1px solid #000",
-    textTransform: "capitalize",
-    padding: "8px 16px",
-    display: "flex",
-  };
-};
-
-const GridHeader = [
-  {
-    id: "collapse",
-    style: getColumnStyle(),
-    label: "",
-  },
-  {
-    id: "item",
-    style: getColumnStyle(),
-    label: "",
-  },
-  {
-    id: "date",
-    style: getColumnStyle(),
-    label: "Date",
-  },
-  {
-    id: "activity",
-    style: getColumnStyle(),
-    label: "Activity",
-  },
-  {
-    id: "time",
-    style: getColumnStyle(),
-    label: "Time",
-  },
-  {
-    id: "link",
-    style: getColumnStyle(),
-    label: "Link",
-  },
-  {
-    id: "cost",
-    style: getColumnStyle(),
-    label: "Cost",
-  },
-  {
-    id: "duration",
-    style: getColumnStyle(),
-    label: "Duration",
-  },
-  {
-    id: "remove",
-    style: getColumnStyle(true),
-    label: "",
-  },
-];
+import { searchHotels } from "api/hotel";
+import type { Hotel } from "types";
+import { editItineraryActivity } from "api/itinerary";
+import { ItineraryTableHeader } from "constants/headers";
 
 const LocationPage = () => {
   const [selectedCollapse, setSelectedCollapse] = useState<string | null>(null);
+  const [hotelOptions, setHotelOptions] = useState<
+    { value: string; label: string; hotel: Hotel }[]
+  >([]);
 
   const { tripId, locationId } = useParams();
 
-  const { updateActivity, itinerary, currency } = useDBStore((state) => state);
+  const { itinerary, currency } = useDBStore((state) => state);
 
   const trip = useTrip(tripId);
   const location = useLocation(locationId);
@@ -111,19 +59,26 @@ const LocationPage = () => {
     (itinerary) => itinerary.locationId === locationId,
   );
 
+  useEffect(() => {
+    if (!location?.city) return;
+
+    const load = async () => {
+      const { combined } = await searchHotels(location.city);
+
+      setHotelOptions(
+        combined.map((h) => ({
+          value: h.placeId,
+          label: `${h.name} (${h.rating ?? "-"}⭐)`,
+          hotel: h,
+        })),
+      );
+    };
+
+    load();
+  }, [location?.city]);
+
   if (tripId === undefined || !trip) return null;
   if (locationId === undefined || !location) return null;
-
-  const getAccommodations = () => {
-    if (location) {
-      const hotels = ALL_HOTELS.find(({ type }) => type === location.city);
-      if (hotels) {
-        return hotels.hotels;
-      }
-      return [];
-    }
-    return [];
-  };
 
   const items = [
     { title: "Home", to: "/", icon: <FaHouse /> },
@@ -135,22 +90,16 @@ const LocationPage = () => {
     },
   ];
 
-  const updateLocationHotel = async (hotel: string | null) => {
-    const accommodation = hotel
-      ? getAccommodations().find(({ name }) => name === hotel)
-      : undefined;
-    if (!accommodation) return;
-
+  const updateLocationHotel = async (hotel: Hotel) => {
     try {
-      await editLocationHotel(locationId, tripId, accommodation);
-      logger.info("Location accommodation was updated.");
+      await editLocationHotel(locationId, tripId, hotel);
+
       showNotification({
         message: "Location accommodation updated.",
         color: "green.7",
         icon: <FaCheck />,
       });
     } catch (error) {
-      logger.error("Location accommodation was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
         message: (error as DexieError).message,
@@ -162,8 +111,12 @@ const LocationPage = () => {
 
   const updateActivityDate = async (id: string, date: string) => {
     try {
-      await db.itinerary.where({ id }).modify({ date });
-      updateActivity(id, { date });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { date },
+      });
       logger.info("Itinerary date was updated.");
       showNotification({
         message: "Itinerary date was updated.",
@@ -183,8 +136,12 @@ const LocationPage = () => {
 
   const updateItineraryLink = async (id: string, link: string) => {
     try {
-      await db.itinerary.where({ id }).modify({ link });
-      updateActivity(id, { link });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { link },
+      });
       logger.info("Itinerary link was updated.");
       showNotification({
         message: "Itinerary link was updated.",
@@ -204,8 +161,12 @@ const LocationPage = () => {
 
   const updateItineraryActivity = async (id: string, activity: string) => {
     try {
-      await db.itinerary.where({ id }).modify({ activity });
-      updateActivity(id, { activity });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { activity },
+      });
       logger.info("Itinerary activity was updated.");
       showNotification({
         message: "Itinerary activity was updated.",
@@ -225,9 +186,12 @@ const LocationPage = () => {
 
   const updateActivityCost = async (id: string, cost: string | number) => {
     try {
-      await db.itinerary.where({ id }).modify({ cost });
-      updateActivity(id, { cost });
-
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { cost },
+      });
       logger.info("Itinerary cost was updated.");
       showNotification({
         message: "Itinerary cost was updated.",
@@ -250,8 +214,12 @@ const LocationPage = () => {
     duration: number | string,
   ) => {
     try {
-      await db.itinerary.where({ id }).modify({ duration: Number(duration) });
-      updateActivity(id, { duration: Number(duration) });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { duration: Number(duration) },
+      });
       logger.info("Itinerary duration was updated.");
       showNotification({
         message: "Itinerary duration was updated.",
@@ -271,8 +239,12 @@ const LocationPage = () => {
 
   const updateActivityTime = async (id: string, time: string) => {
     try {
-      await db.itinerary.where({ id }).modify({ time });
-      updateActivity(id, { time });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { time },
+      });
       logger.info("Itinerary time was updated.");
       showNotification({
         message: "Itinerary time was updated.",
@@ -292,8 +264,12 @@ const LocationPage = () => {
 
   const updateActivityDescription = async (id: string, description: string) => {
     try {
-      await db.itinerary.where({ id }).modify({ description });
-      updateActivity(id, { description });
+      await editItineraryActivity({
+        locationId,
+        tripId,
+        activityId: id,
+        change: { description },
+      });
       logger.info("Itinerary description was updated.");
       showNotification({
         message: "Itinerary description was updated.",
@@ -342,14 +318,20 @@ const LocationPage = () => {
               </Flex>
               <Flex justify="space-between">
                 <Text fw={600} fz="md" my="auto">{`For ${trip.name}`}</Text>
+
                 <Select
-                  value={location.accommodation?.name}
-                  data={getAccommodations().map(({ name }) => name)}
-                  onChange={updateLocationHotel}
-                  size="sm"
-                  searchable
-                  clearable={false}
+                  value={location.accommodation?.placeId}
+                  data={hotelOptions}
+                  onChange={(val) => {
+                    const hotel = hotelOptions.find(
+                      (h) => h.value === val,
+                    )?.hotel;
+                    if (hotel) updateLocationHotel(hotel);
+                  }}
                   rightSection={<FaChevronDown size="0.75rem" color="#000" />}
+                  searchable
+                  size="sm"
+                  clearable={false}
                   styles={{
                     root: {
                       border: "2px solid #000",
@@ -375,33 +357,29 @@ const LocationPage = () => {
                     Itinerary
                   </Title>
 
-                  <AddActivityModal location={location} />
+                  <AddActivityModal tripId={tripId} location={location} />
                 </Flex>
               </Box>
-              <Box>
-                <Flex
-                  bg="primary.3"
-                  bd="6px solid #000"
-                  bdrs={12}
-                  w="100%"
-                  h="calc(100vh - 19rem)"
-                  direction="column"
-                >
-                  <Box
-                    display="grid"
-                    w="100%"
-                    bg="#fff"
-                    style={{
-                      gridTemplateColumns:
-                        "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
-                    }}
-                  >
-                    {GridHeader.map(({ id, label, style }) => (
-                      <Box key={`table-header-${id}`} style={style} fw={600}>
+              <Table
+                bg="primary.3"
+                bd="6px solid #000"
+                bdrs={12}
+                w="100%"
+                layout="fixed"
+                borderColor="#000"
+                withRowBorders
+                withColumnBorders
+              >
+                <Table.Thead>
+                  <Table.Tr bg="#fff">
+                    {ItineraryTableHeader.map(({ id, label }) => (
+                      <Table.Th key={`table-header-${id}`} fw={600}>
                         {label}
-                      </Box>
+                      </Table.Th>
                     ))}
-                  </Box>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {locationItinerary
                     .sort(
                       (a, b) =>
@@ -422,24 +400,11 @@ const LocationPage = () => {
                         index,
                       ) => (
                         <>
-                          <Box
+                          <Table.Tr
                             key={`table-row-${id}`}
-                            display="grid"
-                            w="100%"
-                            fz="sm"
                             bg={index % 2 === 0 ? "purple.2" : "blue.2"}
-                            style={{
-                              gridTemplateColumns:
-                                "3% 4% 15.33% 15.33% 9.66% 26% 10.33% 10.33% 6%",
-                            }}
                           >
-                            <Box
-                              style={{
-                                borderBottom: "1px solid #000",
-                                borderRight: "1px solid #000",
-                                padding: "8px",
-                              }}
-                            >
+                            <Table.Td>
                               <ActionIcon
                                 variant="light"
                                 color="blue.9"
@@ -456,54 +421,61 @@ const LocationPage = () => {
                                   <FaPlus />
                                 )}
                               </ActionIcon>
-                            </Box>
-                            <Box style={getColumnStyle()}>
-                              <Text size="sm" mt="0.5rem" mx="auto">
-                                {index + 1}
-                              </Text>
-                            </Box>
-                            <EditableDateInput
-                              id={id}
-                              date={date}
-                              start
-                              onChange={updateActivityDate}
-                            />
-                            <EditableTextInput
-                              id={id}
-                              text={activity}
-                              onChange={updateItineraryActivity}
-                            />
-                            <EditableTimeInput
-                              id={id}
-                              text={time}
-                              onChange={updateActivityTime}
-                            />
-                            <EditableTextInput
-                              id={id}
-                              text={link}
-                              onChange={updateItineraryLink}
-                            />
-                            <EditableNumberInput
-                              id={id}
-                              text={cost}
-                              preText={`${currency} `}
-                              onChange={updateActivityCost}
-                            />
-                            <EditableNumberInput
-                              id={id}
-                              text={duration}
-                              postText="hours"
-                              onChange={updateActivityDuration}
-                            />
-                            <Box style={getColumnStyle(true)}>
-                              {locationItinerary.length > 1 && (
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableDateInput
+                                id={id}
+                                date={date}
+                                start
+                                onChange={updateActivityDate}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableTextInput
+                                id={id}
+                                text={activity}
+                                onChange={updateItineraryActivity}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableTimeInput
+                                id={id}
+                                text={time}
+                                onChange={updateActivityTime}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableTextInput
+                                id={id}
+                                text={link}
+                                onChange={updateItineraryLink}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableNumberInput
+                                id={id}
+                                text={cost}
+                                preText={`${currency} `}
+                                onChange={updateActivityCost}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              <EditableNumberInput
+                                id={id}
+                                text={duration}
+                                postText="hours"
+                                onChange={updateActivityDuration}
+                              />
+                            </Table.Td>
+                            <Table.Td>
+                              {trip.locations.length > 1 && (
                                 <RemoveActivityModal
                                   locationId={locationId}
                                   activityId={id}
                                 />
                               )}
-                            </Box>
-                          </Box>
+                            </Table.Td>
+                          </Table.Tr>
                           <Collapse
                             in={selectedCollapse === id}
                             p={12}
@@ -520,46 +492,33 @@ const LocationPage = () => {
                       ),
                     )}
                   {locationItinerary.length > 0 && (
-                    <Box
-                      display="grid"
-                      w="100%"
+                    <Table.Tr
+                      classNames={{ tr: "final-table-row" }}
+                      fw="bold"
                       fz="sm"
                       bg="primary.2"
-                      style={{
-                        gridTemplateColumns: "73.34% 26.66%",
-                      }}
+                      tt="capitalize"
                     >
-                      <Box
+                      <Table.Td></Table.Td>
+                      <Table.Td></Table.Td>
+                      <Table.Td></Table.Td>
+                      <Table.Td
+                        ta="right"
                         style={{
-                          borderRight: "1px solid #000",
-                          borderBottom: "1px solid #000",
-                          padding: "8px 16px",
-                          display: "flex",
                           justifyContent: "flex-end",
                         }}
                       >
-                        <Text fw="bold" size="sm" my="auto" ta="right">
-                          Total itinerary cost
-                        </Text>
-                      </Box>
-                      <Box
-                        style={{
-                          textTransform: "capitalize",
-                          borderBottom: "1px solid #000",
-                          padding: "8px 16px",
-                          display: "flex",
-                        }}
-                      >
-                        <Text fw="bold" size="sm" my="auto">
-                          {`R ${sum(
-                            locationItinerary.map(({ cost }) => Number(cost)),
-                          )}`}
-                        </Text>
-                      </Box>
-                    </Box>
+                        Total itinerary cost
+                      </Table.Td>
+                      <Table.Td>{`R ${sum(
+                        locationItinerary.map(({ cost }) => Number(cost)),
+                      )}`}</Table.Td>
+                      <Table.Td></Table.Td>
+                      <Table.Td></Table.Td>
+                    </Table.Tr>
                   )}
-                </Flex>
-              </Box>
+                </Table.Tbody>
+              </Table>
             </Flex>
           </Flex>
         )}
