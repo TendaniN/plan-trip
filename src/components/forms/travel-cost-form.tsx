@@ -24,11 +24,10 @@ import { createTravel } from "api/budget";
 
 interface Props {
   tripId: string;
-  budgetId: string;
   close: () => void;
 }
 
-export const TravelCostForm = ({ tripId, budgetId, close }: Props) => {
+export const TravelCostForm = ({ tripId, close }: Props) => {
   const [creating, setCreating] = useState(false);
 
   const travelId = useId();
