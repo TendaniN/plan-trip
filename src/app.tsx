@@ -7,8 +7,8 @@ import { Notifications } from "@mantine/notifications";
 import { BrowserRouter } from "react-router-dom";
 import { MantineEmotionProvider, emotionTransform } from "@mantine/emotion";
 
-import AppRoutes from "routes/index";
 import "./styles.css";
+import { Pages } from "pages";
 
 const theme = createTheme({
   fontFamily: "Inter, system-ui, sans-serif",
@@ -102,7 +102,7 @@ export default function App() {
         <Notifications />
         <BrowserRouter basename="/plan-trip">
           <ContainerWrapper>
-            <AppRoutes />
+            <Pages />
           </ContainerWrapper>
         </BrowserRouter>
       </MantineEmotionProvider>

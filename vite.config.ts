@@ -13,7 +13,6 @@ export default defineConfig({
       constants: "/src/constants",
       pages: "/src/pages",
       features: "/src/features",
-      routes: "/src/routes",
       types: "/src/types",
       db: "/src/db",
       utils: "/src/utils",

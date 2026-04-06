@@ -26,8 +26,6 @@
 
       "features/*": ["./src/features/*"],
 
-      "routes/*": ["./src/routes/*"],
-
       "types": ["./src/types/index.tsx"],
 
       "db": ["./src/db/index.ts"],
