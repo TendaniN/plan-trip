@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm, matchesField } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 
 import logger from "utils/logger";
 import { Button } from "components";

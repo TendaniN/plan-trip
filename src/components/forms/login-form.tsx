@@ -3,14 +3,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 
 import logger from "utils/logger";
 import { Button } from "components";
 import { showNotification } from "@mantine/notifications";
 import { loginUser } from "api/auth";
 import { getBudgets, getTrips } from "api/trip";
-import { getLocations, getItineraryActivities } from "api/location";
+import { getLocations } from "api/location";
+import { getItineraryActivities } from "api/itinerary";
 
 export const LoginForm = () => {
   const navigate = useNavigate();

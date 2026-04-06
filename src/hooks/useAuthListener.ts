@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "api/firebase";
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 import { getUser } from "api/user";
 import { useNavigate } from "react-router-dom";
 import logger from "utils/logger";

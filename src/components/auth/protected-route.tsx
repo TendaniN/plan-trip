@@ -1,5 +1,5 @@
 import { Flex, Loader } from "@mantine/core";
-import { useAuthStore } from "db/store";
+import { useAuthStore } from "db";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { uid } = useAuthStore((state) => state);
