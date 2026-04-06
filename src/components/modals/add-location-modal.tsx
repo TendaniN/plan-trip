@@ -5,7 +5,7 @@ import { Button, LocationForm } from "components";
 
 import { FaPlus } from "react-icons/fa6";
 
-import type { Trip } from "types/db";
+import type { Trip } from "types";
 
 import { MAX_DB_ENTRIES } from "constants/db";
 

@@ -3,19 +3,21 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
-import { db } from "db";
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 
 import logger from "utils/logger";
 import { Button } from "components";
 import { showNotification } from "@mantine/notifications";
 import { loginUser } from "api/auth";
+import { getBudgets, getTrips } from "api/trip";
+import { getLocations } from "api/location";
+import { getItineraryActivities } from "api/itinerary";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { setState, trips } = useDBStore((state) => state);
+  const { setState } = useDBStore((state) => state);
   const setUser = useAuthStore((state) => state.setUser);
 
   const [submitting, setSubmitting] = useState(false);
@@ -37,19 +39,12 @@ export const LoginForm = () => {
       const user = await loginUser(email, password);
       if (user) {
         setUser(user.authUser);
-        const locations = await db.locations.toArray();
-        const itinerary = await db.itinerary.toArray();
-        const budgets = await db.budgets.toArray();
-        const travels = await db.travels.toArray();
+        const trips = await getTrips(user.userDoc.uid);
+        const locations = await getLocations();
+        const itinerary = await getItineraryActivities();
+        const budgets = await getBudgets();
 
-        setState(
-          user.userDoc,
-          trips.filter((trip) => trip.userId === user.authUser.uid),
-          locations,
-          itinerary,
-          budgets,
-          travels,
-        );
+        setState(user.userDoc, trips, locations, itinerary, budgets);
         logger.info(`User (${user.authUser.email}) logged in.`);
         showNotification({ message: "Login successful", color: "green.7" });
 

@@ -1,6 +1,5 @@
 import type { CityValues } from "constants/city";
 import type { CountryValues } from "constants/country";
-import type { HotelProps } from "./hotel";
 
 export interface Itinerary {
   id: string;
@@ -22,7 +21,7 @@ export interface Location {
   start_date: string;
   end_date: string;
   nights: number;
-  accommodation?: HotelProps;
+  accommodation?: SavedHotel | null;
   itinerary: string[];
 }
 
@@ -40,6 +39,9 @@ export interface Travel {
 export interface Budget {
   id: string;
   tripId: string;
+  accommodationTotal: number;
+  itineraryTotal: number;
+  travel: Travel[];
   buffer: number;
 }
 
@@ -61,3 +63,25 @@ export interface User {
   email: string;
   trips: string[];
 }
+
+// CORE (aligned with SerpApi)
+export interface Hotel {
+  id: string; // internal or placeId
+  placeId: string;
+  name: string;
+  city: string;
+  area?: string;
+  rating: number;
+  reviewCount: number;
+  stars?: number;
+  description?: string;
+  link: string;
+  image?: string;
+}
+
+export interface SavedHotel extends Hotel {
+  price?: string | number;
+  createdAt?: string;
+}
+
+export type CostProps = "Accommodation" | "Itinerary" | "Buffer" | "Travel";

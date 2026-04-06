@@ -2,15 +2,16 @@ import { useDisclosure } from "@mantine/hooks";
 import { ModalRoot, ModalOverlay, ModalContent, Title } from "@mantine/core";
 import { ActivityForm, Button } from "components";
 import { FaPlus } from "react-icons/fa6";
-import type { Location } from "types/db";
+import type { Location } from "types";
 
 import { MAX_DB_ENTRIES } from "constants/db";
 
 interface Props {
+  tripId: string;
   location: Location;
 }
 
-export const AddActivityModal = ({ location }: Props) => {
+export const AddActivityModal = ({ tripId, location }: Props) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
@@ -21,7 +22,7 @@ export const AddActivityModal = ({ location }: Props) => {
           <Title ta="center" order={4} td="underline">
             New Activity
           </Title>
-          <ActivityForm close={close} location={location} />
+          <ActivityForm close={close} tripId={tripId} location={location} />
         </ModalContent>
       </ModalRoot>
       <Button

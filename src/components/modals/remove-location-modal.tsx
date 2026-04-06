@@ -11,12 +11,11 @@ import {
 } from "@mantine/core";
 import { FaRegTrashCan } from "react-icons/fa6";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
 import logger from "utils/logger";
 
 import { Button } from "components";
 import { useState } from "react";
+import { deleteLocation } from "api/location";
 
 export const RemoveLocationModal = ({
   tripId,
@@ -28,15 +27,9 @@ export const RemoveLocationModal = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [removing, setRemoving] = useState(false);
 
-  const { removeLocation } = useDBStore((state) => state);
-
-  const deleteLocation = async () => {
+  const removeLocation = async () => {
     try {
-      await db.trips.update(tripId, (trip) => {
-        trip.locations = trip.locations.filter((id) => id !== locationId);
-      });
-      await db.locations.delete(locationId);
-      removeLocation(tripId, locationId);
+      await deleteLocation(tripId, locationId);
 
       logger.info(`Removed (${locationId}) from Trip (${tripId}).`);
 
@@ -50,7 +43,7 @@ export const RemoveLocationModal = ({
 
   const handleDelete = () => {
     setRemoving(true);
-    deleteLocation();
+    removeLocation();
   };
 
   return (

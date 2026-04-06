@@ -4,20 +4,17 @@ import { DateInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { Button } from "components";
 import { CITY_MAP, type CityValues } from "constants/city";
-import type { HotelProps } from "types/hotel";
 import { FaCheck, FaX } from "react-icons/fa6";
-import { ALL_HOTELS } from "constants/hotels";
-import { useMemo, useState, useId } from "react";
-import type { Trip } from "types/db";
-import { calcDaysBetween } from "utils/calc-days-between";
+import { useState, useEffect } from "react";
+import type { Trip, Hotel } from "types";
 import type { CountryValues } from "constants/country";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
+import { createLocation } from "api/location";
+import { searchHotels } from "api/hotel";
 
 interface Props {
   trip: Trip;
@@ -26,12 +23,17 @@ interface Props {
 
 export const LocationForm = ({ trip, close }: Props) => {
   const [creating, setCreating] = useState(false);
+  const [loadingHotels, setLoadingHotels] = useState(false);
+  const [hotelOptions, setHotelOptions] = useState<
+    { value: string; label: string; hotel: Hotel }[]
+  >([]);
 
-  const locationId = useId();
-
-  const { updateTrip, addLocation } = useDBStore((state) => state);
-
-  const { values, getInputProps, onSubmit, reset } = useForm({
+  const { values, getInputProps, onSubmit, reset, setFieldValue } = useForm<{
+    city: CityValues | "";
+    start_date: string;
+    end_date: string;
+    accommodation: string;
+  }>({
     initialValues: {
       city: "",
       start_date: "",
@@ -46,106 +48,101 @@ export const LocationForm = ({ trip, close }: Props) => {
     },
   });
 
-  const filteredAccommodations = useMemo(() => {
-    if (values.city !== "") {
-      const hotels = ALL_HOTELS.find(({ type }) => type === values.city);
-      if (hotels) {
-        return hotels.hotels;
+  useEffect(() => {
+    const loadHotels = async () => {
+      if (!values.city) return;
+
+      setLoadingHotels(true);
+
+      try {
+        const { combined } = await searchHotels(values.city);
+
+        setHotelOptions(
+          combined.map((hotel) => ({
+            value: hotel.placeId,
+            label: `${hotel.name} (${hotel.rating ?? "-"}⭐)`,
+            hotel,
+          })),
+        );
+      } catch (err) {
+        logger.error("Failed to load hotels", err);
       }
-      return [];
-    }
-    return [];
+
+      setLoadingHotels(false);
+    };
+
+    loadHotels();
   }, [values.city]);
 
-  const createLocation = async (
+  const addLocation = async (
     city: CityValues,
     country: CountryValues,
     start: string,
     end: string,
-    accommodation?: HotelProps,
+    accommodation?: Hotel,
   ) => {
-    const location = {
-      id: locationId,
-      tripId: trip.id,
-      city,
-      country,
-      start_date: start,
-      end_date: end,
-      nights: calcDaysBetween(start, end),
-      accommodation,
-      itinerary: [],
-    };
     try {
-      let start_date = trip.start_date;
-      if (dayjs(start).isBefore(dayjs(start_date))) {
-        start_date = dayjs(start, DEFAULT_DATE_FORMAT).format(
-          DEFAULT_DATE_FORMAT,
-        );
-      }
-      let end_date = trip.end_date;
-      if (dayjs(end).isAfter(dayjs(end_date))) {
-        end_date = dayjs(end, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT);
-      }
-      await db.trips.update(trip.id, {
-        start_date: start_date,
-        end_date: end_date,
-        locations: [...trip.locations, locationId],
+      await createLocation({
+        tripId: trip.id,
+        city,
+        country,
+        start,
+        end,
+        accommodation,
       });
-      await db.locations.add(location);
-      addLocation(location);
-      updateTrip(trip.id, { locations: [...trip.locations, locationId] });
 
-      logger.info(`Location (${locationId}) added to Trip (${trip.id}).`);
       showNotification({
         message: `Location - ${city} - was added.`,
         color: "green.7",
         icon: <FaCheck />,
       });
+
       setCreating(false);
       handleClose();
     } catch (error) {
-      logger.error("Failed to add location:" + error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
+
       setCreating(false);
     }
   };
 
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
+
+    if (!vals.city) return;
+
     const country = CITY_MAP.find(
       ({ cities }) => cities.filter((val) => val === vals.city).length > 0,
     );
 
-    const hotel = vals.accommodation
-      ? filteredAccommodations.find(({ name }) => name === vals.accommodation)
-      : undefined;
+    const selectedHotel = hotelOptions.find(
+      (h) => h.value === vals.accommodation,
+    )?.hotel;
 
     if (country) {
-      createLocation(
+      addLocation(
         vals.city as CityValues,
         country.country as CountryValues,
         vals.start_date,
         vals.end_date,
-        hotel,
+        selectedHotel,
       );
     }
   };
 
   const handleClose = () => {
     reset();
+    setHotelOptions([]);
     close();
   };
 
   const formDisabled =
-    values.city === "" ||
-    values.start_date === "" ||
-    values.end_date === "" ||
-    creating;
+    !values.city || !values.start_date || !values.end_date || creating;
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
@@ -198,19 +195,17 @@ export const LocationForm = ({ trip, close }: Props) => {
             {...getInputProps("end_date")}
           />
         </Flex>
-        <Flex>
-          <Select
-            w="100%"
-            radius="md"
-            label="Accommodation"
-            placeholder="Select a place to stay"
-            value={values.accommodation}
-            disabled={values.city === ""}
-            data={filteredAccommodations.map(({ name }) => name)}
-            {...getInputProps("accommodation")}
-          />
-        </Flex>
-        <Button type="submit" color="purple.3" w="100%" disabled={formDisabled}>
+        <Select
+          label="Accommodation"
+          placeholder="Search hotels..."
+          data={hotelOptions}
+          value={values.accommodation}
+          onChange={(val) => setFieldValue("accommodation", val || "")}
+          disabled={!values.city}
+          searchable
+          nothingFoundMessage={loadingHotels ? "Loading..." : "No hotels found"}
+        />
+        <Button type="submit" disabled={formDisabled}>
           Add Location
         </Button>
       </Flex>

@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm, matchesField } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader } from "@mantine/core";
 
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 
 import logger from "utils/logger";
 import { Button } from "components";
@@ -80,9 +80,9 @@ export const RegisterForm = () => {
       const user = await getUser(newUser.uid);
       if (user && newUser) {
         setUser(newUser);
-        setState(user, [], [], [], [], []);
+        setState(user, [], [], [], []);
 
-        logger.info(`User (${newUser}) created.`);
+        logger.info(`User (${newUser.uid}) created.`);
         showNotification({
           message: "Registration successful",
           color: "green.7",

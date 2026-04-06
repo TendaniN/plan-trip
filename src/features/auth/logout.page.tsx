@@ -1,6 +1,6 @@
 import { Flex, Loader } from "@mantine/core";
 import { logoutUser } from "api/auth";
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 import { useEffect } from "react";
 
 const LogoutPage = () => {

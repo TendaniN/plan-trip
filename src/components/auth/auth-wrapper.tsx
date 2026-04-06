@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { useAuthStore } from "db/store";
+import { useAuthStore } from "db";
 
 interface Props {
   renderDenied: ReactNode;

@@ -1,7 +1,7 @@
 import { Container, Title, Box, Flex, Alert } from "@mantine/core";
 import { LinkButton, TripForm, ProtectedRoute } from "components";
 import { MAX_DB_ENTRIES } from "constants/db";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import { FaEye, FaCircleInfo } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";

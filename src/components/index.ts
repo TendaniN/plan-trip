@@ -27,6 +27,7 @@ import { AddCostModal } from "./modals/add-cost-modal";
 
 import { EditableDateInput } from "./editable-inputs/editable-date-input";
 import { EditableNumberInput } from "./editable-inputs/editable-number-input";
+import { EditableCostInput } from "./editable-inputs/editable-cost-input";
 import { EditableSelect } from "./editable-inputs/editable-select";
 import { EditableTextInput } from "./editable-inputs/editable-text-input";
 import { EditableTextareaInput } from "./editable-inputs/editable-textarea-input";
@@ -64,6 +65,7 @@ export {
   EditableTextInput,
   EditableTextareaInput,
   EditableTimeInput,
+  EditableCostInput,
   CurrencyDropdown,
   InfoTooltip,
 };

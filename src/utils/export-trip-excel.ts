@@ -2,9 +2,8 @@ import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { sum } from "./sum";
 import { workingSumDays } from "./sum-days";
-import type { Budget, Location, Trip } from "types/db";
-import { useDBStore } from "db/store";
-import { ALL_HOTELS } from "constants/hotels";
+import type { Budget, Location, Trip } from "types";
+import { useDBStore } from "db";
 
 const summarySheet = (
   locations: Location[],

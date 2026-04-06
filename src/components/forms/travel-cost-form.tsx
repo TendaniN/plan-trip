@@ -14,25 +14,26 @@ import { Button } from "components";
 import { FaCheck, FaX, FaRegClock } from "react-icons/fa6";
 import { useState, useId } from "react";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { useRef } from "react";
+import { createTravel } from "api/budget";
 
 interface Props {
   tripId: string;
+  budgetId: string;
   close: () => void;
 }
 
-export const TravelCostForm = ({ tripId, close }: Props) => {
+export const TravelCostForm = ({ tripId, budgetId, close }: Props) => {
   const [creating, setCreating] = useState(false);
 
   const travelId = useId();
 
-  const { addTravel, currency } = useDBStore((state) => state);
+  const { currency } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -54,7 +55,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
     },
   });
 
-  const createCost = async (
+  const addTravelCost = async (
     date: string,
     cost: number,
     type: "flight" | "train" | "bus" | "car",
@@ -62,20 +63,15 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
     time: string,
     carrier: string,
   ) => {
-    const newCost = {
-      id: travelId,
-      tripId,
-      date,
-      type,
-      duration,
-      time,
-      carrier,
-      cost,
-    };
     try {
-      await db.travels.add(newCost);
-      addTravel(newCost);
-
+      await createTravel(tripId, budgetId, {
+        date,
+        type,
+        duration,
+        time,
+        carrier,
+        cost,
+      });
       logger.info(`Travel cost (${travelId}) added to Trip (${tripId}).`);
       showNotification({
         message: `Travel cost - ${type} - was added.`,
@@ -88,7 +84,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
       logger.error("Failed to add travel cost:" + error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -98,7 +94,7 @@ export const TravelCostForm = ({ tripId, close }: Props) => {
 
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
-    createCost(
+    addTravelCost(
       vals.date,
       vals.cost,
       vals.type as "flight" | "train" | "bus" | "car",

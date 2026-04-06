@@ -10,7 +10,7 @@ import {
 import { FaCircleUser, FaUserGear, FaDoorOpen } from "react-icons/fa6";
 import { createStyles } from "@mantine/emotion";
 
-import { useAuthStore, useDBStore } from "db/store";
+import { useAuthStore, useDBStore } from "db";
 import { Button } from "components";
 import { Link } from "react-router-dom";
 

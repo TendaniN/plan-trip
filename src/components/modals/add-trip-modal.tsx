@@ -6,7 +6,7 @@ import { Button, TripForm } from "components";
 import { FaPlus } from "react-icons/fa6";
 
 import { MAX_DB_ENTRIES } from "constants/db";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 
 export const AddTripModal = () => {
   const [opened, { open, close }] = useDisclosure(false);

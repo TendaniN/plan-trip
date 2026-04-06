@@ -13,29 +13,28 @@ import dayjs from "dayjs";
 import { Button } from "components";
 import { FaCheck, FaX, FaRegClock } from "react-icons/fa6";
 import { useState, useId } from "react";
-import type { Location } from "types/db";
+import type { Location } from "types";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { useRef } from "react";
+import { createItineraryActivity } from "api/itinerary";
 
 interface Props {
+  tripId: string;
   location: Location;
   close: () => void;
 }
 
-export const ActivityForm = ({ location, close }: Props) => {
+export const ActivityForm = ({ tripId, location, close }: Props) => {
   const [creating, setCreating] = useState(false);
 
   const activityId = useId();
 
-  const { updateLocation, addActivity, currency } = useDBStore(
-    (state) => state,
-  );
+  const { currency } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -57,7 +56,7 @@ export const ActivityForm = ({ location, close }: Props) => {
     },
   });
 
-  const createActivity = async (
+  const addActivity = async (
     date: string,
     activity: string,
     description: string,
@@ -66,25 +65,17 @@ export const ActivityForm = ({ location, close }: Props) => {
     link: string,
     cost: string | number,
   ) => {
-    const newActivity = {
-      id: activityId,
-      locationId: location.id,
-      date,
-      activity,
-      description,
-      time,
-      duration,
-      link,
-      cost,
-    };
     try {
-      await db.itinerary.add(newActivity);
-      await db.locations.update(location.id, {
-        itinerary: [...location.itinerary, activityId],
-      });
-      addActivity(newActivity);
-      updateLocation(location.id, {
-        itinerary: [...location.itinerary, activityId],
+      await createItineraryActivity({
+        locationId: location.id,
+        tripId,
+        date,
+        activity,
+        description,
+        time,
+        duration,
+        link,
+        cost,
       });
 
       logger.info(
@@ -101,7 +92,7 @@ export const ActivityForm = ({ location, close }: Props) => {
       logger.error("Failed to add itinerary activity:" + error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -111,7 +102,7 @@ export const ActivityForm = ({ location, close }: Props) => {
 
   const handleSubmit = (vals: typeof values) => {
     setCreating(true);
-    createActivity(
+    addActivity(
       vals.date,
       vals.activity,
       vals.description,

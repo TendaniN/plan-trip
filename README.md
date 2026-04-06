@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="http://plan-trip.co.za/">
+  <a href="https://tendanin.github.io/plan-trip/">
     <img src="https://img.shields.io/badge/live-demo-brightgreen" />
   </a>
 </p>
@@ -21,7 +21,7 @@
 **Plan-Trip** is a trip-planning web application designed to make organising complex trips easier and more structured.  
 It allows users to plan trips with multiple locations, manage itineraries, and keep track of budgets — all in one place.
 
-> **Current version:** `0.1.0`  
+> **Current version:** `0.2.0`  
 > 🚧 This project is under active development.
 
 ---
@@ -102,17 +102,50 @@ Types are fully defined in `src/types` and are shared across the app to ensure c
 
 ## 🗂️ Project Structure
 
+This project uses **feature-based architecture**
+
 ```txt
 src
-├── api          # API & external integrations
-├── assets
-│   └── branding # Logos and brand assets
-├── components   # Reusable UI components
-├── constants    # Static values (countries, cities, etc.)
-├── db           # Local database (Dexie / IndexedDB)
-├── pages        # Route-level pages
-├── types        # TypeScript domain models
-└── utils        # Helpers (PDF, PPT, formatting, calculations)
+│
+├─ api
+├─ assets
+├─ components
+├─ constants
+├─ db
+├─ hooks
+├─ layouts
+│   └─ AppLayout.tsx
+│
+├─ routes
+│   ├─ index.tsx
+│   ├─ auth.routes.ts
+│   ├─ trip.routes.ts
+│   └─ country.routes.ts
+│
+├─ features
+│   ├─ auth
+│   │   ├─ login.page.tsx
+│   │   ├─ register.page.tsx
+│   │   └─ logout.page.tsx
+│   │
+│   ├─ trip
+│   │   ├─ trips.page.tsx
+│   │   ├─ trip.page.tsx
+│   │   ├─ location.page.tsx
+│   │   └─ budget.page.tsx
+│   │
+│   ├─ country
+│   │    ├─ countries.page.tsx
+│   │    └─ accommodation.page.tsx
+│   │
+│   ├─ help
+│   │    └─ help.page.tsx
+│   │
+│   └─ home
+│       └─ home.page.tsx
+│
+├─ types
+└─ utils
 ```
 
 ---

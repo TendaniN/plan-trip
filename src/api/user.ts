@@ -1,6 +1,6 @@
 import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import type { User } from "types/db";
+import type { User } from "types";
 
 export const addTripToUser = async (uid: string, tripId: string) => {
   await updateDoc(doc(db, "users", uid), {
