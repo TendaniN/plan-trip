@@ -90,106 +90,6 @@ const locationSheet = async (location: Location, workbook: XLSX.WorkBook) => {
   XLSX.utils.book_append_sheet(workbook, ws, `${location.city} Itinerary`);
 };
 
-const accommodationSheet = async (
-  location: Location,
-  workbook: XLSX.WorkBook,
-) => {
-  const { currency, rate } = useDBStore.getState();
-
-  const hotels = ALL_HOTELS.find(({ type }) => type === location.city);
-  let hotelJSON: unknown[] = [];
-
-  if (hotels) {
-    hotelJSON = hotels.hotels.map((hotel, index) => [
-      index + 1,
-      hotel.name,
-      hotel.area,
-      hotel.room.title,
-      hotel.rating.booking,
-      hotel.rating.google,
-
-      Math.round(((hotel.rating.booking + hotel.rating.google) / 15) * 500) /
-        100,
-      Math.round(hotel.price * location.nights * rate * 100) / 100,
-      hotel.link,
-      hotel.stars,
-      hotel.breakfast,
-    ]);
-  }
-
-  const hotelAOA: unknown[][] = [
-    [
-      "#",
-      "Name",
-      "Area",
-      "Room",
-      "Ratings",
-      "",
-      "",
-      `Cost (in ${currency})`,
-      "Link",
-      "Stars",
-      "Breakfast Included",
-    ],
-    ["", "", "", "", "Booking", "Google", "Average", "", "", "", ""],
-  ];
-
-  const ws = XLSX.utils.aoa_to_sheet(hotelAOA.concat(hotelJSON));
-  hotelJSON.forEach((_, i) => {
-    const row = i + 3;
-    const cellRef = `H${row}`;
-
-    if (ws[cellRef]) {
-      ws[cellRef].z = `${currency}#,##0.00`;
-    }
-  });
-
-  ws["!merges"] = [
-    {
-      s: { r: 0, c: 4 },
-      e: { r: 0, c: 6 },
-    },
-    {
-      s: { r: 0, c: 0 },
-      e: { r: 1, c: 0 },
-    },
-    {
-      s: { r: 0, c: 1 },
-      e: { r: 1, c: 1 },
-    },
-    {
-      s: { r: 0, c: 2 },
-      e: { r: 1, c: 2 },
-    },
-    {
-      s: { r: 0, c: 3 },
-      e: { r: 1, c: 3 },
-    },
-    {
-      s: { r: 0, c: 7 },
-      e: { r: 1, c: 7 },
-    },
-    {
-      s: { r: 0, c: 8 },
-      e: { r: 1, c: 8 },
-    },
-    {
-      s: { r: 0, c: 9 },
-      e: { r: 1, c: 9 },
-    },
-    {
-      s: { r: 0, c: 10 },
-      e: { r: 1, c: 10 },
-    },
-  ];
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    ws,
-    `Accommodation in ${location.city}`,
-  );
-};
-
 const budgetSheet = async (
   budget: Budget,
   trip: Trip,
@@ -208,27 +108,25 @@ const budgetSheet = async (
     dayjs(trip.start_date).diff(dayjs(), "months", true),
   );
 
-  const { travels, itinerary, rate, currency } = useDBStore.getState();
+  const { itinerary, rate, currency } = useDBStore.getState();
 
-  const budgetJSON = [
-    {
+  const budgetJSON = [];
+
+  if (budget.buffer > 0) {
+    budgetJSON.push({
       Name: "Buffer Total",
       Type: "Buffer",
       Cost: budget.buffer,
       "Monthly (cost / timespan)":
         Math.round((budget.buffer / months) * 100) / 100,
       "Timespan (now - departure)": months,
-    },
-  ];
+    });
+  }
 
-  travels
-    .filter(({ tripId }) => tripId === trip.id)
-    .map((travel) => {
-      const travelMonths = Math.floor(
-        dayjs(trip.start_date).diff(dayjs(), "months", true),
-      );
-      const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
+  if (budget.travel.length > 0) {
+    const timespan = months <= 6 ? months : months - 6;
 
+    budget.travel.map((travel) => {
       budgetJSON.push({
         Name: `${travel.carrier} ${travel.type}`,
         Type: "Travel",
@@ -238,39 +136,44 @@ const budgetSheet = async (
         "Timespan (now - departure)": timespan,
       });
     });
+  }
 
-  locations.map((loc) => {
-    const locMonths = Math.floor(
-      dayjs(loc.start_date).diff(dayjs(), "months", true),
-    );
-    if (loc.accommodation) {
-      const cost = loc.nights * loc.accommodation.price;
-      budgetJSON.push({
-        Name: loc.accommodation.name,
-        Type: "Accommodation",
-        Cost: Math.round(cost * rate * 100) / 100,
-        "Monthly (cost / timespan)":
-          Math.round(((cost * rate) / locMonths) * 100) / 100,
-        "Timespan (now - departure)": locMonths,
-      });
-    }
-    const activities =
-      itinerary.filter((itinerary) => itinerary.locationId === loc.id) ?? [];
-    if (activities.length > 0) {
-      budgetJSON.push({
-        Name: `${loc.city} ${dayjs(loc.start_date).format(
-          "(DD MMM - ",
-        )}${dayjs(loc.end_date).format("DD MMM)")}`,
-        Type: "Itinerary",
-        Cost: sum(activities.map(({ cost }) => Number(cost))),
-        "Monthly (cost / timespan)":
-          Math.round(
-            (sum(activities.map(({ cost }) => Number(cost))) / months) * 100,
-          ) / 100,
-        "Timespan (now - departure)": months,
-      });
-    }
-  });
+  if (locations.length > 0) {
+    locations.map((loc) => {
+      const locMonths = Math.floor(
+        dayjs(loc.start_date).diff(dayjs(), "months", true),
+      );
+      if (loc.accommodation) {
+        const cost = loc.accommodation.price
+          ? Number(loc.accommodation.price)
+          : 0;
+        budgetJSON.push({
+          Name: loc.accommodation.name,
+          Type: "Accommodation",
+          Cost: Math.round(cost * rate * 100) / 100,
+          "Monthly (cost / timespan)":
+            Math.round(((cost * rate) / locMonths) * 100) / 100,
+          "Timespan (now - departure)": locMonths,
+        });
+      }
+      const activities =
+        itinerary.filter((itinerary) => itinerary.locationId === loc.id) ?? [];
+      if (activities.length > 0) {
+        budgetJSON.push({
+          Name: `${loc.city} ${dayjs(loc.start_date).format(
+            "(DD MMM - ",
+          )}${dayjs(loc.end_date).format("DD MMM)")}`,
+          Type: "Itinerary",
+          Cost: sum(activities.map(({ cost }) => Number(cost))),
+          "Monthly (cost / timespan)":
+            Math.round(
+              (sum(activities.map(({ cost }) => Number(cost))) / months) * 100,
+            ) / 100,
+          "Timespan (now - departure)": months,
+        });
+      }
+    });
+  }
 
   const ws = XLSX.utils.json_to_sheet(budgetJSON, { header });
 
@@ -316,12 +219,7 @@ export const exportTripExcel = async (
 
   if (values.location || values.accommodation) {
     for (const location of tripLocations) {
-      if (values.location) {
-        locationSheet(location, workbook);
-      }
-      if (values.accommodation) {
-        accommodationSheet(location, workbook);
-      }
+      locationSheet(location, workbook);
     }
   }
 
