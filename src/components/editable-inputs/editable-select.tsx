@@ -1,5 +1,5 @@
 import { Text, Select } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SavedHotel, Hotel } from "types";
 import { FaChevronDown } from "react-icons/fa6";
 import logger from "utils/logger";
@@ -22,6 +22,7 @@ export const EditableSelect = ({
   const [value, setValue] = useState<string | null>(
     accommodation ? accommodation.name : null,
   );
+  const [searchValue, setSearchValue] = useState("");
   const [loadingHotels, setLoadingHotels] = useState(false);
   const [hotelOptions, setHotelOptions] = useState<
     { value: string; label: string; hotel: Hotel }[]
@@ -33,15 +34,16 @@ export const EditableSelect = ({
     setValue(val);
     onChange(id, hotel);
     setEditing(false);
+    loadHotels("");
   };
 
-  const loadHotels = async () => {
+  const loadHotels = async (search?: string) => {
     if (!city) return;
 
     setLoadingHotels(true);
 
     try {
-      const { combined } = await searchHotels(city);
+      const { combined } = await searchHotels(city, search);
 
       setHotelOptions(
         combined.map((hotel) => ({
@@ -57,13 +59,23 @@ export const EditableSelect = ({
     setLoadingHotels(false);
   };
 
+  useEffect(() => {
+    if (!editing) return;
+
+    const timeout = setTimeout(() => {
+      loadHotels(searchValue);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchValue, editing]);
+
   return !editing ? (
     <Text
       size="sm"
       mt="0.5rem"
       onClick={() => {
         setEditing(true);
-        loadHotels();
+        loadHotels("");
       }}
       styles={{
         root: {
@@ -88,6 +100,7 @@ export const EditableSelect = ({
       value={value}
       onChange={handleSave}
       onBlur={() => setEditing(false)}
+      onSearchChange={setSearchValue}
       size="xs"
       autoFocus
       searchable

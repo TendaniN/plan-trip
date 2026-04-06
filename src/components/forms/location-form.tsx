@@ -27,6 +27,7 @@ export const LocationForm = ({ trip, close }: Props) => {
   const [hotelOptions, setHotelOptions] = useState<
     { value: string; label: string; hotel: Hotel }[]
   >([]);
+  const [searchValue, setSearchValue] = useState("");
 
   const { values, getInputProps, onSubmit, reset, setFieldValue } = useForm<{
     city: CityValues | "";
@@ -48,31 +49,27 @@ export const LocationForm = ({ trip, close }: Props) => {
     },
   });
 
-  useEffect(() => {
-    const loadHotels = async () => {
-      if (!values.city) return;
+  const loadHotels = async (search?: string) => {
+    if (!values.city) return;
 
-      setLoadingHotels(true);
+    setLoadingHotels(true);
 
-      try {
-        const { combined } = await searchHotels(values.city);
+    try {
+      const { combined } = await searchHotels(values.city, search);
 
-        setHotelOptions(
-          combined.map((hotel) => ({
-            value: hotel.placeId,
-            label: `${hotel.name} (${hotel.rating ?? "-"}⭐)`,
-            hotel,
-          })),
-        );
-      } catch (err) {
-        logger.error("Failed to load hotels", err);
-      }
+      setHotelOptions(
+        combined.map((hotel) => ({
+          value: hotel.placeId,
+          label: `${hotel.name} (${hotel.rating ?? "-"}⭐)`,
+          hotel,
+        })),
+      );
+    } catch (err) {
+      logger.error("Failed to load hotels", err);
+    }
 
-      setLoadingHotels(false);
-    };
-
-    loadHotels();
-  }, [values.city]);
+    setLoadingHotels(false);
+  };
 
   const addLocation = async (
     city: CityValues,
@@ -141,6 +138,14 @@ export const LocationForm = ({ trip, close }: Props) => {
     close();
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      loadHotels(searchValue);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchValue]);
+
   const formDisabled =
     !values.city || !values.start_date || !values.end_date || creating;
 
@@ -202,6 +207,7 @@ export const LocationForm = ({ trip, close }: Props) => {
           value={values.accommodation}
           onChange={(val) => setFieldValue("accommodation", val || "")}
           disabled={!values.city}
+          onSearchChange={setSearchValue}
           searchable
           nothingFoundMessage={loadingHotels ? "Loading..." : "No hotels found"}
         />
