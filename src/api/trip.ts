@@ -18,6 +18,7 @@ import type { Budget, Trip } from "types";
 import dayjs from "dayjs";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import logger from "utils/logger";
+import { addTripToUser } from "./user";
 
 interface TripInput {
   user_uid: string;
@@ -80,6 +81,8 @@ export const createTrip = async ({
       setDoc(doc(db, "locations", locationId), location),
       setDoc(doc(db, "budgets", budgetId), budget),
     ]);
+
+    await addTripToUser(user_uid, tripId);
 
     logger.info("Created batch trip, location & budget entries.");
     useDBStore.getState().addTrip(trip, location, budget);
