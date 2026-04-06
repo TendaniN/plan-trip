@@ -65,7 +65,7 @@ export const searchHotelsExternal = async (
   searchString?: string,
 ): Promise<Hotel[]> => {
   const res = await fetch(
-    `https://serpapi.com/search?engine=tripadvisor&q=${encodeURIComponent(city)}${searchString ? encodeURIComponent(searchString) : ""}&ssrc=h&api_key=${import.meta.env.VITE_SERPAPI_API_KEY}`,
+    `https://serpapi.com/search?engine=tripadvisor&q=${encodeURIComponent(`${city} ${searchString ?? ""}`)}&ssrc=h&api_key=${import.meta.env.VITE_SERPAPI_API_KEY}`,
   );
   const data = await res.json();
 
@@ -73,9 +73,9 @@ export const searchHotelsExternal = async (
 };
 
 // COMBINED SEARCH (CACHE → API)
-export const searchHotels = async (city: string) => {
+export const searchHotels = async (city: string, searchString?: string) => {
   const cached = await getHotelsByCity(city);
-  const external = await searchHotelsExternal(city);
+  const external = await searchHotelsExternal(city, searchString);
 
   // Deduplicate by placeId OR name fallback
   const cachedIds = new Set(cached.map((h) => h.placeId || h.name));
