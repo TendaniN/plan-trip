@@ -4,7 +4,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { Flex, TextInput, LoadingOverlay, Loader, Select } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 
-import { useDBStore } from "db/store";
+import { useAuthStore } from "db";
 
 import logger from "utils/logger";
 import { Button } from "components";
@@ -20,7 +20,7 @@ export const TripForm = () => {
 
   const [creating, setCreating] = useState(false);
 
-  const { uid, addTrip: resetTrip } = useDBStore((state) => state);
+  const { uid } = useAuthStore((state) => state);
 
   const { values, getInputProps, onSubmit } = useForm({
     initialValues: {
@@ -49,7 +49,6 @@ export const TripForm = () => {
     if (uid) {
       try {
         setCreating(true);
-
         const { trip, location, budget } = await createTrip({
           user_uid: uid,
           name,
@@ -58,7 +57,6 @@ export const TripForm = () => {
           start,
           end,
         });
-        resetTrip(trip, location, budget);
         logger.info(
           `Location (${location.id}), Budget (${budget.id}) added to Trip (${trip.id}).`,
         );
@@ -86,7 +84,6 @@ export const TripForm = () => {
   };
 
   const handleSubmit = (vals: typeof values) => {
-    setCreating(true);
     const country = CITY_MAP.find(
       ({ cities }) => cities.filter((val) => val === vals.cityValue).length > 0,
     );

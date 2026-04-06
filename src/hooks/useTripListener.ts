@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import logger from "utils/logger";
 import { getBudgets, getTrips } from "api/trip";
-import { getLocations, getItineraryActivities } from "api/location";
+import { getLocations } from "api/location";
+import { getItineraryActivities } from "api/itinerary";
 
 export default function useTripListener() {
   const { setDb, uid, trips, locations, itinerary, budgets } = useDBStore(
@@ -11,7 +12,7 @@ export default function useTripListener() {
 
   useEffect(() => {
     const loadDB = async () => {
-      if (!uid) return;
+      if (!uid || trips.length > 0) return;
 
       const dbEmpty =
         trips.length === 0 &&

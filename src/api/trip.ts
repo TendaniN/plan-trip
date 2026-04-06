@@ -11,12 +11,13 @@ import {
 import { db } from "api/firebase";
 import { calcDaysBetween } from "utils/calc-days-between";
 import { v4 as uuidv4 } from "uuid";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import type { CityValues } from "constants/city";
 import type { CountryValues } from "constants/country";
-import type { Budget, Trip } from "types/db";
+import type { Budget, Trip } from "types";
 import dayjs from "dayjs";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
+import logger from "utils/logger";
 
 interface TripInput {
   user_uid: string;
@@ -67,7 +68,8 @@ export const createTrip = async ({
     const budget = {
       id: budgetId,
       tripId,
-      accommodation: { itineraryTotal: 0, hotelTotal: 0 },
+      accommodationTotal: 0,
+      itineraryTotal: 0,
       travel: [],
       buffer: 0,
     };
@@ -77,9 +79,9 @@ export const createTrip = async ({
       setDoc(doc(db, "trips", tripId), trip),
       setDoc(doc(db, "locations", locationId), location),
       setDoc(doc(db, "budgets", budgetId), budget),
-      setDoc(doc(db, "budgets", budgetId), budget),
     ]);
 
+    logger.info("Created batch trip, location & budget entries.");
     useDBStore.getState().addTrip(trip, location, budget);
 
     return { trip, location, budget };
@@ -133,13 +135,11 @@ export const editTripLocations = async (
     locations,
   });
 
-  useDBStore
-    .getState()
-    .updateTrip(tripId, {
-      start_date: trip_start_date,
-      end_date: trip_end_date,
-      locations,
-    });
+  useDBStore.getState().updateTrip(tripId, {
+    start_date: trip_start_date,
+    end_date: trip_end_date,
+    locations,
+  });
 };
 
 export const getTrips = async (userId?: string): Promise<Trip[]> => {

@@ -2,10 +2,12 @@ import TripsPage from "features/trip/trips.page";
 import TripPage from "features/trip/trip.page";
 import LocationPage from "features/trip/location.page";
 import BudgetPage from "features/trip/budget.page";
+import ProtectedLayout from "layouts/ProtectedLayout";
 
 export const tripRoutes = [
   {
     path: "trip",
+    Component: ProtectedLayout,
     children: [
       {
         index: true, // /trip
