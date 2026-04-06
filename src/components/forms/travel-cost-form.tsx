@@ -33,7 +33,8 @@ export const TravelCostForm = ({ tripId, budgetId, close }: Props) => {
 
   const travelId = useId();
 
-  const { currency } = useDBStore((state) => state);
+  const { currency, budgets } = useDBStore((state) => state);
+  const budgetId = budgets.find((budget) => budget.tripId === tripId)?.id;
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -54,6 +55,10 @@ export const TravelCostForm = ({ tripId, budgetId, close }: Props) => {
       carrier: isNotEmpty("Required."),
     },
   });
+
+  const ref = useRef<HTMLInputElement>(null);
+
+  if (!budgetId) return null;
 
   const addTravelCost = async (
     date: string,
@@ -117,8 +122,6 @@ export const TravelCostForm = ({ tripId, budgetId, close }: Props) => {
     values.date === "" ||
     values.carrier === "" ||
     creating;
-
-  const ref = useRef<HTMLInputElement>(null);
 
   const pickerControl = (
     <ActionIcon

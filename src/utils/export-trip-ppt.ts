@@ -234,7 +234,7 @@ const buildBudgetSlide = (
 ) => {
   const slide = pptx.addSlide();
 
-  const { travels, itinerary, rate, currency } = useDBStore.getState();
+  const { itinerary, rate, currency } = useDBStore.getState();
 
   // Title
   slide.addText("Budget Plan", {
@@ -284,14 +284,11 @@ const buildBudgetSlide = (
   ]);
 
   // Travel rows
-  travels
-    .filter(({ tripId }) => tripId === trip.id)
-    .forEach((travel) => {
-      const travelMonths = Math.floor(
-        dayjs(trip.start_date).diff(dayjs(), "months", true),
-      );
-      const timespan = travelMonths <= 6 ? travelMonths : travelMonths - 6;
 
+  if (budget.travel.length > 0) {
+    const timespan = months <= 6 ? months : months - 6;
+
+    budget.travel.map((travel) => {
       tableRows.push([
         { text: `${travel.carrier} ${travel.type}` },
         { text: "Travel" },
@@ -306,6 +303,7 @@ const buildBudgetSlide = (
         },
       ]);
     });
+  }
 
   // Accommodation rows
   locations
@@ -315,7 +313,9 @@ const buildBudgetSlide = (
         dayjs(loc.start_date).diff(dayjs(), "months", true),
       );
       if (loc.accommodation) {
-        const cost = loc.nights * loc.accommodation.price;
+        const cost = loc.accommodation.price
+          ? Number(loc.accommodation.price)
+          : 0;
 
         tableRows.push([
           { text: loc.accommodation.name },
