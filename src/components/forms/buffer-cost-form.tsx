@@ -4,11 +4,11 @@ import { Button } from "components";
 import { FaCheck, FaX } from "react-icons/fa6";
 import { useState, useId } from "react";
 
-import { db } from "db";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import logger from "utils/logger";
 import { showNotification } from "@mantine/notifications";
 import type { DexieError } from "dexie";
+import { editBudget } from "api/budget";
 interface Props {
   tripId: string;
   close: () => void;
@@ -19,7 +19,7 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
 
   const budgetId = useId();
 
-  const { addBudget, currency } = useDBStore((state) => state);
+  const { currency } = useDBStore((state) => state);
 
   const { values, getInputProps, onSubmit, reset } = useForm({
     initialValues: {
@@ -32,14 +32,8 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
   });
 
   const createCost = async (cost: number) => {
-    const newCost = {
-      id: budgetId,
-      tripId,
-      buffer: cost,
-    };
     try {
-      await db.budgets.add(newCost);
-      addBudget(newCost);
+      await editBudget(tripId, budgetId, { buffer: cost });
 
       logger.info(`Cost (${budgetId}) added to Trip (${tripId}).`);
       showNotification({

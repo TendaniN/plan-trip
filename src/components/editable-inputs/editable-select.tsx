@@ -1,14 +1,15 @@
 import { Text, Select } from "@mantine/core";
-import { ALL_HOTELS } from "constants/hotels";
-import { useState, useMemo } from "react";
-import type { HotelProps } from "types/hotel";
+import { useState } from "react";
+import type { SavedHotel, Hotel } from "types";
 import { FaChevronDown } from "react-icons/fa6";
+import logger from "utils/logger";
+import { searchHotels } from "api/hotel";
 
 type Props = {
   id: string;
   city: string;
-  accommodation?: HotelProps;
-  onChange: (id: string, accommodation?: HotelProps) => void;
+  accommodation?: SavedHotel | null;
+  onChange: (id: string, accommodation?: SavedHotel) => void;
 };
 
 export const EditableSelect = ({
@@ -21,30 +22,49 @@ export const EditableSelect = ({
   const [value, setValue] = useState<string | null>(
     accommodation ? accommodation.name : null,
   );
-
-  const filteredAccommodations = useMemo(() => {
-    const hotels = ALL_HOTELS.find(({ type }) => type === city);
-    if (hotels) {
-      return hotels.hotels;
-    }
-    return [];
-  }, [city]);
+  const [loadingHotels, setLoadingHotels] = useState(false);
+  const [hotelOptions, setHotelOptions] = useState<
+    { value: string; label: string; hotel: Hotel }[]
+  >([]);
 
   const handleSave = (val: string | null) => {
-    const hotel = val
-      ? filteredAccommodations.find(({ name }) => name === val)
-      : undefined;
+    const hotel = hotelOptions.find((h) => h.value === val)?.hotel;
 
     setValue(val);
     onChange(id, hotel);
     setEditing(false);
   };
 
+  const loadHotels = async () => {
+    if (!city) return;
+
+    setLoadingHotels(true);
+
+    try {
+      const { combined } = await searchHotels(city);
+
+      setHotelOptions(
+        combined.map((hotel) => ({
+          value: hotel.placeId,
+          label: `${hotel.name} (${hotel.rating ?? "-"}⭐)`,
+          hotel,
+        })),
+      );
+    } catch (err) {
+      logger.error("Failed to load hotels", err);
+    }
+
+    setLoadingHotels(false);
+  };
+
   return !editing ? (
     <Text
       size="sm"
       mt="0.5rem"
-      onClick={() => setEditing(true)}
+      onClick={() => {
+        setEditing(true);
+        loadHotels();
+      }}
       styles={{
         root: {
           display: "inline-flex",
@@ -64,13 +84,14 @@ export const EditableSelect = ({
     </Text>
   ) : (
     <Select
+      data={hotelOptions}
       value={value}
-      data={filteredAccommodations.map(({ name }) => name)}
       onChange={handleSave}
       onBlur={() => setEditing(false)}
       size="xs"
       autoFocus
       searchable
+      nothingFoundMessage={loadingHotels ? "Loading..." : "No hotels found"}
     />
   );
 };
