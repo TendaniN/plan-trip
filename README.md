@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/version-0.2.0-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/status-active%20development-yellow.svg" alt="Status" />
   <img src="https://img.shields.io/badge/react-19.x-61dafb.svg" alt="React" />
   <img src="https://img.shields.io/badge/typescript-strict-blue.svg" alt="TypeScript" />
@@ -18,22 +18,23 @@
   </a>
 </p>
 
-**Plan-Trip** is a trip-planning web application designed to make organising complex trips easier and more structured.  
-It allows users to plan trips with multiple locations, manage itineraries, and keep track of budgets — all in one place.
+**Plan-Trip** is a trip-planning web application designed to make organising complex trips easier and more structured.
+It allows users to plan trips with multiple locations, manage itineraries, and track budgets — all in one place.
 
-> **Current version:** `0.2.0`  
+> **Current version:** `0.3.0`
 > 🚧 This project is under active development.
 
 ---
 
 ## 🌍 Project Goal
 
-Planning a trip often involves juggling dates, locations, activities, and budgets across multiple tools.  
-**Plan-Trip** aims to simplify this by providing:
+Planning a trip often involves juggling dates, locations, activities, and budgets across multiple tools.
+**Plan-Trip** simplifies this by providing:
 
 - A single source of truth for trip planning
+- Real-time synced data across devices
 - Clear visibility of schedules and costs
-- Easy export of plans (PDF & PowerPoint)
+- Easy export of plans (Excel, PDF, PowerPoint)
 
 ---
 
@@ -41,11 +42,11 @@ Planning a trip often involves juggling dates, locations, activities, and budget
 
 ### 🧳 Trips
 
-- Create trips with a start and end date
-- Each trip can contain:
+- Create trips with start and end dates
+- Each trip contains:
   - Multiple locations
   - Travel entries (flights, trains, buses, cars)
-  - One or more budgets
+  - Budget tracking
 
 ### 📍 Locations
 
@@ -53,34 +54,49 @@ Planning a trip often involves juggling dates, locations, activities, and budget
 - A location includes:
   - Country & city
   - Arrival and departure dates
-  - Number of nights
+  - Number of nights (auto-calculated)
   - Optional accommodation
   - Linked itinerary items
 
 ### 🗓️ Itinerary
 
-- Each location can have a detailed itinerary
-- Itinerary items support:
+- Detailed itinerary per location
+- Each item supports:
   - Activity name & description
   - Date & time
   - Duration
   - Cost
-  - External links (e.g. booking pages)
+  - External links
 
 ### 💰 Budgeting
 
-- Track travel costs, accommodation costs, and itinerary costs
-- Add a buffer amount
-- Automatically calculate:
-  - Total cost
-  - Monthly contribution until departure
+- Track:
+  - Accommodation costs
+  - Itinerary costs
+  - Travel costs
+  - Buffer
+- Automatically calculates:
+  - Total trip cost
+  - Monthly savings required
+
+### 🔄 Real-time Sync (NEW)
+
+- Powered by **Firebase Firestore**
+- Changes instantly reflect across sessions
+- Zustand used for client-side caching + UI state
+
+### 🔐 Authentication (NEW)
+
+- Firebase Authentication (email/password)
+- User-scoped data access
+- Secure backend enforced via Firestore rules
 
 ### 📄 Export
 
 - Export trips to:
-  - **Excel** (using `xlsx`)
-  - **PDF** (using `pdfmake`)
-  - **PowerPoint** (using `pptxgenjs`)
+  - **Excel** (`xlsx`)
+  - **PDF** (`pdfmake`)
+  - **PowerPoint** (`pptxgenjs`)
 
 ---
 
@@ -107,42 +123,28 @@ This project uses **feature-based architecture**
 ```txt
 src
 │
-├─ api
+├─ api            # Firebase interaction layer (CRUD logic)
 ├─ assets
 ├─ components
 ├─ constants
-├─ db
+├─ db             # Zustand store (client state)
 ├─ hooks
 ├─ layouts
+│   ├─ ProtectedLayout.tsx
 │   └─ AppLayout.tsx
 │
-├─ routes
-│   ├─ index.tsx
-│   ├─ auth.routes.ts
-│   ├─ trip.routes.ts
-│   └─ country.routes.ts
-│
-├─ features
-│   ├─ auth
-│   │   ├─ login.page.tsx
-│   │   ├─ register.page.tsx
-│   │   └─ logout.page.tsx
-│   │
-│   ├─ trip
-│   │   ├─ trips.page.tsx
-│   │   ├─ trip.page.tsx
-│   │   ├─ location.page.tsx
-│   │   └─ budget.page.tsx
-│   │
-│   ├─ country
-│   │    ├─ countries.page.tsx
-│   │    └─ accommodation.page.tsx
-│   │
-│   ├─ help
-│   │    └─ help.page.tsx
-│   │
-│   └─ home
-│       └─ home.page.tsx
+├─ pages
+│   ├─ login.page.tsx
+│   ├─ register.page.tsx
+│   ├─ logout.page.tsx
+│   ├─ trips.page.tsx
+│   ├─ trip.page.tsx
+│   ├─ location.page.tsx
+│   ├─ budget.page.tsx
+│   ├─ countries.page.tsx
+│   ├─ accommodation.page.tsx
+│   ├─ help.page.tsx
+│   └─ home.page.tsx
 │
 ├─ types
 └─ utils
@@ -156,14 +158,15 @@ src
   - React 19
   - TypeScript
   - Vite
-  - React Router
+  - React Router (Declarative Routing)
 - UI & Styling
   - Mantine
   - Emotion
   - Fontsource (Inter, Chango)
 - State & Data
   - Zustand – state management
-  - Dexie – IndexedDB wrapper
+  - Firebase Firestore – backend database
+  - Firebase Auth – authentication
 - Utilities
   - Day.js – date handling
   - Axios – HTTP requests
@@ -173,33 +176,51 @@ src
 
 ---
 
+## 🔐 Security Model (NEW)
+
+- All data is **user-scoped**
+- Firestore security rules enforce:
+
+  - Users can only access their own trips
+  - No cross-user reads/writes
+  - Budget, location, itinerary tied to `tripId`
+- Sensitive operations validated server-side via rules
+
+---
+
 ## Running the Project Locally
 
 ### Prerequisites
 
-- Node.js (v18 or later recommended)
+- Node.js (v18+)
 - npm or yarn
 
+### Setup
+
 ```bash
-// Install dependencies
 npm install
-
-// Start development server
 npm run dev
+```
 
-// The app will be available at:
+App runs at:
+
+```bash
 http://localhost:5173
 ```
 
+---
+
 ## 🧪 Status
 
-- ✅ Core trip, location, itinerary & budget models
-- ✅ Local persistence with IndexedDB
-- ✅ Excel, PDF & PowerPoint exports
-- 🚧 Authentication & backend integration (planned)
-- 🚧 Sharing & collaboration features (planned)
+- ✅ Trips, locations, itinerary, budgets
+- ✅ Firebase backend integration
+- ✅ Authentication system
+- ✅ Real-time updates
+- ✅ Export functionality
+- 🚧 Collaboration & sharing
+- 🚧 Advanced budgeting insights
 
 ## 👤 Author
 
-Tendani Netshitenzhe
-@TendaniN
+**Tendani Netshitenzhe**
+[@TendaniN](https://github.com/TendaniN)
