@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NativeSelect } from "@mantine/core";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { FaAngleDown } from "react-icons/fa6";
 

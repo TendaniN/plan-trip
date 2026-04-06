@@ -1,4 +1,4 @@
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import pdfMake from "./pdf";
 import dayjs from "dayjs";
 import { sum } from "./sum";

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { api } from "api";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import logger from "utils/logger";
 
 export default function useExchangeRates() {

@@ -1,9 +1,9 @@
 import PptxGenJS from "pptxgenjs";
-import { useDBStore } from "db/store";
+import { useDBStore } from "db";
 import dayjs from "dayjs";
 import { workingSumDays } from "./sum-days";
 import { sum } from "./sum";
-import type { Budget, Location, Trip } from "types/db";
+import type { Budget, Location, Trip } from "types";
 
 const buildSummarySlide = (
   pptx: PptxGenJS,
