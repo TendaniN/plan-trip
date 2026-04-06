@@ -1,5 +1,4 @@
-// hotel.ts
-
+import axios from "axios";
 import {
   collection,
   query,
@@ -12,6 +11,8 @@ import type { Hotel, SavedHotel } from "types";
 import { db } from "./firebase";
 
 const HOTEL_COLLECTION = "hotels";
+
+const SERP_API_URL = "https://serpapi.com/search";
 
 // FIREBASE: GET HOTELS BY CITY (CACHE FIRST)
 export const getHotelsByCity = async (city: string): Promise<SavedHotel[]> => {
@@ -64,12 +65,30 @@ export const searchHotelsExternal = async (
   city: string,
   searchString?: string,
 ): Promise<Hotel[]> => {
-  const res = await fetch(
-    `https://serpapi.com/search?engine=tripadvisor&q=${encodeURIComponent(`${city} ${searchString ?? ""}`)}&ssrc=h&api_key=${import.meta.env.VITE_SERPAPI_API_KEY}`,
-  );
-  const data = await res.json();
+  try {
+    const query = `${city} ${searchString ?? ""}`.trim();
 
-  return data.places.map((place: PlacesProps) => mapToHotel(place, city));
+    const { data } = await axios.get(SERP_API_URL, {
+      params: {
+        engine: "tripadvisor",
+        q: query,
+        ssrc: "h",
+        api_key: import.meta.env.VITE_SERPAPI_API_KEY,
+      },
+    });
+
+    if (!data?.places || !Array.isArray(data.places)) {
+      console.warn("Unexpected SerpAPI response:", data);
+      return [];
+    }
+
+    return data.places.map((place: PlacesProps) => mapToHotel(place, city));
+  } catch (error) {
+    console.error("Error fetching hotels from SerpAPI:", error);
+
+    // Optional: surface cleaner error
+    throw new Error("Failed to fetch hotels. Please try again.");
+  }
 };
 
 // COMBINED SEARCH (CACHE → API)
