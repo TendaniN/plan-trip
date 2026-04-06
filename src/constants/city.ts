@@ -62,4 +62,4 @@ export const CITY_MAP = [
     country: "united arab emirates",
     cities: Object.values(UNITED_ARAB_EMIRATES_CITIES),
   },
-];
+] as const;

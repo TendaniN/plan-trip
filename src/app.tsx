@@ -1,13 +1,12 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
-import { Loader, MantineProvider, createTheme, Container } from "@mantine/core";
+import { MantineProvider, createTheme, Container } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { BrowserRouter } from "react-router-dom";
 import { MantineEmotionProvider, emotionTransform } from "@mantine/emotion";
 
-import { initDB } from "db";
 import AppRoutes from "routes/index";
 import "./styles.css";
 
@@ -97,31 +96,14 @@ const ContainerWrapper = ({ children }: { children: ReactNode }) => (
 );
 
 export default function App() {
-  const [siteLoading, setSiteLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      await initDB();
-      setSiteLoading(false);
-    })();
-  }, []);
-
   return (
     <MantineProvider theme={theme} stylesTransform={emotionTransform}>
       <MantineEmotionProvider>
         <Notifications />
         <BrowserRouter basename="/plan-trip">
-          {siteLoading ? (
-            <Loader
-              color="primary.5"
-              size="xl"
-              style={{ margin: "auto", display: "block" }}
-            />
-          ) : (
-            <ContainerWrapper>
-              <AppRoutes />
-            </ContainerWrapper>
-          )}
+          <ContainerWrapper>
+            <AppRoutes />
+          </ContainerWrapper>
         </BrowserRouter>
       </MantineEmotionProvider>
     </MantineProvider>
