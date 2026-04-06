@@ -12,7 +12,7 @@ import type { CountryValues } from "constants/country";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { createLocation } from "api/location";
 import { searchHotels } from "api/hotel";
 
@@ -102,7 +102,7 @@ export const LocationForm = ({ trip, close }: Props) => {
     } catch (error) {
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });

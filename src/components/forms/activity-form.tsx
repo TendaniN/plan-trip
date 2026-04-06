@@ -19,7 +19,7 @@ import { useDBStore } from "db";
 import logger from "utils/logger";
 import { DEFAULT_DATE_FORMAT } from "constants/db";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { useRef } from "react";
 import { createItineraryActivity } from "api/itinerary";
 
@@ -92,7 +92,7 @@ export const ActivityForm = ({ tripId, location, close }: Props) => {
       logger.error("Failed to add itinerary activity:" + error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });

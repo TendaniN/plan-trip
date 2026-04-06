@@ -12,7 +12,7 @@ import { BudgetTableHeader } from "constants/headers";
 import type { CostProps } from "types";
 import { editLocationHotel } from "api/location";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { saveHotelIfNotExists } from "api/hotel";
 import { editBudget } from "api/budget";
 
@@ -146,7 +146,7 @@ const BudgetPage = () => {
       } catch (error) {
         showNotification({
           title: "Something Went Wrong",
-          message: (error as DexieError).message,
+          message: (error as FirestoreError).message,
           color: "red",
           icon: <FaX />,
         });
@@ -166,7 +166,7 @@ const BudgetPage = () => {
     } catch (error) {
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -192,7 +192,7 @@ const BudgetPage = () => {
     } catch (error) {
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });

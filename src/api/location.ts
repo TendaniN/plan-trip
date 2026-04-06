@@ -136,7 +136,7 @@ export const editLocationHotel = async (
       (doc) => doc.data() as Location,
     );
     const accommodationTotal = sum(
-      locations.map((loc) => loc.accommodation?.price || 0),
+      locations.map((loc) => Number(loc.accommodation?.price) || 0),
     );
     const budgetId = budgetDoc.id;
     await updateDoc(doc(db, "budgets", budgetId), {

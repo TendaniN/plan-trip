@@ -27,7 +27,7 @@ import {
 import { useDBStore, useTrip } from "db";
 import logger from "utils/logger";
 import type { SavedHotel } from "types";
-import { type DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { workingSumDays } from "utils/sum-days";
 import { sum } from "utils/sum";
 import { editLocationDate, editLocationHotel } from "api/location";
@@ -154,7 +154,7 @@ const TripPage = () => {
       logger.error("Trip name was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -174,7 +174,7 @@ const TripPage = () => {
       logger.error("Location date was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -197,7 +197,7 @@ const TripPage = () => {
       logger.error("Location accommodation was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });

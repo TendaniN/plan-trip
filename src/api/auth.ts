@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { setDoc, getDoc, doc } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import type { User } from "types/index";
+import type { User } from "types";
 import logger from "utils/logger";
 
 export const registerUser = async (

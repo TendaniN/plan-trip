@@ -34,7 +34,7 @@ import {
 } from "components";
 import { useDBStore, useLocation, useTrip } from "db";
 import logger from "utils/logger";
-import { type DexieError } from "dexie";
+import type { FirestoreError } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { sum } from "utils/sum";
 import { editLocationHotel } from "api/location";
@@ -102,7 +102,7 @@ const LocationPage = () => {
     } catch (error) {
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -127,7 +127,7 @@ const LocationPage = () => {
       logger.error("Location date was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -152,7 +152,7 @@ const LocationPage = () => {
       logger.error("Itinerary link was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -177,7 +177,7 @@ const LocationPage = () => {
       logger.error("Itinerary activity was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -202,7 +202,7 @@ const LocationPage = () => {
       logger.error("Itinerary cost was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -230,7 +230,7 @@ const LocationPage = () => {
       logger.error("Itinerary duration was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -255,7 +255,7 @@ const LocationPage = () => {
       logger.error("Itinerary time was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });
@@ -280,7 +280,7 @@ const LocationPage = () => {
       logger.error("Itinerary description was not updated:", error);
       showNotification({
         title: "Something Went Wrong",
-        message: (error as DexieError).message,
+        message: (error as FirestoreError).message,
         color: "red",
         icon: <FaX />,
       });

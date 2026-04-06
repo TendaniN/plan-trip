@@ -5,9 +5,9 @@ import { FaCheck, FaX } from "react-icons/fa6";
 import { useState, useId } from "react";
 
 import { useDBStore } from "db";
+import type { FirestoreError } from "firebase/firestore";
 import logger from "utils/logger";
 import { showNotification } from "@mantine/notifications";
-import type { DexieError } from "dexie";
 import { editBudget } from "api/budget";
 interface Props {
   tripId: string;
@@ -33,7 +33,7 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
 
   const createCost = async (cost: number) => {
     try {
-      await editBudget(tripId, budgetId, { buffer: cost });
+      await editBudget(budgetId, { buffer: cost });
 
       logger.info(`Cost (${budgetId}) added to Trip (${tripId}).`);
       showNotification({
@@ -48,7 +48,7 @@ export const BufferCostForm = ({ tripId, close }: Props) => {
       showNotification({
         title: "Something Went Wrong",
         message:
-          (error as DexieError).message ||
+          (error as FirestoreError).message ||
           "Failed to add cost. Please try again.",
         color: "red",
         icon: <FaX />,
